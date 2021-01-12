@@ -1,6 +1,6 @@
 import { getUserDataFromCookie } from './auth'
 
-const baseURL = 'https://parkplatztransform-api.herokuapp.com'
+const baseURL = 'https://api.xtransform.org'
 //const baseURL = 'http://localhost:8023'
 
 export const routes = {
