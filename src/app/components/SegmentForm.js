@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 import Button from '@material-ui/core/Button'
 import SplitButton from './SplitButton'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
@@ -139,6 +140,14 @@ export default function SegmentForm ({segment, onChanged}) {
     setChanged()
   }
 
+  function duplicateSubsegment (subsegment) {
+    // Insert in the right position
+    segment.properties.subsegments[subsegment.order_number + 1] = subsegment
+    // Normalize the subsegment order
+    segment.properties.subsegments = segment.properties.subsegments.map((sub, idx) => ({ ...sub, order_number: idx }))
+    setChanged()
+  }
+
   function getButtonVariant (highlighted) {
     return highlighted ? 'contained' : 'outlined'
   }
@@ -176,8 +185,11 @@ export default function SegmentForm ({segment, onChanged}) {
               secondary="Detailinfo"
             />
             <ListItemSecondaryAction>
+              <IconButton onClick={() => duplicateSubsegment(subsegment)} edge="end" aria-label="duplicate">
+                <FileCopyIcon/>
+              </IconButton>
               <IconButton onClick={() => deleteSubsegment(subsegment)} edge="end" aria-label="delete">
-                <DeleteIcon/>
+                <DeleteIcon />
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
@@ -406,7 +418,7 @@ export default function SegmentForm ({segment, onChanged}) {
             <TableCell align="left">
               <FormGroup>
                 {Object.keys(NO_PARKING_REASONS_AND_LABEL).map(key => {
-                  const reason = selectedSubsegment.no_parking_reasons.find(k => k === key)
+                  const reason = selectedSubsegment?.no_parking_reasons?.find(k => k === key)
                   return (
                     <FormControlLabel
                       key={key}
