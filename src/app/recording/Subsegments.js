@@ -139,11 +139,11 @@ export function createEmptySubsegment (orderNumber) {
     alignment: ALIGNMENT.PARALLEL,
     duration_constraint: false,
     // TODO: should be singular?
-    usage_restrictions: null,
+    usage_restrictions: [],
     time_constraint: false,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
     usage_when_no_parking: null,
-    no_parking_reasons: null,
+    no_parking_reasons: [],
   }
 }
 
