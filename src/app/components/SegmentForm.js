@@ -406,10 +406,17 @@ export default function SegmentForm ({segment, onChanged}) {
             <TableCell align="left">
               <FormGroup>
                 {Object.keys(NO_PARKING_REASONS_AND_LABEL).map(key => {
+                  const reason = selectedSubsegment.no_parking_reasons.find(k => k === key)
                   return (
                     <FormControlLabel
-                      control={<Checkbox color={'primary'} checked={selectedSubsegment.no_parking_reasons?.[key]}
-                                         onChange={updateSubsegment(getToggleNoParkingReasonFn(key))}/>}
+                      key={key}
+                      control={
+                        <Checkbox 
+                          color={'primary'} 
+                          checked={reason === key}
+                          onChange={updateSubsegment(getToggleNoParkingReasonFn(key))}
+                        />
+                      }
                       label={NO_PARKING_REASONS_AND_LABEL[key]}
                     />
                   )
