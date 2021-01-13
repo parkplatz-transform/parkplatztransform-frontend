@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import PTMap from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
 import { makeStyles } from '@material-ui/core/styles'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
@@ -41,6 +42,12 @@ const useStyles = makeStyles({
   formArea: {
     width: '30%',
     minWidth: 300
+  },
+  loadingContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%'
   }
 })
 
@@ -184,7 +191,9 @@ function Recording () {
   function renderFormView () {
     if (isLoading) {
       return (
-        <div>Loading...</div>
+        <div className={classes.loadingContainer}>
+          <CircularProgress/>
+        </div>
       )
     }
     if (!selectedSegmentId) {

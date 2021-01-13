@@ -232,7 +232,7 @@ export default function PTMap ({
             onSegmentSelect(null) // Clear any selected segment
             setDeleteModeEnabled(true)
           }}
-          //onDeleteStop={() => console.log('on delete end')}
+          onDeleteStop={() => setDeleteModeEnabled(false)}
           draw={getDrawOptions()}
           edit={getEditOptions()}
         />
