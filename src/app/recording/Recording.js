@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import PTMap from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
 import { makeStyles } from '@material-ui/core/styles'
-import { getSegment, getSegments, postSegment, updateSegment } from '../../helpers/api'
+import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
 
@@ -47,7 +47,15 @@ const useStyles = makeStyles({
 function Recording () {
   const classes = useStyles()
 
+  /*
+   * As far as I can tell the react-leaflet-draw event listeners only get bound on initial mounting of the components,
+   * so they're all set to the initial segment state of `{}` leading to all kinds of weird bugs.
+   * I've used a Ref bellow to keep track of up to date segment values, when reading from segmentsById use segmentsByIdRef instead.
+   * */
   const [segmentsById, setSegmentsById] = useState({})
+  const segmentsByIdRef = useRef({});
+  segmentsByIdRef.current = segmentsById
+
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -132,7 +140,7 @@ function Recording () {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    const newSegmentsById = Object.assign({}, segmentsById)
+    const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
     for (const segment of newOrUpdatedSegments) {
       newSegmentsById[segment.id] = segment
     }
@@ -145,6 +153,16 @@ function Recording () {
   async function onSegmentChanged (segment) {
     await updateSegment(segment)
   }
+  
+  function onSegmentsDeleted(ids) {
+    const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
+    const deletes = ids.map(async id => {
+      delete newSegmentsById[id]
+      await deleteSegment(id)
+    })
+    setSegmentsById(newSegmentsById)
+    return Promise.all(deletes)
+  }
 
   function renderMapView () {
     return (
@@ -155,6 +173,7 @@ function Recording () {
           onSegmentSelect={onSegmentSelect}
           onSegmentEdited={onSegmentEdited}
           onSegmentCreated={onSegmentCreated}
+          onSegmentsDeleted={onSegmentsDeleted}
           onBoundsChanged={onBoundsChange}
           segments={Object.values(segmentsById)}
         />

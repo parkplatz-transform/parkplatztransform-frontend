@@ -32,10 +32,12 @@ export default function PTMap ({
                                  selectedSegmentId,
                                  onSegmentEdited,
                                  onSegmentCreated,
+                                 onSegmentsDeleted,
                                  onBoundsChanged
                                }) {
 
   const [showEditControl, setShowEditControl] = useState(false)
+  const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
   const editableFGRef = useRef(null)
 
   useEffect(() => {
@@ -52,8 +54,14 @@ export default function PTMap ({
     _onChange()
   }
 
-  function _onDeleted (e) {
-    _onChange()
+  async function _onDeleted (e) {
+    const layers = e.layers._layers
+    const idsToDelete = Object.keys(layers)
+      .filter(key => !!layers[key]?.feature && layers[key]?.feature?.id)
+      .map(key => layers[key]?.feature?.id)
+
+    await onSegmentsDeleted(idsToDelete)
+    setDeleteModeEnabled(false)
   }
 
   function _onMounted (drawControl) {
@@ -167,7 +175,9 @@ export default function PTMap ({
         leafletFG.addLayer(layer)
         layer.off('click')
         layer.on('click', function (event) {
-          onSegmentSelect(layer.feature.id)
+          if (!deleteModeEnabled) {
+            onSegmentSelect(layer.feature.id)
+          }
         })
       }
     })
@@ -187,7 +197,7 @@ export default function PTMap ({
   function getEditOptions () {
     return {
       edit: showEditControl,
-      remove: false
+      remove: showEditControl
     }
   }
 
@@ -218,8 +228,11 @@ export default function PTMap ({
           onDrawStop={_onDrawStop}
           // onEditStart={_onEditStart}
           onEditStop={_onEditStop}
-          // onDeleteStart={() => console.log('on delete start')}
-          // onDeleteStop={() => console.log('on delete stop')}
+          onDeleteStart={() => { 
+            onSegmentSelect(null) // Clear any selected segment
+            setDeleteModeEnabled(true)
+          }}
+          //onDeleteStop={() => console.log('on delete end')}
           draw={getDrawOptions()}
           edit={getEditOptions()}
         />
