@@ -1,5 +1,4 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 
 import './components.css'
 import { makeStyles } from '@material-ui/core/styles'
@@ -8,12 +7,12 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
-import MenuIcon from '@material-ui/icons/Menu'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import LoginForm from './LoginForm'
+import { removeAuthCookie } from '../../helpers/auth'
 import { getUserDataFromCookie } from '../../helpers/auth'
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,12 +21,13 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
+  logoutButton: {
+    marginLeft: theme.spacing(2),
+  },
   title: {
     flexGrow: 1,
   },
 }))
-
-
 
 function MainMenu() {
   const classes = useStyles()
@@ -36,47 +36,60 @@ function MainMenu() {
   const userData = getUserDataFromCookie()
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
+
+  const handleLogout = () => {
+    removeAuthCookie()
+    window.location.href = '/'
+  }
 
   return (
-    <AppBar position="static">
+    <AppBar position='static'>
       <Toolbar>
-        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-          <MenuIcon />
-        </IconButton>
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleClose}>
-          <NavLink  activeClassName="is-active" to="/">
-            Home
-          </NavLink>
-          </MenuItem>
-          <MenuItem onClick={handleClose}><NavLink activeClassName="is-active" to="/welcome">
-            Welcome
-            </NavLink></MenuItem>
-          <MenuItem onClick={handleClose}><NavLink activeClassName="is-active" to="/about">
-           About
-            </NavLink></MenuItem>
-        </Menu>
-        <Typography variant="h6" className={classes.title}>
+
+        <Typography variant='h6' className={classes.title}>
           ParkplatzTransform
         </Typography>
-        {!userData.loggedIn && <Button color="inherit" onClick={() => setLoginModalOpen(true)}>Login</Button>}
+        {!userData.loggedIn && (
+          <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
+            Login
+          </Button>
+        )}
+
         {userData.loggedIn && userData.email}
+        {userData.loggedIn && (
+          <>
+            <IconButton
+              edge='start'
+              className={classes.logoutButton}
+              color='inherit'
+              aria-label='menu'
+              aria-controls='simple-menu'
+              aria-haspopup='true'
+              onClick={handleClick}
+            >
+              <ExitToAppIcon />
+            </IconButton>
+            <Menu
+              id='simple-menu'
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </>
+        )}
       </Toolbar>
     </AppBar>
-  );
+  )
 }
 
-export default MainMenu;
+export default MainMenu
