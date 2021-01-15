@@ -240,7 +240,7 @@ function Recording () {
   function renderSnackBar () {
     return (
       <Snackbar 
-        open={alertDisplayed} 
+        open={!!alertDisplayed} 
         autoHideDuration={3000} 
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
         onClose={() => setAlertDisplayed(null)}
