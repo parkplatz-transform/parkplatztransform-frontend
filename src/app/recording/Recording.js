@@ -105,9 +105,15 @@ function Recording () {
     }
   }
 
-  function onSegmentEdited (changedGeojson) {
-    // TODO: merge existing geoJson with new geoJson
+  async function onSegmentEdited (changedGeojson) {
     setSelectedSegmentId(null)
+    addSegments(changedGeojson?.features)
+
+    const promises = changedGeojson?.features.map(async segment => {
+      return await updateSegment(segment)
+    })
+
+    await Promise.all(promises)
   }
 
   async function onSegmentSelect (id) {

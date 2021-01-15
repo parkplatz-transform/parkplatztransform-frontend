@@ -92,7 +92,6 @@ export default function PTMap ({
   }
 
   function _onEditStop (e) {
-    console.log('_onEditStop', e)
     _onChange(true)
   }
 
@@ -226,7 +225,7 @@ export default function PTMap ({
           onMounted={_onMounted}
           onDrawStart={_onDrawStart}
           onDrawStop={_onDrawStop}
-          // onEditStart={_onEditStart}
+          onEditStart={() => onSegmentSelect(null)}
           onEditStop={_onEditStop}
           onDeleteStart={() => { 
             onSegmentSelect(null) // Clear any selected segment
