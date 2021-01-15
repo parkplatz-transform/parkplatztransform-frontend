@@ -72,9 +72,14 @@ function Recording () {
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
   async function onSegmentCreated (segment) {
-    const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
-    addSegment(createdSegment)
-    setSelectedSegmentId(createdSegment.id)
+    try {
+      const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
+      addSegment(createdSegment)
+      setSelectedSegmentId(createdSegment.id)
+      setAlertDisplayed({ severity: 'success', message: `Successfully created segment with id: ${createdSegment.id}` })
+    } catch (e) {
+      setAlertDisplayed({ severity: 'error', message: 'Failed to create segement' })
+    }
   }
 
   async function onBoundsChange (bounds) {
@@ -105,6 +110,8 @@ function Recording () {
       setIsLoading(false)
       setAlertDisplayed({ severity: 'success', message: 'Successfully loaded all segments.' })
     } catch (e) {
+      setAlertDisplayed({ severity: 'error', message: 'Problem loading all segments.' })
+      setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
   }

@@ -18,9 +18,11 @@ export const headers = () => new Headers({
 async function withErrorHandling(response) {
   const json = await response.json()
   if (!response.ok) {
-    console.error(json.body)
-    Sentry.captureException(json.body)
-    throw new Error(json.body)
+    json.detail.forEach(error => {
+      console.error(error)
+    })
+    Sentry.captureMessage(json.detail)
+    throw new Error(json.detail)
   }
   return json
 }
