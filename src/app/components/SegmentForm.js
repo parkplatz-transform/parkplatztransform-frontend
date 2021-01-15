@@ -136,15 +136,21 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function deleteSubsegment (subsegment) {
-    segment.properties.subsegments = segment.properties.subsegments.filter(s => s !== subsegment)
+    segment.properties.subsegments = segment.properties.subsegments
+      .filter(s => s !== subsegment)
+      .map((sub, idx) => ({ ...sub, order_number: idx }))
     setChanged()
   }
 
   function duplicateSubsegment (subsegment) {
+    const newSubsegment = { ...subsegment }
+    delete newSubsegment.id
+    delete newSubsegment.created_at
+    delete newSubsegment.modified_at
     // Insert in the right position
-    segment.properties.subsegments[subsegment.order_number + 1] = subsegment
-    // Normalize the subsegment order
-    segment.properties.subsegments = segment.properties.subsegments.map((sub, idx) => ({ ...sub, order_number: idx }))
+    segment.properties.subsegments
+      .splice(subsegment.order_number + 1, 0, newSubsegment)
+      .map((sub, idx) => ({ ...sub, order_number: idx })) // Normalize the subsegment order
     setChanged()
   }
 
