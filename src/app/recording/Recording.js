@@ -3,9 +3,11 @@ import PTMap from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
 import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Alert from '@material-ui/lab/Alert'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
+import {Snackbar} from '@material-ui/core'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -60,6 +62,7 @@ function Recording () {
    * I've used a Ref bellow to keep track of up to date segment values, when reading from segmentsById use segmentsByIdRef instead.
    * */
   const [segmentsById, setSegmentsById] = useState({})
+  const [alertDisplayed, setAlertDisplayed] = useState(null)
   const segmentsByIdRef = useRef({});
   segmentsByIdRef.current = segmentsById
 
@@ -100,6 +103,7 @@ function Recording () {
       const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
       addSegments(geoJson.features)
       setIsLoading(false)
+      setAlertDisplayed({ severity: 'success', message: 'Successfully loaded all segments.' })
     } catch (e) {
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
@@ -113,7 +117,12 @@ function Recording () {
       return await updateSegment(segment)
     })
 
-    await Promise.all(promises)
+    try {
+      await Promise.all(promises)
+      setAlertDisplayed({ severity: 'success', message: 'Successfully updated segment(s)' })
+    } catch (e) {
+      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement(s)' })
+    }
   }
 
   async function onSegmentSelect (id) {
@@ -164,7 +173,12 @@ function Recording () {
   }
 
   async function onSegmentChanged (segment) {
-    await updateSegment(segment)
+    try {
+      await updateSegment(segment)
+      setAlertDisplayed({ severity: 'success', message: `Successfully updated segment with id: ${segment.id}` })
+    } catch (e) {
+      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement.' })
+    }
   }
   
   function onSegmentsDeleted(ids) {
@@ -174,7 +188,14 @@ function Recording () {
       await deleteSegment(id)
     })
     setSegmentsById(newSegmentsById)
-    return Promise.all(deletes)
+    
+    try {
+      setAlertDisplayed({ severity: 'success', message: `Successfully deleted ${deletes.length} segments.` })
+      return Promise.all(deletes)
+    } catch (e) {
+      setAlertDisplayed({ severity: 'error', message: `Failed to delete ${deletes.length} segments` })
+      return Promise.reject(e)
+    }
   }
 
   function renderMapView () {
@@ -216,7 +237,22 @@ function Recording () {
     return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged}/>
   }
 
+  function renderSnackBar () {
+    return (
+      <Snackbar 
+        open={alertDisplayed} 
+        autoHideDuration={3000} 
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
+        onClose={() => setAlertDisplayed(null)}
+      >
+        <Alert severity={alertDisplayed?.severity}>{alertDisplayed?.message}</Alert>
+      </Snackbar>
+    )
+  }
+
   return (
+    <>
+    {renderSnackBar()}
     <div className={classes.container}>
       <div className={classes.mapArea}>
         {renderMapView()}
@@ -227,6 +263,7 @@ function Recording () {
       </div>
 
     </div>
+    </>
   )
 }
 
