@@ -7129,12 +7129,27 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
+leaflet-arrowheads@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/leaflet-arrowheads/-/leaflet-arrowheads-1.2.2.tgz#421318ce5ea56ad8a74a8f21cfbfffdfac5d5a7a"
+  integrity sha512-EDk/dbrIu+vPS1Y1JC8ShA6aLTkdnZ5O6yVu1548dcG6eyIt96TonklKz4OvQKEMzZrFwXJUmGqm8th+IKTltA==
+  dependencies:
+    leaflet "^1.6.0"
+    leaflet-geometryutil "^0.9.3"
+
 leaflet-draw@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/leaflet-draw/-/leaflet-draw-1.0.4.tgz"
   integrity sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==
 
-leaflet@^1.6.0:
+leaflet-geometryutil@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/leaflet-geometryutil/-/leaflet-geometryutil-0.9.3.tgz#e10fa302d99d4b1d3c6365a1f39298635a2704cd"
+  integrity sha512-Wi6YvfNx/Xu9q35AEfXpsUXmIFLen/MO+C2qimxHRnjyeyOxBhdcZa6kSiReaOX0cGK7yQInqrzz0dkIqZ8Dpg==
+  dependencies:
+    leaflet ">=0.7.0"
+
+leaflet@>=0.7.0, leaflet@^1.6.0:
   version "1.7.1"
   resolved "https://registry.npmjs.org/leaflet/-/leaflet-1.7.1.tgz"
   integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==

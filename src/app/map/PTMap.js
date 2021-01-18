@@ -10,6 +10,8 @@ import L from 'leaflet'
 import { EditControl } from 'react-leaflet-draw'
 import { geoJsonFromSegments } from '../../helpers/geojson'
 
+// Leaflet plugins
+import 'leaflet-arrowheads'
 // work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -23,7 +25,7 @@ const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
 const DEFAULT_MAP_CENTER = [52.501389, 13.402500] // geographical center of Berlin
 
-const SELECTED_FEATURE_COLOR = 'red'
+const SELECTED_FEATURE_COLOR = '#00e676' // taken from here https://material-ui.com/customization/color/
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
 export default function PTMap ({
@@ -142,8 +144,7 @@ export default function PTMap ({
       const color = isSelected
         ? SELECTED_FEATURE_COLOR
         : UNSELECTED_FEATURE_COLOR
-      layer.setStyle({color: color})
-      layer.setStyle({color: selectedSegmentId === layer.feature.id ? SELECTED_FEATURE_COLOR : UNSELECTED_FEATURE_COLOR})
+      layer.setStyle({ color, lineJoin: 'square' })
       const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
       // if (!isInBounds && leafletFG.hasLayer(layer._leaflet_id)) {
       //   layer.off("click")
@@ -155,20 +156,7 @@ export default function PTMap ({
 
         // add a marker for start and end if selected
         if (isSelected) {
-          const latLngs = layer.getLatLngs()
-          L.marker(latLngs[0], {
-            icon: new L.DivIcon({
-              className: 'startMarker',
-              html: 'Start'
-            })
-          }).addTo(leafletFG)
-          L.marker(latLngs[latLngs.length - 1], {
-            icon: new L.DivIcon({
-              className: 'endMarker',
-              html: 'Ende'
-            })
-          }).addTo(leafletFG)
-
+          layer.arrowheads({ size: '8px', fill: true, frequency: 'endonly' })
         }
         leafletFG.addLayer(layer)
         layer.off('click')
