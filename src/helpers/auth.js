@@ -1,16 +1,16 @@
-import jwt_decode from 'jwt-decode';
-
+import jwt_decode from 'jwt-decode'
 
 function getAuthTokenExpiration(token) {
   const tokenTTL = 14 * 24 * 60 // 2 Weeks in minutes, same as backend
   const { iat } = jwt_decode(token)
   const tokenIssuedAt = new Date(iat * 1000)
   tokenIssuedAt.setUTCMinutes(tokenIssuedAt.getUTCMinutes() + tokenTTL)
-  return (tokenIssuedAt).toUTCString()
+  return tokenIssuedAt.toUTCString()
 }
 
 export function getUserDataFromCookie() {
   const match = document.cookie.match(new RegExp('access_token=([^;]+)'))
+
   if (match?.length && match[0]) {
     const { sub } = jwt_decode(match[0])
     return {
@@ -30,4 +30,12 @@ export function getUserDataFromCookie() {
 export function setAuthCookie(token) {
   const expires = getAuthTokenExpiration(token)
   document.cookie = `access_token=${token};expires=${expires};path=/`
+}
+
+export function removeAuthCookie() {
+  let cookieValue = document.cookie.replace(
+    /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+    '$1'
+  )
+  document.cookie = `access_token=${cookieValue};expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`
 }
