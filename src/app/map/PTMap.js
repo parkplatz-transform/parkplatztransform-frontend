@@ -47,7 +47,7 @@ export default function PTMap ({
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 
   function _onEdited (e) {
-    _onChange()
+    _onChange(true)
   }
 
   function _onCreated (e) {
@@ -92,7 +92,6 @@ export default function PTMap ({
   }
 
   function _onEditStop (e) {
-    _onChange(true)
   }
 
   function _onFeatureGroupReady (reactFGref) {
