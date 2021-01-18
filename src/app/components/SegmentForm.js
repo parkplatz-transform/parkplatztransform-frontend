@@ -62,20 +62,26 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 10,
     marginRight: 10
   },
-
   centered: {
     left: '50%',
     transform: 'translateX(-50%)'
   },
-
   header: {
-    margin: '20px auto',
+    margin: '20px',
     textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 20
+    fontWeight: 'normal'
+  },
+  headerContainer: {
+    margin: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    '& h4': {
+      fontWeight: 'normal'
+    }
   },
   subheader: {
-    margin: '20px auto',
+    margin: '0 20px',
     textAlign: 'center',
     fontEeight: 'bold',
     fontSize: 16
@@ -106,7 +112,7 @@ export default function SegmentForm ({segment, onChanged}) {
   const [selectedSubsegment, setSelectedSubsegment] = React.useState(null)
   const [isChanged, setChanged] = useReducer((updateValue, changed = true) => {
     return changed ? updateValue + 1 : 0
-  }, () => 0)
+  }, 0)
 
   const prevSegmentRef = useRef(segment)
 
@@ -116,7 +122,11 @@ export default function SegmentForm ({segment, onChanged}) {
       prevSegmentRef.current = segment
       setChanged(false)
     }
-    setSelectedSubsegment(null)
+    if (segment.properties.subsegments.length) {
+      setSelectedSubsegment(segment.properties.subsegments[0])
+    } else {
+      setSelectedSubsegment(null)
+    }
   }, [segment])
 
   /**
@@ -147,10 +157,13 @@ export default function SegmentForm ({segment, onChanged}) {
     delete newSubsegment.id
     delete newSubsegment.created_at
     delete newSubsegment.modified_at
+    
     // Insert in the right position
-    segment.properties.subsegments
+   segment.properties.subsegments 
       .splice(subsegment.order_number + 1, 0, newSubsegment)
-      .map((sub, idx) => ({ ...sub, order_number: idx })) // Normalize the subsegment order
+    //TODO: probably makes more sense to just set order_number server-side
+    segment.properties.subsegments = segment.properties.subsegments
+      .map((sub, idx) => ({ order_number: idx, ...sub, order_number: idx })) // Normalize the subsegment order
     setChanged()
   }
 
@@ -461,7 +474,9 @@ export default function SegmentForm ({segment, onChanged}) {
     }
     return (
       <div>
-        <div className={classes.header}>Details</div>
+        <div className={classes.headerContainer}>
+          <h4>Details</h4>
+        </div>
         <div className={classes.marginLeftRight}>
 
           <TableContainer component={Paper}>
@@ -522,7 +537,19 @@ export default function SegmentForm ({segment, onChanged}) {
 
   return (
     <div className={classes.formView}>
-      <div className={classes.header}>Unterabschnitte</div>
+      <div className={classes.headerContainer}>
+        <h4>Unterabschnitte</h4>
+        {selectedSubsegment && (
+          <Button 
+            onClick={() => onChanged(prevSegmentRef.current)}
+            disabled={isChanged === 0}
+            color="primary" 
+            variant="contained" 
+            size="small">
+            Speichen
+          </Button>)
+        }
+      </div>
       <div className={classes.list}>
         {renderList()}
       </div>
