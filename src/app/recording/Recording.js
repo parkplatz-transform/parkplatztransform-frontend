@@ -233,7 +233,7 @@ function Recording () {
       return (
         <div>
           <div className={classes.verticalSpace}/>
-          <div className={classes.header}>Willkommen bei ParkplatzTransport</div>
+          <div className={classes.header}>Willkommen bei ParkplatzTransform</div>
           <div className={classes.subheader}>Wähle einen vorhandenen Abschnitt oder erstelle einen Neuen</div>
           <div className={classes.subheader}>Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen</div>
         </div>
