@@ -25,7 +25,7 @@ const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
 const DEFAULT_MAP_CENTER = [52.501389, 13.402500] // geographical center of Berlin
 
-const SELECTED_FEATURE_COLOR = '#00e676' // taken from here https://material-ui.com/customization/color/
+const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
 export default function PTMap ({
