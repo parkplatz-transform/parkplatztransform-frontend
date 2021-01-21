@@ -39,11 +39,10 @@ const useStyles = makeStyles({
     height: 30
   },
   mapArea: {
-    width: '70%'
+    width: 'calc(100% - 360px)'
   },
   formArea: {
-    width: '30%',
-    minWidth: 300
+    width: 360,
   },
   loadingContainer: {
     display: 'flex',
