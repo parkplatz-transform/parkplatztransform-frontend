@@ -172,7 +172,7 @@ export default function PTMap ({
   function getDrawOptions () {
     return {
       polyline: showEditControl,
-      polygon: showEditControl,
+      polygon: false,
       rectangle: false,
       circle: false,
       marker: false,
