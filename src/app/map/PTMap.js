@@ -12,6 +12,8 @@ import { geoJsonFromSegments } from '../../helpers/geojson'
 
 // Leaflet plugins
 import 'leaflet-arrowheads'
+import { makeStyles } from '@material-ui/core/styles'
+import SplitButton from '../components/SplitButton'
 // work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -24,9 +26,20 @@ L.Icon.Default.mergeOptions({
 const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
 const DEFAULT_MAP_CENTER = [52.501389, 13.402500] // geographical center of Berlin
+const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
+
+
+const useStyles = makeStyles({
+  downloadButton: {
+    zIndex: 1000,
+    position: 'absolute',
+    left: 10,
+    bottom: 10
+  }
+})
 
 export default function PTMap ({
                                  segments,
@@ -40,7 +53,10 @@ export default function PTMap ({
 
   const [showEditControl, setShowEditControl] = useState(false)
   const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
+  const visibleSegmentsRef = useRef([])
   const editableFGRef = useRef(null)
+
+  const classes = useStyles()
 
   useEffect(() => {
     setFeaturesFromSegments()
@@ -129,6 +145,7 @@ export default function PTMap ({
    *       on zoom change.
    */
   function setFeaturesFromSegments () {
+    visibleSegmentsRef.current = []
     if (editableFGRef.current == null) {
       // not yet ready
       return
@@ -139,24 +156,21 @@ export default function PTMap ({
     // populate the leaflet FeatureGroup with the initialGeoJson layers
     const leafletFG = editableFGRef.current.leafletElement
     leafletFG.clearLayers()
+
     leafletGeojson.eachLayer(layer => {
       const isSelected = selectedSegmentId === layer.feature.id
       const color = isSelected
         ? SELECTED_FEATURE_COLOR
         : UNSELECTED_FEATURE_COLOR
-      layer.setStyle({ color, lineJoin: 'square' })
+      layer.setStyle({color, lineJoin: 'square'})
       const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
-      // if (!isInBounds && leafletFG.hasLayer(layer._leaflet_id)) {
-      //   layer.off("click")
-      //   leafletFG.removeLayer(layer)
-      //   // console.log('removing layer', layer)
-      // }
-      // else if (isInBounds && !leafletFG.hasLayer(layer._leaflet_id)) {
+
       if (isInBounds) {
+        visibleSegmentsRef.current.push(layer.toGeoJSON())
 
         // add a marker for start and end if selected
         if (isSelected) {
-          layer.arrowheads({ size: '8px', fill: true, frequency: 'endonly' })
+          layer.arrowheads({size: '8px', fill: true, frequency: 'endonly'})
         }
         leafletFG.addLayer(layer)
         layer.off('click')
@@ -187,43 +201,73 @@ export default function PTMap ({
     }
   }
 
+  function downloadSegments(segments) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(segments, null, "    ")));
+    element.setAttribute('download', DOWNLOAD_FILENAME);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  function downloadVisibleSegments() {
+    downloadSegments(visibleSegmentsRef.current)
+  }
+
+  function downloadAllSegments() {
+    downloadSegments(segments)
+  }
+
   console.log('hidden? ' + !editableFGRef.current || editableFGRef.current.leafletElement._map._zoom <= 16)
   return (
-    <Map
-      center={DEFAULT_MAP_CENTER}
-      zoom={11}
-      maxZoom={19}
-      zoomControl={true}
-      style={{height: MAP_HEIGHT}}
-      onMoveEnd={_onMoveEnd}
-      onZoomEnd={_onMoveEnd}
-    >
-      <TileLayer
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
-      />
-
-      <FeatureGroup ref={(reactFGref) => {_onFeatureGroupReady(reactFGref)}}>
-        <EditControl
-          position='topright'
-          onEdited={_onEdited}
-          onCreated={_onCreated}
-          onDeleted={_onDeleted}
-          onMounted={_onMounted}
-          onDrawStart={_onDrawStart}
-          onDrawStop={_onDrawStop}
-          onEditStart={() => onSegmentSelect(null)}
-          onEditStop={_onEditStop}
-          onDeleteStart={() => { 
-            onSegmentSelect(null) // Clear any selected segment
-            setDeleteModeEnabled(true)
-          }}
-          onDeleteStop={() => setDeleteModeEnabled(false)}
-          draw={getDrawOptions()}
-          edit={getEditOptions()}
+    <>
+      <Map
+        center={DEFAULT_MAP_CENTER}
+        zoom={11}
+        maxZoom={19}
+        zoomControl={true}
+        style={{height: MAP_HEIGHT}}
+        onMoveEnd={_onMoveEnd}
+        onZoomEnd={_onMoveEnd}
+      >
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-      </FeatureGroup>
-    </Map>
+
+        <FeatureGroup ref={(reactFGref) => {_onFeatureGroupReady(reactFGref)}}>
+          <EditControl
+            position='topright'
+            onEdited={_onEdited}
+            onCreated={_onCreated}
+            onDeleted={_onDeleted}
+            onMounted={_onMounted}
+            onDrawStart={_onDrawStart}
+            onDrawStop={_onDrawStop}
+            onEditStart={() => onSegmentSelect(null)}
+            onEditStop={_onEditStop}
+            onDeleteStart={() => {
+              onSegmentSelect(null) // Clear any selected segment
+              setDeleteModeEnabled(true)
+            }}
+            onDeleteStop={() => setDeleteModeEnabled(false)}
+            draw={getDrawOptions()}
+            edit={getEditOptions()}
+          />
+        </FeatureGroup>
+      </Map>
+      <div className={classes.downloadButton}>
+        <SplitButton optionsAndCallbacks={[
+          {label: 'Download'},
+          {label: 'Sichtbaren Bereich', disabled: visibleSegmentsRef.current.length === 0, callback: downloadVisibleSegments},
+          {label: 'Alle geladenen Bereichen', disabled: segments.length === 0, callback: downloadAllSegments},
+        ]}/>
+      </div>
+    </>
   )
 
 }
