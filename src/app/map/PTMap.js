@@ -264,7 +264,7 @@ export default function PTMap ({
         <SplitButton optionsAndCallbacks={[
           {label: 'Download'},
           {label: 'Sichtbaren Bereich', disabled: visibleSegmentsRef.current.length === 0, callback: downloadVisibleSegments},
-          {label: 'Alle geladenen Bereichen', disabled: segments.length === 0, callback: downloadAllSegments},
+          {label: 'Alle geladenen Bereiche', disabled: segments.length === 0, callback: downloadAllSegments},
         ]}/>
       </div>
     </>
