@@ -202,8 +202,13 @@ export default function PTMap ({
   }
 
   function downloadSegments(segments) {
+    const data = {
+      "type": "FeatureCollection",
+      "features": segments,
+    }
+
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(segments, null, "    ")));
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, "    ")));
     element.setAttribute('download', DOWNLOAD_FILENAME);
 
     element.style.display = 'none';
