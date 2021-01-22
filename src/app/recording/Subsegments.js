@@ -138,8 +138,8 @@ export function createEmptySubsegment (orderNumber) {
   return {
     parking_allowed: null,
     order_number: orderNumber,
-    length_in_meters: 0,
-    car_count: 0,
+    length_in_meters: null,
+    car_count: null,
     quality: 1,
     fee: false,
     street_location: STREET_LOCATION.STREET,
