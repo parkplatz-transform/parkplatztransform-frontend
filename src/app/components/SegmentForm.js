@@ -167,12 +167,13 @@ export default function SegmentForm ({segment, onChanged}) {
     delete newSubsegment.created_at
     delete newSubsegment.modified_at
 
+    const newSubsegments = [...segment.properties.subsegments]
     // Insert in the right position
-    segment.properties.subsegments
+    newSubsegments
       .splice(subsegment.order_number + 1, 0, newSubsegment)
     //TODO: probably makes more sense to just set order_number server-side
-    segment.properties.subsegments = segment.properties.subsegments
-      .map((sub, idx) => ({order_number: idx, ...sub})) // Normalize the subsegment order
+    segment.properties.subsegments = newSubsegments 
+      .map((sub, idx) => ({...sub, order_number: idx})) // Normalize the subsegment order
     setChanged()
   }
 
