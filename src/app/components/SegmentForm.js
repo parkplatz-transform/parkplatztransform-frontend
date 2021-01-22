@@ -193,6 +193,12 @@ export default function SegmentForm ({segment, onChanged}) {
     }
   }
 
+  async function save () {
+    const success = await onChanged(prevSegmentRef.current)
+    console.log('success', success)
+    setChanged(!success)
+  }
+
   function renderList () {
     if (segment.properties && segment.properties.subsegments) {
       const listItems = segment.properties.subsegments.map((subsegment) => {
@@ -283,7 +289,7 @@ export default function SegmentForm ({segment, onChanged}) {
                     onChange={updateSubsegment(setHasTimeConstraint)}
                   />
                 }
-                label="Mit Höchstparkdauer"/>
+                label="Parken zeitweise verboten"/>
 
               {selectedSubsegment.time_constraint
                 ? <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.wideTextField)}>
@@ -547,12 +553,12 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   return (
-    <div className={classes.formView}>
+    <div className={classes.formView} onMouseLeave={save}>
       <div className={classes.headerContainer}>
         <h4>Abschnitte</h4>
         {selectedSubsegment && (
           <Button
-            onClick={() => onChanged(prevSegmentRef.current)}
+            onClick={save}
             disabled={isChanged === 0}
             color="primary"
             variant="contained"

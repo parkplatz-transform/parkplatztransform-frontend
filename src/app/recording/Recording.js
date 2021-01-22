@@ -182,8 +182,10 @@ function Recording () {
     try {
       await updateSegment(segment)
       setAlertDisplayed({ severity: 'success', message: `Successfully updated segment with id: ${segment.id}` })
+      return true
     } catch (e) {
       setAlertDisplayed({ severity: 'error', message: 'Failed to update segement.' })
+      return false
     }
   }
   
