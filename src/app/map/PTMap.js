@@ -52,11 +52,11 @@ export default function PTMap ({
                                  onBoundsChanged
                                }) {
 
-  const [showEditControl, setShowEditControl] = useState(false)
+  let position = loadMapPosition();
+  const [showEditControl, setShowEditControl] = useState(position.zoom >= MIN_ZOOM_FOR_EDITING)
   const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
   const visibleSegmentsRef = useRef([])
   const editableFGRef = useRef(null)
-  let position = loadMapPosition();
 
   const classes = useStyles()
 
