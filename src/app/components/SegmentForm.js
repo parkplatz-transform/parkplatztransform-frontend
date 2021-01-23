@@ -131,11 +131,6 @@ export default function SegmentForm ({segment, onChanged}) {
       prevSegmentRef.current = segment
       setChanged(false)
     }
-    if (segment.properties.subsegments.length) {
-      setSelectedSubsegment(segment.properties.subsegments[0])
-    } else {
-      setSelectedSubsegment(null)
-    }
   }, [isChanged, onChanged, segment])
 
   /**
