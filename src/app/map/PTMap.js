@@ -31,6 +31,7 @@ const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
+const position = loadMapPosition();
 
 
 const useStyles = makeStyles({
@@ -52,7 +53,6 @@ export default function PTMap ({
                                  onBoundsChanged
                                }) {
 
-  let position = loadMapPosition();
   const [showEditControl, setShowEditControl] = useState(position.zoom >= MIN_ZOOM_FOR_EDITING)
   const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
   const visibleSegmentsRef = useRef([])
