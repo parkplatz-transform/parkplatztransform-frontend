@@ -136,7 +136,7 @@ export default function SegmentForm ({segment, onChanged}) {
     } else {
       setSelectedSubsegment(null)
     }
-  }, [segment])
+  }, [isChanged, onChanged, segment])
 
   /**
    * @param segmentCreationFunction A function with order_number as first parameter.
@@ -553,7 +553,7 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   return (
-    <div className={classes.formView} onMouseLeave={save}>
+    <div className={classes.formView}>
       <div className={classes.headerContainer}>
         <h4>Abschnitte</h4>
         {selectedSubsegment && (
