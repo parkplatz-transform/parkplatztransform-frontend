@@ -274,7 +274,7 @@ export default function SegmentForm ({segment, onChanged}) {
           <TableRow key={`${selectedSubsegment.id}_time_constraint`}>
             <TableCell align="left">
 
-              <div className={classes.optionTitle}>Beschränkung&nbsp;nach&nbsp;Zeit</div>
+              <div className={classes.optionTitle}>Temporäres&nbsp;Parkverbot</div>
 
               <FormControlLabel
                 control={
@@ -400,8 +400,8 @@ export default function SegmentForm ({segment, onChanged}) {
                     <MenuItem value={STREET_LOCATION.CURB}>Bordstein</MenuItem>
                     <MenuItem value={STREET_LOCATION.SIDEWALK}>Gehweg</MenuItem>
                     <MenuItem value={STREET_LOCATION.PARKING_BAY}>Parkbucht</MenuItem>
-                    <MenuItem value={STREET_LOCATION.MIDDLE}>"Middle"</MenuItem>
-                    <MenuItem value={STREET_LOCATION.CAR_PARK}>"Car Park"</MenuItem>
+                    <MenuItem value={STREET_LOCATION.MIDDLE}>Parkinsel</MenuItem>
+                    <MenuItem value={STREET_LOCATION.CAR_PARK}>Sammelanlage</MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -419,7 +419,7 @@ export default function SegmentForm ({segment, onChanged}) {
                   >
                     <MenuItem value={USAGE_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.RESIDENTS}>Anlieger</MenuItem>
+                    <MenuItem value={USAGE_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.GENDER}>nach Geschlecht</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.ELECTRIC_CARS}>E-Autos</MenuItem>
