@@ -9,6 +9,7 @@ import { FeatureGroup, Map, TileLayer } from 'react-leaflet'
 import L from 'leaflet'
 import { EditControl } from 'react-leaflet-draw'
 import { geoJsonFromSegments } from '../../helpers/geojson'
+import { persistMapPosition, loadMapPosition } from '../../helpers/position-persistence'
 
 // Leaflet plugins
 import 'leaflet-arrowheads'
@@ -30,6 +31,8 @@ const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
+
+const position = loadMapPosition();
 
 
 const useStyles = makeStyles({
@@ -60,7 +63,7 @@ export default function PTMap ({
 
   useEffect(() => {
     setFeaturesFromSegments()
-  }, [segments])
+  }, [segments, setFeaturesFromSegments])
 
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 
@@ -90,6 +93,18 @@ export default function PTMap ({
     setShowEditControl(e.sourceTarget._zoom >= MIN_ZOOM_FOR_EDITING)
     setFeaturesFromSegments()
     onBoundsChanged(e.sourceTarget.getBounds())
+    if (
+      e.sourceTarget?._lastCenter
+      && e.sourceTarget?._lastCenter?.lat
+      && e.sourceTarget?._lastCenter?.lng
+      && e.sourceTarget?._zoom
+    ) {
+      persistMapPosition({
+        lat: e.sourceTarget._lastCenter?.lat,
+        lng: e.sourceTarget._lastCenter?.lng, 
+        zoom: e.sourceTarget?._zoom,
+      })
+    }
   }
 
   function _onDrawStart (e, f) {
@@ -231,8 +246,8 @@ export default function PTMap ({
   return (
     <>
       <Map
-        center={DEFAULT_MAP_CENTER}
-        zoom={11}
+        center={{ lat: position.lat, lng: position.lng }}
+        zoom={position.zoom}
         maxZoom={19}
         zoomControl={true}
         style={{height: MAP_HEIGHT}}
