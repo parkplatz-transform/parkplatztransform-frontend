@@ -124,7 +124,8 @@ function Recording () {
     })
 
     try {
-      await Promise.all(promises)
+      const returnedSegments = await Promise.all(promises)
+      addSegments(returnedSegments)
       setAlertDisplayed({ severity: 'success', message: 'Successfully updated segment(s)' })
     } catch (e) {
       setAlertDisplayed({ severity: 'error', message: 'Failed to update segement(s)' })
