@@ -26,13 +26,11 @@ L.Icon.Default.mergeOptions({
 
 const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
-const DEFAULT_MAP_CENTER = [52.501389, 13.402500] // geographical center of Berlin
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
-const position = loadMapPosition();
 
 
 const useStyles = makeStyles({
@@ -58,6 +56,7 @@ export default function PTMap ({
   const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
   const visibleSegmentsRef = useRef([])
   const editableFGRef = useRef(null)
+  let position = loadMapPosition();
 
   const classes = useStyles()
 
@@ -93,17 +92,12 @@ export default function PTMap ({
     setShowEditControl(e.sourceTarget._zoom >= MIN_ZOOM_FOR_EDITING)
     setFeaturesFromSegments()
     onBoundsChanged(e.sourceTarget.getBounds())
-    if (
-      e.sourceTarget?._lastCenter
-      && e.sourceTarget?._lastCenter?.lat
-      && e.sourceTarget?._lastCenter?.lng
-      && e.sourceTarget?._zoom
-    ) {
-      persistMapPosition({
-        lat: e.sourceTarget._lastCenter?.lat,
-        lng: e.sourceTarget._lastCenter?.lng, 
-        zoom: e.sourceTarget?._zoom,
-      })
+    const leafletFG = editableFGRef.current.leafletElement
+    const {lat, lng} = leafletFG._map.getCenter()
+    const zoom = leafletFG._map.getZoom()
+
+    if (lat && lng && zoom) {
+      persistMapPosition({ lat, lng, zoom })
     }
   }
 
