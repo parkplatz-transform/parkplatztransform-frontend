@@ -181,7 +181,8 @@ function Recording () {
 
   async function onSegmentChanged (segment) {
     try {
-      await updateSegment(segment)
+      const updatedSegment = await updateSegment(segment)
+      addSegment(updatedSegment)
       setAlertDisplayed({ severity: 'success', message: `Successfully updated segment with id: ${segment.id}` })
       return true
     } catch (e) {
