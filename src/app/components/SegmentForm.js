@@ -417,7 +417,7 @@ export default function SegmentForm ({segment, onChanged}) {
                     onChange={updateSubsegment(setUsageRestriction)}
                     variant={'outlined'}
                   >
-                    <MenuItem value={USAGE_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer</MenuItem>
+                    <MenuItem value={USAGE_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
                     <MenuItem value={USAGE_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>
