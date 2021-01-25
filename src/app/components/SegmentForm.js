@@ -189,7 +189,7 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   async function save () {
-    const success = await onChanged(prevSegmentRef.current)
+    const success = await onChanged(segment)
     console.log('success', success)
     setChanged(!success)
   }
