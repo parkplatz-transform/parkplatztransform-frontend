@@ -74,18 +74,12 @@ export function setDurationConstraint (subsegment, hasDurationConstraint) {
 
 export function setLengthInMeters (subsegment, length) {
   // due to too much generification we get a `false` here if the string is empty...
-  subsegment.length_in_meters = length === false ? '' : Number(length)
-
-  // remove this line when the server supports empty values
-  subsegment.length_in_meters |= 0
+  subsegment.length_in_meters = length === false ? null : Number(length)
 }
 
 export function setCarCount (subsegment, car_count) {
   // due to too much generification we get a `false` here if the string is empty...
-  subsegment.car_count = car_count === false  ? '' : Number(car_count)
-
-  // remove this line when the server supports empty values
-  subsegment.car_count |= 0
+  subsegment.car_count = car_count === false  ? null : Number(car_count)
 }
 
 /**
