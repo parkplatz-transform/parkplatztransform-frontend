@@ -205,12 +205,19 @@ export default function SegmentForm ({segment, onChanged}) {
         } else {
           title = 'Neuer Parkabschnitt'
         }
+        let details = "";
+        if (subsegment.length_in_meters) {
+          details = `${subsegment.length_in_meters} m`
+        }
+        else if (subsegment.car_count) {
+          details = `${subsegment.car_count} Stellplätze`
+        }
         return (
           <ListItem key={subsegment.order_number} button selected={subsegment === selectedSubsegment}
                     onClick={() => setSelectedSubsegment(subsegment)}>
             <ListItemText
               primary={title}
-              secondary="Detailinfo"
+              secondary={details}
             />
             <ListItemSecondaryAction>
               <IconButton onClick={() => duplicateSubsegment(subsegment)} edge="end" aria-label="duplicate">
