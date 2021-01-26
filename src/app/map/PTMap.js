@@ -31,8 +31,7 @@ const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
-const position = loadMapPosition();
-
+const position = loadMapPosition()
 
 const useStyles = makeStyles({
   downloadButton: {
@@ -97,7 +96,7 @@ export default function PTMap ({
     const zoom = leafletFG._map.getZoom()
 
     if (lat && lng && zoom) {
-      persistMapPosition({ lat, lng, zoom })
+      persistMapPosition({lat, lng, zoom})
     }
   }
 
@@ -166,12 +165,19 @@ export default function PTMap ({
     const leafletFG = editableFGRef.current.leafletElement
     leafletFG.clearLayers()
 
+    // line weight depending on zoom. The closer you are, the thicker they're being displayed
+    const zoom = leafletFG._map.getZoom()
+    let weight = Math.max(1, zoom - 12)
+    if (zoom >= 18) {
+      weight += 1
+    }
+
     leafletGeojson.eachLayer(layer => {
       const isSelected = selectedSegmentId === layer.feature.id
       const color = isSelected
         ? SELECTED_FEATURE_COLOR
         : UNSELECTED_FEATURE_COLOR
-      layer.setStyle({color, lineJoin: 'square'})
+      layer.setStyle({color, weight: weight, lineJoin: 'square'})
       const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
 
       if (isInBounds) {
@@ -210,29 +216,29 @@ export default function PTMap ({
     }
   }
 
-  function downloadSegments(segments) {
+  function downloadSegments (segments) {
     const data = {
-      "type": "FeatureCollection",
-      "features": segments,
+      'type': 'FeatureCollection',
+      'features': segments,
     }
 
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, "    ")));
-    element.setAttribute('download', DOWNLOAD_FILENAME);
+    var element = document.createElement('a')
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, '    ')))
+    element.setAttribute('download', DOWNLOAD_FILENAME)
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+    element.style.display = 'none'
+    document.body.appendChild(element)
 
-    element.click();
+    element.click()
 
-    document.body.removeChild(element);
+    document.body.removeChild(element)
   }
 
-  function downloadVisibleSegments() {
+  function downloadVisibleSegments () {
     downloadSegments(visibleSegmentsRef.current)
   }
 
-  function downloadAllSegments() {
+  function downloadAllSegments () {
     downloadSegments(segments)
   }
 
@@ -240,7 +246,7 @@ export default function PTMap ({
   return (
     <>
       <Map
-        center={{ lat: position.lat, lng: position.lng }}
+        center={{lat: position.lat, lng: position.lng}}
         zoom={position.zoom}
         maxZoom={19}
         zoomControl={true}
@@ -277,7 +283,11 @@ export default function PTMap ({
       <div className={classes.downloadButton}>
         <SplitButton optionsAndCallbacks={[
           {label: 'Download'},
-          {label: 'Sichtbaren Bereich', disabled: visibleSegmentsRef.current.length === 0, callback: downloadVisibleSegments},
+          {
+            label: 'Sichtbaren Bereich',
+            disabled: visibleSegmentsRef.current.length === 0,
+            callback: downloadVisibleSegments
+          },
           {label: 'Alle geladenen Bereiche', disabled: segments.length === 0, callback: downloadAllSegments},
         ]}/>
       </div>
