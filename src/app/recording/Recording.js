@@ -7,7 +7,8 @@ import Alert from '@material-ui/lab/Alert'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
-import {Snackbar} from '@material-ui/core'
+import { Snackbar } from '@material-ui/core'
+import getString from '../../strings'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -75,9 +76,9 @@ function Recording () {
       const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
       addSegment(createdSegment)
       setSelectedSegmentId(createdSegment.id)
-      setAlertDisplayed({ severity: 'success', message: `Successfully created segment with id: ${createdSegment.id}` })
+      setAlertDisplayed({ severity: 'success', message: getString('segment_create_success', createdSegment.id) })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to create segement' })
+      setAlertDisplayed({ severity: 'error', message: getString('segment_create_failure') })
     }
   }
 
@@ -107,9 +108,9 @@ function Recording () {
       const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
       addSegments(geoJson.features)
       setIsLoading(false)
-      setAlertDisplayed({ severity: 'success', message: 'Successfully loaded all segments.' })
+      setAlertDisplayed({ severity: 'success', message: getString('segment_loaded_success') })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Problem loading all segments.' })
+      setAlertDisplayed({ severity: 'error', message: getString('segment_loaded_failure') })
       setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
@@ -126,9 +127,9 @@ function Recording () {
     try {
       const updatedSegments = await Promise.all(promises)
       addSegments(updatedSegments)
-      setAlertDisplayed({ severity: 'success', message: 'Successfully updated segment(s)' })
+      setAlertDisplayed({ severity: 'success', message: getString('segment_update_success') })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement(s)' })
+      setAlertDisplayed({ severity: 'error', message: getString('segment_update_failure') })
     }
   }
 
@@ -183,10 +184,10 @@ function Recording () {
     try {
       const updatedSegment = await updateSegment(segment)
       addSegment(updatedSegment)
-      setAlertDisplayed({ severity: 'success', message: `Successfully updated segment with id: ${segment.id}` })
+      setAlertDisplayed({ severity: 'success', message: getString('segment_update_success', segment.id) })
       return true
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement.' })
+      setAlertDisplayed({ severity: 'error', message: getString('segment_update_failure') })
       return false
     }
   }
@@ -200,10 +201,10 @@ function Recording () {
     setSegmentsById(newSegmentsById)
     
     try {
-      setAlertDisplayed({ severity: 'success', message: `Successfully deleted ${deletes.length} segments.` })
+      setAlertDisplayed({ severity: 'success', message: getString('segment_delete_success', deletes.length) })
       return Promise.all(deletes)
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: `Failed to delete ${deletes.length} segments` })
+      setAlertDisplayed({ severity: 'error', message: getString('segment_delete_failure', deletes.length) })
       return Promise.reject(e)
     }
   }
@@ -237,9 +238,9 @@ function Recording () {
       return (
         <div>
           <div className={classes.verticalSpace}/>
-          <div className={classes.header}>Willkommen bei ParkplatzTransform</div>
-          <div className={classes.subheader}>Wähle einen vorhandenen Abschnitt oder erstelle einen Neuen</div>
-          <div className={classes.subheader}>Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen</div>
+          <div className={classes.header}>{getString('welcome_title')}</div>
+          <div className={classes.subheader}>{getString('welcome_subtitle')}</div>
+          <div className={classes.subheader}>{getString('welcome_subtitle_2')}</div>
         </div>
 
       )
