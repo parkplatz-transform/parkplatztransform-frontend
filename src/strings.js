@@ -18,6 +18,8 @@ const strings = {
     download_visible_segments: () => 'Sichtbaren Bereich',
     download_all_segments: () => 'Alle geladenen Bereiche',
     save: () => 'Speichen',
+
+    helper_text_length: () => 'Either length in meters or car count is required.'
 }
 
 export default function getString(key, variable) {

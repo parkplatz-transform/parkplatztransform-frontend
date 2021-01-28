@@ -136,10 +136,13 @@ export default function SegmentForm ({segment, onChanged}) {
   const prevSegmentRef = useRef(segment)
 
   useEffect(() => {
-    if (isChanged && prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
-      onChanged(prevSegmentRef.current)
+    if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
+      if (isChanged) {
+        onChanged(prevSegmentRef.current)
+      }
       prevSegmentRef.current = segment
       setChanged(false)
+      setSelectedSubsegment(null)
     }
   }, [isChanged, onChanged, segment])
 
@@ -206,7 +209,7 @@ export default function SegmentForm ({segment, onChanged}) {
 
   function renderList () {
     if (segment.properties && segment.properties.subsegments) {
-      const listItems = segment.properties.subsegments.map((subsegment) => {
+      const listItems = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number).map((subsegment) => {
         let title
         if (subsegment.parking_allowed === true) {
           title = 'Parken'
@@ -258,29 +261,40 @@ export default function SegmentForm ({segment, onChanged}) {
 
               {/* Length in meters */}
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
-                <Input
+                <TextField
+                  label="m"
                   required
-                  id="standard-adornment-weight"
+                  error={
+                    selectedSubsegment.length_in_meters === null
+                    && selectedSubsegment.car_count === null
+                  }
+                  type="number"
+                  helperText={getString('helper_text_length')}
                   value={selectedSubsegment.length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
-                  endAdornment={<InputAdornment position="end">m</InputAdornment>}
                   aria-describedby="length in meters"
                   inputProps={{
-                    'aria-label': 'weight',
+                    'aria-label': 'length',
                   }}
                 />
               </FormControl>
 
               {/* Count */}
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
-                <Input
-                  id="standard-adornment-weight"
+                <TextField
+                  label="Stellplätze"
+                  required
+                  error={
+                    selectedSubsegment.length_in_meters === null
+                    && selectedSubsegment.car_count === null
+                  }
+                  type="number"
                   value={selectedSubsegment.car_count}
+                  helperText={getString('helper_text_length')}
                   onChange={updateSubsegment(setCarCount)}
-                  endAdornment={<InputAdornment position="end">Stellplätze</InputAdornment>}
                   aria-describedby="car count"
                   inputProps={{
-                    'aria-label': 'weight',
+                    'aria-label': 'car count',
                   }}
                 />
               </FormControl>
@@ -560,7 +574,7 @@ export default function SegmentForm ({segment, onChanged}) {
           </TableContainer>
         </div>
 
-        <pre className={classes.json}>{JSON.stringify(segment, null, ' ')}</pre>
+        <pre className={clsx(classes.json, classes.margin)}>{JSON.stringify(segment, null, ' ')}</pre>
       </div>
     )
   }
@@ -589,7 +603,9 @@ export default function SegmentForm ({segment, onChanged}) {
         {label: 'Busspur', disabled: true},
         {label: 'Einfahrt', disabled: true}
       ]}/>
-      {renderDetails()}
+      <form>
+        {renderDetails()}
+      </form>
     </div>
   )
 }
