@@ -107,6 +107,15 @@ const useStyles = makeStyles((theme) => ({
   wideTextField: {
     width: '35ch',
   },
+  fullWidth: {
+    width: '100%',
+  },
+  halfWidth: {
+    width: 'calc(100% / 2)'
+  },
+  thirdWidth: {
+    width: 'calc(100% / 3)'
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -247,8 +256,9 @@ export default function SegmentForm ({segment, onChanged}) {
               <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
 
               {/* Length in meters */}
-              <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.textField)}>
+              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <Input
+                  required
                   id="standard-adornment-weight"
                   value={selectedSubsegment.length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
@@ -261,7 +271,7 @@ export default function SegmentForm ({segment, onChanged}) {
               </FormControl>
 
               {/* Count */}
-              <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.shortTextField)}>
+              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <Input
                   id="standard-adornment-weight"
                   value={selectedSubsegment.car_count}
@@ -337,17 +347,17 @@ export default function SegmentForm ({segment, onChanged}) {
             <TableCell align="left">
               <div className={classes.optionTitle}>Parkwinkel</div>
 
-              <ButtonGroup color="primary" aria-label="outlined primary button group">
+              <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
                 <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.PARALLEL)}
-                        onClick={updateSubsegment(setAlignmentParallel)}>
+                        onClick={updateSubsegment(setAlignmentParallel)} className={classes.thirdWidth}>
                   Parallel
                 </Button>
                 <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.DIAGONAL)}
-                        onClick={updateSubsegment(setAlignmentDiagonal)}>
+                        onClick={updateSubsegment(setAlignmentDiagonal)} className={classes.thirdWidth}>
                   Diagonal
                 </Button>
                 <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.PERPENDICULAR)}
-                        onClick={updateSubsegment(setAlignmentPerpendicular)}>
+                        onClick={updateSubsegment(setAlignmentPerpendicular)} className={classes.thirdWidth}>
                   Quer
                 </Button>
               </ButtonGroup>
@@ -395,7 +405,7 @@ export default function SegmentForm ({segment, onChanged}) {
 
               {/* Street location */}
               <div>
-                <FormControl className={classes.formControl}>
+                <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
                   Parkposition:
                   <Select
                     id="select_parking_position"
@@ -415,7 +425,7 @@ export default function SegmentForm ({segment, onChanged}) {
 
               {/* usage restriction */}
               <div>
-                <FormControl className={classes.formControl}>
+                <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
                   Nutzergruppe:
                   <Select
                     labelId="demo-simple-select-label"
@@ -455,7 +465,7 @@ export default function SegmentForm ({segment, onChanged}) {
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.)</div>
 
-              <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.textField)}>
+              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <Input
                   id="standard-adornment-weight"
                   value={selectedSubsegment.length_in_meters}
@@ -529,13 +539,13 @@ export default function SegmentForm ({segment, onChanged}) {
                     <div className={classes.optionTitle}>Öffentliches Parken</div>
 
 
-                    <ButtonGroup color="primary" aria-label="outlined primary button group">
+                    <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
                       <Button variant={getButtonVariant(selectedSubsegment.parking_allowed === true)}
-                              onClick={updateSubsegment(setParkingIsAllowed)}>
+                              onClick={updateSubsegment(setParkingIsAllowed)} className={classes.halfWidth}>
                         Erlaubt
                       </Button>
                       <Button variant={getButtonVariant(selectedSubsegment.parking_allowed === false)}
-                              onClick={updateSubsegment(setParkingIsNotAllowed)}>
+                              onClick={updateSubsegment(setParkingIsNotAllowed)} className={classes.halfWidth}>
                         Nie&nbsp;erlaubt
                       </Button>
                     </ButtonGroup>
