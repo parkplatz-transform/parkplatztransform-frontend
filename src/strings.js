@@ -12,7 +12,12 @@ const strings = {
     segment_create_failure: () => 'Failed to create segment',
     segment_update_failure: () => 'Failed to update segment(s)',
     segment_delete_failure: (num) => `Failed to delete ${num} segment(s).`,
-    segment_loaded_failure: () => 'A problem occured loading all segments.'
+    segment_loaded_failure: () => 'A problem occured loading all segments.',
+
+    download_geo_json: () => 'GeoJSON herunterladen',
+    download_visible_segments: () => 'Sichtbaren Bereich',
+    download_all_segments: () => 'Alle geladenen Bereiche',
+    save: () => 'Speichen',
 }
 
 export default function getString(key, variable) {

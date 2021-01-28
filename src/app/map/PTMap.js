@@ -15,6 +15,7 @@ import { persistMapPosition, loadMapPosition } from '../../helpers/position-pers
 import 'leaflet-arrowheads'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitButton from '../components/SplitButton'
+import getString from '../../strings';
 // work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -282,13 +283,13 @@ export default function PTMap ({
       </Map>
       <div className={classes.downloadButton}>
         <SplitButton optionsAndCallbacks={[
-          {label: 'Download'},
+          {label: getString('download_geo_json')},
           {
-            label: 'Sichtbaren Bereich',
+            label: getString('download_visible_segments'),
             disabled: visibleSegmentsRef.current.length === 0,
             callback: downloadVisibleSegments
           },
-          {label: 'Alle geladenen Bereiche', disabled: segments.length === 0, callback: downloadAllSegments},
+          {label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments},
         ]}/>
       </div>
     </>

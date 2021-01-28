@@ -38,6 +38,7 @@ import {
   USAGE_WHEN_NO_PARKING,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
+import getString from '../../strings'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -575,7 +576,7 @@ export default function SegmentForm ({segment, onChanged}) {
             color="primary"
             variant="contained"
             size="small">
-            Speichern
+            {getString('save')}
           </Button>)
         }
       </div>
