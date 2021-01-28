@@ -205,7 +205,7 @@ export default function SegmentForm ({segment, onChanged}) {
     }
   }
 
-  async function save () {
+  async function save() {
     const success = await onChanged(segment)
     console.log('success', success)
     setChanged(!success)
@@ -595,7 +595,6 @@ export default function SegmentForm ({segment, onChanged}) {
     <div className={classes.formView}>
       <div className={classes.headerContainer}>
         <h4>Abschnitte</h4>
-        {selectedSubsegment() && (
           <Button
             onClick={save}
             disabled={isChanged === 0}
@@ -603,8 +602,7 @@ export default function SegmentForm ({segment, onChanged}) {
             variant="contained"
             size="small">
             {getString('save')}
-          </Button>)
-        }
+          </Button>
       </div>
       <div className={classes.list}>
         {renderList()}
