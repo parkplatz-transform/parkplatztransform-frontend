@@ -437,12 +437,12 @@ export default function SegmentForm ({segment, onChanged}) {
                     onChange={updateSubsegment(setStreetLocation)}
                     variant={'outlined'}
                   >
-                    <MenuItem value={STREET_LOCATION.STREET}>Straße</MenuItem>
-                    <MenuItem value={STREET_LOCATION.CURB}>Bordstein</MenuItem>
-                    <MenuItem value={STREET_LOCATION.SIDEWALK}>Gehweg</MenuItem>
-                    <MenuItem value={STREET_LOCATION.PARKING_BAY}>Parkbucht</MenuItem>
-                    <MenuItem value={STREET_LOCATION.MIDDLE}>Parkinsel</MenuItem>
-                    <MenuItem value={STREET_LOCATION.CAR_PARK}>Sammelanlage</MenuItem>
+                    <MenuItem value={STREET_LOCATION.STREET}>auf der Straße</MenuItem>
+                    <MenuItem value={STREET_LOCATION.CURB}>auf dem Bordstein (halb auf Straße)</MenuItem>
+                    <MenuItem value={STREET_LOCATION.SIDEWALK}>auf dem Gehweg</MenuItem>
+                    <MenuItem value={STREET_LOCATION.PARKING_BAY}>in einer Parkbucht</MenuItem>
+                    <MenuItem value={STREET_LOCATION.MIDDLE}>auf einer Parkinsel</MenuItem>
+                    <MenuItem value={STREET_LOCATION.CAR_PARK}>in einer Sammelanlage</MenuItem>
                   </Select>
                 </FormControl>
               </div>
