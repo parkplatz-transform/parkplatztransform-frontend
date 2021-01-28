@@ -128,12 +128,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SegmentForm ({segment, onChanged}) {
   const classes = useStyles()
-  const [selectedSubsegment, setSelectedSubsegment] = React.useState(null)
+  const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [isChanged, setChanged] = useReducer((updateValue, changed = true) => {
     return changed ? updateValue + 1 : 0
   }, 0)
 
   const prevSegmentRef = useRef(segment)
+  const selectedSubsegment = () => {
+    return segment.properties.subsegments[selectedSubsegmentIndex]
+  }
 
   useEffect(() => {
     if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
@@ -142,7 +145,7 @@ export default function SegmentForm ({segment, onChanged}) {
       } 
       prevSegmentRef.current = segment
       setChanged(false)
-      setSelectedSubsegment(null)
+      setSelectedSubsegmentIndex(0)
     }
   }, [isChanged, onChanged, segment])
 
@@ -158,7 +161,7 @@ export default function SegmentForm ({segment, onChanged}) {
     }
     const subsegment = segmentCreationFunction(segment.properties.subsegments.length)
     segment.properties.subsegments.push(subsegment)
-    setSelectedSubsegment(subsegment)
+    setSelectedSubsegmentIndex(subsegment.order_number)
     setChanged()
   }
 
@@ -183,6 +186,7 @@ export default function SegmentForm ({segment, onChanged}) {
     segment.properties.subsegments = newSubsegments 
       .map((sub, idx) => ({...sub, order_number: idx})) // Normalize the subsegment order
     setChanged()
+    setSelectedSubsegmentIndex(subsegment.order_number + 1)
   }
 
   function getButtonVariant (highlighted) {
@@ -196,7 +200,7 @@ export default function SegmentForm ({segment, onChanged}) {
    */
   function updateSubsegment (subsegmentChangeFunction) {
     return (event) => {
-      subsegmentChangeFunction(selectedSubsegment, event?.target?.value || event?.target?.checked)
+      subsegmentChangeFunction(selectedSubsegment(), event?.target?.value || event?.target?.checked)
       setChanged()
     }
   }
@@ -230,8 +234,8 @@ export default function SegmentForm ({segment, onChanged}) {
           <ListItem
             key={subsegment.order_number}
             button
-            selected={subsegment?.order_number === selectedSubsegment?.order_number}
-            onClick={() => setSelectedSubsegment(subsegment)}
+            selected={subsegment?.order_number === selectedSubsegmentIndex}
+            onClick={() => setSelectedSubsegmentIndex(subsegment.order_number)}
           >
             <ListItemText
               primary={title}
@@ -256,11 +260,11 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetailsForParkingAllowed () {
-    if (selectedSubsegment.parking_allowed) {
+    if (selectedSubsegment().parking_allowed) {
       return (
         <React.Fragment>
 
-          <TableRow key={`${selectedSubsegment.id}_length`}>
+          <TableRow key={`${selectedSubsegment().id}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
 
@@ -270,12 +274,12 @@ export default function SegmentForm ({segment, onChanged}) {
                   label="m"
                   required
                   error={
-                    selectedSubsegment.length_in_meters === null
-                    && selectedSubsegment.car_count === null
+                    selectedSubsegment().length_in_meters === null
+                    && selectedSubsegment().car_count === null
                   }
                   type="number"
                   helperText={getString('helper_text_length')}
-                  value={selectedSubsegment.length_in_meters}
+                  value={selectedSubsegment().length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
                   aria-describedby="length in meters"
                   inputProps={{
@@ -290,11 +294,11 @@ export default function SegmentForm ({segment, onChanged}) {
                   label="Stellplätze"
                   required
                   error={
-                    selectedSubsegment.length_in_meters === null
-                    && selectedSubsegment.car_count === null
+                    selectedSubsegment().length_in_meters === null
+                    && selectedSubsegment().car_count === null
                   }
                   type="number"
-                  value={selectedSubsegment.car_count}
+                  value={selectedSubsegment().car_count}
                   helperText={getString('helper_text_length')}
                   onChange={updateSubsegment(setCarCount)}
                   aria-describedby="car count"
@@ -308,7 +312,7 @@ export default function SegmentForm ({segment, onChanged}) {
 
 
           {/* Time Constraint*/}
-          <TableRow key={`${selectedSubsegment.id}_time_constraint`}>
+          <TableRow key={`${selectedSubsegment().id}_time_constraint`}>
             <TableCell align="left">
 
               <div className={classes.optionTitle}>Temporäres&nbsp;Parkverbot</div>
@@ -316,35 +320,35 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={selectedSubsegment.time_constraint}
+                    checked={selectedSubsegment().time_constraint}
                     color={'primary'}
                     onChange={updateSubsegment(setHasTimeConstraint)}
                   />
                 }
                 label="Parken zeitweise verboten"/>
 
-              {selectedSubsegment.time_constraint
+              {selectedSubsegment().time_constraint
                 ? <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.wideTextField)}>
                   <FormLabel component="legend">Wann besteht Parkverbot?</FormLabel>
-                  <TextField id={`${selectedSubsegment.id}_time_constraint_reason`}
+                  <TextField id={`${selectedSubsegment().id}_time_constraint_reason`}
                              multiline variant={'outlined'} style={{width: '100%'}}
                              InputLabelProps={{shrink: true}}
                              rows={3}
                              rowsMax={5}
-                             value={selectedSubsegment.time_constraint_reason}
+                             value={selectedSubsegment().time_constraint_reason}
                              onChange={updateSubsegment(setTimeConstraintReason)}
                   />
                 </FormControl>
                 : null
               }
 
-              {selectedSubsegment.time_constraint
+              {selectedSubsegment().time_constraint
                 ? <FormControl className={classes.formControl}>
                   <FormLabel component="legend">Nutzung bei Parkverbot</FormLabel>
                   <Select
                     labelId="select_alternative_usage_reason"
                     id="select_alternative_usage_reason"
-                    value={selectedSubsegment.alternative_usage_reason}
+                    value={selectedSubsegment().alternative_usage_reason}
                     onChange={updateSubsegment(setAlternativeUsageReason)}
                     // variant={'outlined'}
                   >
@@ -363,20 +367,20 @@ export default function SegmentForm ({segment, onChanged}) {
           </TableRow>
 
           {/*Alignment*/}
-          <TableRow key={`${selectedSubsegment.id}_alignment`}>
+          <TableRow key={`${selectedSubsegment().id}_alignment`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Parkwinkel</div>
 
               <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
-                <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.PARALLEL)}
+                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PARALLEL)}
                         onClick={updateSubsegment(setAlignmentParallel)} className={classes.thirdWidth}>
                   Parallel
                 </Button>
-                <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.DIAGONAL)}
+                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.DIAGONAL)}
                         onClick={updateSubsegment(setAlignmentDiagonal)} className={classes.thirdWidth}>
                   Diagonal
                 </Button>
-                <Button variant={getButtonVariant(selectedSubsegment.alignment === ALIGNMENT.PERPENDICULAR)}
+                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PERPENDICULAR)}
                         onClick={updateSubsegment(setAlignmentPerpendicular)} className={classes.thirdWidth}>
                   Quer
                 </Button>
@@ -385,7 +389,7 @@ export default function SegmentForm ({segment, onChanged}) {
           </TableRow>
 
           {/* Other properties*/}
-          <TableRow key={`${selectedSubsegment.id}_fee`}>
+          <TableRow key={`${selectedSubsegment().id}_fee`}>
             <TableCell align="left">
 
               <div className={classes.optionTitle}>Weitere Eigenschaften</div>
@@ -394,7 +398,7 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={selectedSubsegment.marked}
+                    checked={selectedSubsegment().marked}
                     color={'primary'}
                     onChange={updateSubsegment(setIsMarked)}
                   />
@@ -405,7 +409,7 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={selectedSubsegment.fee}
+                    checked={selectedSubsegment().fee}
                     color={'primary'}
                     onChange={updateSubsegment(setHasFee)}
                   />
@@ -416,7 +420,7 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={selectedSubsegment.duration_constraint}
+                    checked={selectedSubsegment().duration_constraint}
                     color={'primary'}
                     onChange={updateSubsegment(setDurationConstraint)}
                   />
@@ -429,7 +433,7 @@ export default function SegmentForm ({segment, onChanged}) {
                   Parkposition:
                   <Select
                     id="select_parking_position"
-                    value={selectedSubsegment.street_location}
+                    value={selectedSubsegment().street_location}
                     onChange={updateSubsegment(setStreetLocation)}
                     variant={'outlined'}
                   >
@@ -450,7 +454,7 @@ export default function SegmentForm ({segment, onChanged}) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment.user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
+                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
                     onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >
@@ -476,19 +480,19 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetailsForParkingNotAllowed () {
-    if (selectedSubsegment.parking_allowed === false) {
+    if (selectedSubsegment().parking_allowed === false) {
       return (
         <React.Fragment>
 
           {/*Length*/}
-          <TableRow key={`${selectedSubsegment.id}_length`}>
+          <TableRow key={`${selectedSubsegment().id}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.)</div>
 
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <Input
                   id="standard-adornment-weight"
-                  value={selectedSubsegment.length_in_meters}
+                  value={selectedSubsegment().length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
                   endAdornment={<InputAdornment position="end">m</InputAdornment>}
                   aria-describedby="length in meters"
@@ -501,13 +505,13 @@ export default function SegmentForm ({segment, onChanged}) {
           </TableRow>
 
           {/*No parking reason*/}
-          <TableRow key={`${selectedSubsegment.id}_noparking_reason`}>
+          <TableRow key={`${selectedSubsegment().id}_noparking_reason`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Gründe</div>
 
               <FormGroup>
                 {Object.keys(NO_PARKING_REASONS_AND_LABEL).map(key => {
-                  const reason = selectedSubsegment?.no_parking_reasons?.find(k => k === key)
+                  const reason = selectedSubsegment()?.no_parking_reasons?.find(k => k === key)
                   return (
                     <FormControlLabel
                       key={key}
@@ -534,7 +538,7 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetails () {
-    if (!selectedSubsegment) {
+    if (!selectedSubsegment()) {
       return (
         <div>
           <div className={classes.header}>Details</div>
@@ -554,17 +558,17 @@ export default function SegmentForm ({segment, onChanged}) {
               <TableBody>
 
                 {/*Parking allowed*/}
-                <TableRow key={`${selectedSubsegment.id}_parking_allowed`}>
+                <TableRow key={`${selectedSubsegment().id}_parking_allowed`}>
                   <TableCell align="left">
                     <div className={classes.optionTitle}>Öffentliches Parken</div>
 
 
                     <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
-                      <Button variant={getButtonVariant(selectedSubsegment.parking_allowed === true)}
+                      <Button variant={getButtonVariant(selectedSubsegment().parking_allowed === true)}
                               onClick={updateSubsegment(setParkingIsAllowed)} className={classes.halfWidth}>
                         Erlaubt
                       </Button>
-                      <Button variant={getButtonVariant(selectedSubsegment.parking_allowed === false)}
+                      <Button variant={getButtonVariant(selectedSubsegment().parking_allowed === false)}
                               onClick={updateSubsegment(setParkingIsNotAllowed)} className={classes.halfWidth}>
                         Nie&nbsp;erlaubt
                       </Button>
@@ -591,7 +595,7 @@ export default function SegmentForm ({segment, onChanged}) {
     <div className={classes.formView}>
       <div className={classes.headerContainer}>
         <h4>Abschnitte</h4>
-        {selectedSubsegment && (
+        {selectedSubsegment() && (
           <Button
             onClick={save}
             disabled={isChanged === 0}
