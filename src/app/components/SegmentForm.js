@@ -569,6 +569,9 @@ export default function SegmentForm ({segment, onChanged}) {
 
                 {renderDetailsForParkingAllowed()}
                 {renderDetailsForParkingNotAllowed()}
+                <Button variant="contained" color="primary" onClick={save} className={classes.fullWidth}>
+                  {getString('save')}
+                </Button>
               </TableBody>
             </Table>
           </TableContainer>
