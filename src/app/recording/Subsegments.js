@@ -13,7 +13,7 @@ export const ALIGNMENT = {
   DIAGONAL: 'diagonal'
 }
 
-export const USAGE_RESTRICTIONS = {
+export const USER_RESTRICTIONS = {
   HANDICAP: 'handicap',
   RESIDENTS: 'residents',
   CAR_SHARING: 'car_sharing',
@@ -23,7 +23,7 @@ export const USAGE_RESTRICTIONS = {
   NO_RESTRICTION: 'no restriction'
 }
 
-export const USAGE_WHEN_NO_PARKING = {
+export const ALTERNATIVE_USAGE_REASON = {
   BUS_STOP: 'bus_stop',
   BUS_LANE: 'bus_lane',
   MARKET: 'market',
@@ -85,22 +85,22 @@ export function setCarCount (subsegment, car_count) {
 /**
  * TODO: rename to setTimeConstraintDetails
  */
-export function setTimeConstraintReason (subsegment, details) {
-  subsegment.details = details
+export function setTimeConstraintReason (subsegment, reason) {
+  subsegment.time_constraint_reason = reason
 }
 
 export function setStreetLocation (subsegment, street_location) {
   subsegment.street_location = street_location
 }
 
-export function setUsageRestriction (subsegment, usageRestriction) {
-  subsegment.usage_restrictions = usageRestriction === USAGE_RESTRICTIONS.NO_RESTRICTION
+export function setUserRestriction (subsegment, userRestriction) {
+  subsegment.user_restrictions = userRestriction === USER_RESTRICTIONS.NO_RESTRICTION
     ? null
-    : usageRestriction
+    : userRestriction
 }
 
-export function setUsageWhenNoParking (subsegment, usageWhenNoParking) {
-  subsegment.usage_when_no_parking = usageWhenNoParking
+export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
+  subsegment.alternative_usage_reason = alternativeUsageReason
 }
 
 export function setAlignmentParallel (subsegment) {

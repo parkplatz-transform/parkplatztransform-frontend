@@ -31,11 +31,11 @@ import {
   setStreetLocation,
   setHasTimeConstraint,
   setTimeConstraintReason,
-  setUsageRestriction,
-  setUsageWhenNoParking,
+  setUserRestriction,
+  setAlternativeUsageReason,
   STREET_LOCATION,
-  USAGE_RESTRICTIONS,
-  USAGE_WHEN_NO_PARKING,
+  USER_RESTRICTIONS,
+  ALTERNATIVE_USAGE_REASON,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
 import getString from '../../strings'
@@ -139,7 +139,7 @@ export default function SegmentForm ({segment, onChanged}) {
     if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
       if (isChanged) {
         onChanged(prevSegmentRef.current)
-      }
+      } 
       prevSegmentRef.current = segment
       setChanged(false)
       setSelectedSubsegment(null)
@@ -225,9 +225,14 @@ export default function SegmentForm ({segment, onChanged}) {
         else if (subsegment.car_count) {
           details = `${subsegment.car_count} Stellplätze`
         }
+
         return (
-          <ListItem key={subsegment.order_number} button selected={subsegment === selectedSubsegment}
-                    onClick={() => setSelectedSubsegment(subsegment)}>
+          <ListItem
+            key={subsegment.order_number}
+            button
+            selected={subsegment?.order_number === selectedSubsegment?.order_number}
+            onClick={() => setSelectedSubsegment(subsegment)}
+          >
             <ListItemText
               primary={title}
               secondary={details}
@@ -337,18 +342,18 @@ export default function SegmentForm ({segment, onChanged}) {
                 ? <FormControl className={classes.formControl}>
                   <FormLabel component="legend">Nutzung bei Parkverbot</FormLabel>
                   <Select
-                    labelId="select_usage_when_no_parking"
-                    id="select_usage_when_no_parking"
-                    value={selectedSubsegment.usage_when_no_parking}
-                    onChange={updateSubsegment(setUsageWhenNoParking)}
+                    labelId="select_alternative_usage_reason"
+                    id="select_alternative_usage_reason"
+                    value={selectedSubsegment.alternative_usage_reason}
+                    onChange={updateSubsegment(setAlternativeUsageReason)}
                     // variant={'outlined'}
                   >
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.BUS_STOP}>Haltestelle</MenuItem>
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.BUS_LANE}>Busspur</MenuItem>
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.MARKET}>Markt</MenuItem>
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.LANE}>Fahrspur</MenuItem>
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.TAXI}>Taxi</MenuItem>
-                    <MenuItem value={USAGE_WHEN_NO_PARKING.OTHER}>Sonstiges</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_STOP}>Haltestelle</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_LANE}>Busspur</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.MARKET}>Markt</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.LANE}>Fahrspur</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.TAXI}>Taxi</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.OTHER}>Sonstiges</MenuItem>
                   </Select>
                 </FormControl>
                 : null
@@ -445,17 +450,17 @@ export default function SegmentForm ({segment, onChanged}) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment.usage_restrictions || USAGE_RESTRICTIONS.NO_RESTRICTION}
-                    onChange={updateSubsegment(setUsageRestriction)}
+                    value={selectedSubsegment.user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
+                    onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >
-                    <MenuItem value={USAGE_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.GENDER}>nach Geschlecht</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.ELECTRIC_CARS}>E-Autos</MenuItem>
-                    <MenuItem value={USAGE_RESTRICTIONS.OTHER}>Sonstige</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.GENDER}>nach Geschlecht</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.ELECTRIC_CARS}>E-Autos</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.OTHER}>Sonstige</MenuItem>
                   </Select>
                 </FormControl>
               </div>
