@@ -63,7 +63,7 @@ function Recording () {
    * */
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
-  const segmentsByIdRef = useRef({});
+  const segmentsByIdRef = useRef({})
   segmentsByIdRef.current = segmentsById
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
@@ -76,9 +76,9 @@ function Recording () {
       const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
       addSegment(createdSegment)
       setSelectedSegmentId(createdSegment.id)
-      setAlertDisplayed({ severity: 'success', message: getString('segment_create_success', createdSegment.id) })
+      setAlertDisplayed({severity: 'success', message: getString('segment_create_success', createdSegment.id)})
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: getString('segment_create_failure') })
+      setAlertDisplayed({severity: 'error', message: getString('segment_create_failure')})
     }
   }
 
@@ -108,9 +108,9 @@ function Recording () {
       const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
       addSegments(geoJson.features)
       setIsLoading(false)
-      setAlertDisplayed({ severity: 'success', message: getString('segment_loaded_success') })
+      setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: getString('segment_loaded_failure') })
+      setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
@@ -127,9 +127,9 @@ function Recording () {
     try {
       const updatedSegments = await Promise.all(promises)
       addSegments(updatedSegments)
-      setAlertDisplayed({ severity: 'success', message: getString('segment_update_success') })
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: getString('segment_update_failure') })
+      setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
     }
   }
 
@@ -180,31 +180,58 @@ function Recording () {
     setSegmentsById(newSegmentsById)
   }
 
+  /**
+   * returns a sanitized copy or null if has invalid configurations
+   */
+  function sanitizeSegment (segment) {
+    const copy = JSON.parse(JSON.stringify(segment))
+
+    for (const subsegment of copy.properties.subsegments) {
+      if (subsegment.parking_allowed === null) {
+        return null
+      }
+      if (subsegment.parking_allowed === true) {
+        // TODO: remove all settings related to parking_allowed === false
+
+      } else {
+        // TODO: remove all settings related to parking_allowed === true
+
+      }
+    }
+    return copy
+  }
+
   async function onSegmentChanged (segment) {
     try {
+      const sanitizedSegment = sanitizeSegment(segment)
+
+      if (!sanitizedSegment) {
+        setAlertDisplayed({severity: 'error', message: getString('subsegment_invalid')})
+      }
+
       const updatedSegment = await updateSegment(segment)
       addSegment(updatedSegment)
-      setAlertDisplayed({ severity: 'success', message: getString('segment_update_success', segment.id) })
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
       return true
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: getString('segment_update_failure') })
+      setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
       return false
     }
   }
-  
-  function onSegmentsDeleted(ids) {
+
+  function onSegmentsDeleted (ids) {
     const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
     const deletes = ids.map(async id => {
       delete newSegmentsById[id]
       await deleteSegment(id)
     })
     setSegmentsById(newSegmentsById)
-    
+
     try {
-      setAlertDisplayed({ severity: 'success', message: getString('segment_delete_success', deletes.length) })
+      setAlertDisplayed({severity: 'success', message: getString('segment_delete_success', deletes.length)})
       return Promise.all(deletes)
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: getString('segment_delete_failure', deletes.length) })
+      setAlertDisplayed({severity: 'error', message: getString('segment_delete_failure', deletes.length)})
       return Promise.reject(e)
     }
   }
@@ -250,10 +277,10 @@ function Recording () {
 
   function renderSnackBar () {
     return (
-      <Snackbar 
-        open={!!alertDisplayed} 
-        autoHideDuration={3000} 
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
+      <Snackbar
+        open={!!alertDisplayed}
+        autoHideDuration={3000}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
         onClose={() => setAlertDisplayed(null)}
       >
         <Alert severity={alertDisplayed?.severity}>{alertDisplayed?.message}</Alert>
@@ -263,17 +290,17 @@ function Recording () {
 
   return (
     <>
-    {renderSnackBar()}
-    <div className={classes.container}>
-      <div className={classes.mapArea}>
-        {renderMapView()}
-      </div>
+      {renderSnackBar()}
+      <div className={classes.container}>
+        <div className={classes.mapArea}>
+          {renderMapView()}
+        </div>
 
-      <div className={classes.formArea}>
-        {renderFormView()}
-      </div>
+        <div className={classes.formArea}>
+          {renderFormView()}
+        </div>
 
-    </div>
+      </div>
     </>
   )
 }

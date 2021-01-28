@@ -592,7 +592,7 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   return (
-    <div className={classes.formView}>
+    <div className={classes.formView} /*onMouseLeave={save}*/>
       <div className={classes.headerContainer}>
         <h4>Unterabschnitt</h4>
           <Button
