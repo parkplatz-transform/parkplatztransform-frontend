@@ -13,6 +13,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import LoginForm from './LoginForm'
 import { removeAuthCookie } from '../../helpers/auth'
 import { getUserDataFromCookie } from '../../helpers/auth'
+import { Link } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  legalnotice: {
+    marginLeft: 10,
+    fontSize: 12
+  }
 }))
 
 function MainMenu() {
@@ -55,6 +60,9 @@ function MainMenu() {
 
         <Typography variant='h6' className={classes.title}>
           ParkplatzTransform
+          <Link className={classes.legalnotice} target="_blank" href="https://www.xtransform.org/impressum.html" color="inherit">
+            Impressum
+          </Link>
         </Typography>
         {!userData.loggedIn && (
           <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
