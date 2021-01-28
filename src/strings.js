@@ -6,25 +6,35 @@ const strings = {
     welcome_subtitle_2: () => 'Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen',
     
     // Alert success messages
-    segment_create_success: () => 'Successfully created segement.',
-    segment_update_success: () => `Successfully updated segment(s)`,
-    segment_delete_success: (num) => `${num} Abschnitt(e) gelöscht`,
-    segment_loaded_success: () => 'Successfully loaded all segments.',
+    segment_create_success: () => 'Abschnitt erfolgreich erstellt.',
+    segment_update_success: () => `Abschnitte erfolgreich gespeichert.`,
+    segment_delete_success: (num) => {
+        if (num === 1) {
+            return 'Abschnitt gelöscht.'
+        }
+        return `${num} Abschnitte gelöscht.`
+    },
+    segment_loaded_success: () => 'Abschnitte erfolgreich geladen.',
    
     // Alert failure messages
-    segment_create_failure: () => 'Failed to create segment',
-    segment_update_failure: () => 'Failed to update segment(s)',
-    segment_delete_failure: (num) => `Failed to delete ${num} segment(s).`,
-    segment_loaded_failure: () => 'A problem occured loading all segments.',
+    segment_create_failure: () => 'Abschnitt konnte nicht erstellt werden.',
+    segment_update_failure: () => 'Abschnitt konnte nicht gespeichert werden.',
+    segment_delete_failure: (num) => {
+        if (num === 1) {
+            return "Abschnitt konnte nicht gelöscht werden."
+        }
+        return `${num} Abschnitte konnte nicht gelöscht werden.`
+    },
+    segment_loaded_failure: () => 'Beim Laden der Abschnitte trat ein Fehler auf.',
 
     // Download & Save buttons
-    download_geo_json: () => 'GeoJSON herunterladen',
-    download_visible_segments: () => 'Sichtbaren Bereich',
-    download_all_segments: () => 'Alle geladenen Bereiche',
-    save: () => 'Speichen',
+    download_geo_json: () => 'Daten herunterladen',
+    download_visible_segments: () => 'GeoJSON - sichtbaren Bereich',
+    download_all_segments: () => 'GeoJSON - alle geladenen Bereiche',
+    save: () => 'Speichern',
 
     // Form validation helper text
-    helper_text_length: () => 'Either length in meters or car count is required.',
+    helper_text_length: () => 'Länge oder Stellplatzzahl muss gesetzt werden.',
 }
 
 

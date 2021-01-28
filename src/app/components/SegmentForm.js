@@ -220,7 +220,7 @@ export default function SegmentForm ({segment, onChanged}) {
         } else if (subsegment.parking_allowed === false) {
           title = 'Kein Parken'
         } else {
-          title = 'Neuer Parkabschnitt'
+          title = 'Neuer Unterabschnitt'
         }
         let details = "";
         if (subsegment.length_in_meters) {
@@ -594,7 +594,7 @@ export default function SegmentForm ({segment, onChanged}) {
   return (
     <div className={classes.formView}>
       <div className={classes.headerContainer}>
-        <h4>Abschnitte</h4>
+        <h4>Unterabschnitt</h4>
           <Button
             onClick={save}
             disabled={isChanged === 0}
@@ -608,7 +608,7 @@ export default function SegmentForm ({segment, onChanged}) {
         {renderList()}
       </div>
       <SplitButton optionsAndCallbacks={[
-        {label: 'Abschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment)},
+        {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment)},
         {label: 'Haltestelle', disabled: true},
         {label: 'Busspur', disabled: true},
         {label: 'Einfahrt', disabled: true}
