@@ -32,6 +32,8 @@ const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 const SELECTED_FEATURE_COLOR = 'red' // ⚠️
 const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
 
+const MAX_ZOOM = 19   // osm doesn't have maps on zoom level above 19
+
 const position = loadMapPosition()
 
 const useStyles = makeStyles({
@@ -168,9 +170,17 @@ export default function PTMap ({
 
     // line weight depending on zoom. The closer you are, the thicker they're being displayed
     const zoom = leafletFG._map.getZoom()
-    let weight = Math.max(1, zoom - 12)
-    if (zoom >= 18) {
-      weight += 1
+    let weight
+
+    switch (zoom){
+      // max zoom is 19
+      case MAX_ZOOM:
+      case 19: weight = 9; break
+      case 18: weight = 7; break
+      case 17: weight = 5; break
+      case 16: weight = 4; break
+      case 15: weight = 3; break
+      default: weight = 2
     }
 
     leafletGeojson.eachLayer(layer => {
@@ -249,7 +259,7 @@ export default function PTMap ({
       <Map
         center={{lat: position.lat, lng: position.lng}}
         zoom={position.zoom}
-        maxZoom={19}
+        maxZoom={MAX_ZOOM}
         zoomControl={true}
         style={{height: MAP_HEIGHT}}
         onMoveEnd={_onMoveEnd}
