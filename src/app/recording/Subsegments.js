@@ -130,7 +130,7 @@ export function getToggleNoParkingReasonFn (reason) {
 
 export function createEmptySubsegment (orderNumber) {
   return {
-    parking_allowed: null,
+    parking_allowed: true,
     order_number: orderNumber,
     length_in_meters: null,
     car_count: null,

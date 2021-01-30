@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button'
 import SplitButton from './SplitButton'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Paper from '@material-ui/core/Paper'
+import red from '@material-ui/core/colors/red';
 import {
   ALIGNMENT,
   createEmptySubsegment,
@@ -39,6 +40,7 @@ import {
 } from '../recording/Subsegments'
 import clsx from 'clsx'
 import getString from '../../strings'
+import subsegmentSchema from '../recording/SubsegmentSchema'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -126,12 +128,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function SegmentForm ({segment, onChanged}) {
+export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
+  const [errors, setErrors] = React.useState({})
   const [isChanged, setChanged] = useReducer((updateValue, changed = true) => {
     return changed ? updateValue + 1 : 0
   }, 0)
+
+  const formRef = useRef(null)
 
   const prevSegmentRef = useRef(segment)
   const selectedSubsegment = () => {
@@ -206,9 +211,28 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   async function save() {
-    const success = await onChanged(segment)
-    console.log('success', success)
-    setChanged(!success)
+    let errs = {}
+    await Promise.all(segment.properties.subsegments.map(async (sub, idx) => {
+      try {
+        await subsegmentSchema.validate(sub)
+      } catch (error) {
+        errs = {
+          ...errs, [idx]: {
+            message: error.message.replace(error.path, ''),
+            path: error.path
+          }
+        }
+      }
+    }))
+
+    setErrors(errs)
+    console.log(errs)
+  
+    if (Object.keys(errs).length === 0) {
+      const success = await onChanged(segment)
+      console.log('success', success)
+      setChanged(!success)
+    }
   }
 
   function renderList () {
@@ -230,16 +254,19 @@ export default function SegmentForm ({segment, onChanged}) {
           details = `${subsegment.car_count} Stellplätze`
         }
 
+        const hasError = errors && errors[subsegment.order_number]
+
         return (
           <ListItem
             key={subsegment.order_number}
             button
+            style={{ backgroundColor: hasError ? red[100] : null }}
             selected={subsegment?.order_number === selectedSubsegmentIndex}
             onClick={() => setSelectedSubsegmentIndex(subsegment.order_number)}
           >
             <ListItemText
               primary={title}
-              secondary={details}
+              secondary={hasError ? 'Invalid subsegment' : details}
             />
             <ListItemSecondaryAction>
               <IconButton onClick={() => duplicateSubsegment(subsegment)} edge="end" aria-label="duplicate">
@@ -260,11 +287,13 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetailsForParkingAllowed () {
-    if (selectedSubsegment().parking_allowed) {
+    const subsegment = selectedSubsegment()
+    const error = errors && errors[subsegment.order_number]
+    if (subsegment.parking_allowed) {
       return (
         <React.Fragment>
 
-          <TableRow key={`${selectedSubsegment().id}_length`}>
+          <TableRow key={`${subsegment.id}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
 
@@ -272,14 +301,11 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <TextField
                   label="m"
-                  required
-                  error={
-                    selectedSubsegment().length_in_meters === null
-                    && selectedSubsegment().car_count === null
-                  }
+                  required={!!error}
+                  error={!!error}
                   type="number"
                   helperText={getString('helper_text_length')}
-                  value={selectedSubsegment().length_in_meters}
+                  value={subsegment.length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
                   aria-describedby="length in meters"
                   inputProps={{
@@ -292,13 +318,10 @@ export default function SegmentForm ({segment, onChanged}) {
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <TextField
                   label="Stellplätze"
-                  required
-                  error={
-                    selectedSubsegment().length_in_meters === null
-                    && selectedSubsegment().car_count === null
-                  }
+                  required={!!error}
+                  error={!!error}
                   type="number"
-                  value={selectedSubsegment().car_count}
+                  value={subsegment.car_count}
                   helperText={getString('helper_text_length')}
                   onChange={updateSubsegment(setCarCount)}
                   aria-describedby="car count"
@@ -480,19 +503,20 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetailsForParkingNotAllowed () {
-    if (selectedSubsegment().parking_allowed === false) {
+    const subsegment = selectedSubsegment()
+    if (subsegment.parking_allowed === false) {
       return (
         <React.Fragment>
 
           {/*Length*/}
-          <TableRow key={`${selectedSubsegment().id}_length`}>
+          <TableRow key={`${subsegment.id}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.)</div>
 
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <Input
                   id="standard-adornment-weight"
-                  value={selectedSubsegment().length_in_meters}
+                  value={subsegment.length_in_meters}
                   onChange={updateSubsegment(setLengthInMeters)}
                   endAdornment={<InputAdornment position="end">m</InputAdornment>}
                   aria-describedby="length in meters"
@@ -505,13 +529,13 @@ export default function SegmentForm ({segment, onChanged}) {
           </TableRow>
 
           {/*No parking reason*/}
-          <TableRow key={`${selectedSubsegment().id}_noparking_reason`}>
+          <TableRow key={`${subsegment.id}_noparking_reason`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Gründe</div>
 
               <FormGroup>
                 {Object.keys(NO_PARKING_REASONS_AND_LABEL).map(key => {
-                  const reason = selectedSubsegment()?.no_parking_reasons?.find(k => k === key)
+                  const reason = subsegment?.no_parking_reasons?.find(k => k === key)
                   return (
                     <FormControlLabel
                       key={key}
@@ -538,6 +562,7 @@ export default function SegmentForm ({segment, onChanged}) {
   }
 
   function renderDetails () {
+    const subsegment = selectedSubsegment()
     if (!selectedSubsegment()) {
       return (
         <div>
@@ -556,15 +581,13 @@ export default function SegmentForm ({segment, onChanged}) {
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <TableBody>
-
-                {/*Parking allowed*/}
-                <TableRow key={`${selectedSubsegment().id}_parking_allowed`}>
+                <TableRow key={`${subsegment.id}_parking_allowed`}>
                   <TableCell align="left">
                     <div className={classes.optionTitle}>Öffentliches Parken</div>
 
 
                     <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
-                      <Button variant={getButtonVariant(selectedSubsegment().parking_allowed === true)}
+                      <Button variant={getButtonVariant(subsegment.parking_allowed === true)}
                               onClick={updateSubsegment(setParkingIsAllowed)} className={classes.halfWidth}>
                         Erlaubt
                       </Button>
@@ -613,7 +636,7 @@ export default function SegmentForm ({segment, onChanged}) {
         {label: 'Busspur', disabled: true},
         {label: 'Einfahrt', disabled: true}
       ]}/>
-      <form>
+      <form ref={formRef}>
         {renderDetails()}
       </form>
     </div>

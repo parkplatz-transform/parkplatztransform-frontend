@@ -253,6 +253,10 @@ function Recording () {
     )
   }
 
+  function onValidationFailed(message) {
+    setAlertDisplayed({severity: 'error', message})
+  }
+
   function renderFormView () {
     if (isLoading) {
       return (
@@ -272,7 +276,7 @@ function Recording () {
 
       )
     }
-    return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged}/>
+    return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged} onValidationFailed={onValidationFailed}/>
   }
 
   function renderSnackBar () {
