@@ -15,7 +15,7 @@ import { persistMapPosition, loadMapPosition } from '../../helpers/position-pers
 import 'leaflet-arrowheads'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitButton from '../components/SplitButton'
-import getString from '../../strings';
+import getString from '../../strings'
 // work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -29,8 +29,9 @@ const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
-const SELECTED_FEATURE_COLOR = 'red' // ⚠️
-const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
+const SELECTED_SEGMENT_COLOR = 'red' // ⚠️
+const UNSELECTED_EMPTY_SEGMENT_COLOR = 'purple' // dark gray
+const UNSELECTED_SEGMENT_COLOR = '#3388ff'  // default blue
 
 const MAX_ZOOM = 19   // osm doesn't have maps on zoom level above 19
 
@@ -172,22 +173,40 @@ export default function PTMap ({
     const zoom = leafletFG._map.getZoom()
     let weight
 
-    switch (zoom){
+    switch (zoom) {
       // max zoom is 19
       case MAX_ZOOM:
-      case 19: weight = 9; break
-      case 18: weight = 7; break
-      case 17: weight = 5; break
-      case 16: weight = 4; break
-      case 15: weight = 3; break
-      default: weight = 2
+      case 19:
+        weight = 9
+        break
+      case 18:
+        weight = 7
+        break
+      case 17:
+        weight = 5
+        break
+      case 16:
+        weight = 4
+        break
+      case 15:
+        weight = 3
+        break
+      default:
+        weight = 2
     }
 
     leafletGeojson.eachLayer(layer => {
       const isSelected = selectedSegmentId === layer.feature.id
-      const color = isSelected
-        ? SELECTED_FEATURE_COLOR
-        : UNSELECTED_FEATURE_COLOR
+      let color
+      if (isSelected) {
+        color = SELECTED_SEGMENT_COLOR
+      }
+      else if (layer.feature.properties.subsegments.length === 0) {
+        color = UNSELECTED_EMPTY_SEGMENT_COLOR
+      }
+      else {
+        color = UNSELECTED_SEGMENT_COLOR
+      }
       layer.setStyle({color, weight: weight, lineJoin: 'square'})
       const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
 
@@ -221,6 +240,11 @@ export default function PTMap ({
   }
 
   function getEditOptions () {
+    // disable the "Clear all" button which would delete all visible segments
+    L.EditToolbar.Delete.include({
+      removeAllLayers: false
+    });
+
     return {
       edit: showEditControl,
       remove: showEditControl

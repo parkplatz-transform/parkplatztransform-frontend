@@ -7,7 +7,7 @@ const strings = {
     
     // Alert success messages
     segment_create_success: () => 'Abschnitt erfolgreich erstellt.',
-    segment_update_success: () => `Abschnitte erfolgreich gespeichert.`,
+    segment_update_success: () => `Abschnitt erfolgreich gespeichert.`,
     segment_delete_success: (num) => {
         if (num === 1) {
             return 'Abschnitt gelöscht.'
