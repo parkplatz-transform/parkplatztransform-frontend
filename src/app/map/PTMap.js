@@ -2,6 +2,7 @@
  * Map taken and changed from here: https://github.com/alex3165/react-leaflet-draw/blob/HEAD/example/edit-control.js
  *
  * TODO: localize language: https://stackoverflow.com/a/53401594
+ *
  */
 
 import React, { useEffect, useRef, useState } from 'react'
