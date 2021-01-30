@@ -21,7 +21,7 @@ async function withErrorHandling(response) {
     json.detail.forEach(error => {
       console.error(error)
     })
-    Sentry.captureMessage(json.detail)
+    Sentry.captureException(json.detail)
     throw new Error(json.detail)
   }
   return json
