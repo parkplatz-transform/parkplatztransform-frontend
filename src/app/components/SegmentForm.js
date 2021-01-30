@@ -136,23 +136,26 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     return changed ? updateValue + 1 : 0
   }, 0)
 
-  const formRef = useRef(null)
-
   const prevSegmentRef = useRef(segment)
   const selectedSubsegment = () => {
     return segment.properties.subsegments[selectedSubsegmentIndex]
   }
 
+  const isFormValid = (errs) => {
+    return Object.keys(errs).length === 0
+  }
+
   useEffect(() => {
     if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
-      if (isChanged) {
+      if (isChanged && isFormValid(errors)) {
         onChanged(prevSegmentRef.current)
       } 
       prevSegmentRef.current = segment
-      setChanged(false)
+      //setChanged(false)
       setSelectedSubsegmentIndex(0)
+      setErrors({})
     }
-  }, [isChanged, onChanged, segment])
+  }, [isChanged, errors, onChanged, segment])
 
   /**
    * @param segmentCreationFunction A function with order_number as first parameter.
@@ -226,9 +229,8 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }))
 
     setErrors(errs)
-    console.log(errs)
   
-    if (Object.keys(errs).length === 0) {
+    if (isFormValid(errs)) {
       const success = await onChanged(segment)
       console.log('success', success)
       setChanged(!success)
@@ -254,19 +256,19 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           details = `${subsegment.car_count} Stellplätze`
         }
 
-        const hasError = errors && errors[subsegment.order_number]
+        const error = errors && errors[subsegment.order_number]
 
         return (
           <ListItem
             key={subsegment.order_number}
             button
-            style={{ backgroundColor: hasError ? red[100] : null }}
+            style={{ backgroundColor: error ? red[100] : null }}
             selected={subsegment?.order_number === selectedSubsegmentIndex}
             onClick={() => setSelectedSubsegmentIndex(subsegment.order_number)}
           >
             <ListItemText
               primary={title}
-              secondary={hasError ? 'Invalid subsegment' : details}
+              secondary={error ? error.message : details}
             />
             <ListItemSecondaryAction>
               <IconButton onClick={() => duplicateSubsegment(subsegment)} edge="end" aria-label="duplicate">
@@ -636,7 +638,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
         {label: 'Busspur', disabled: true},
         {label: 'Einfahrt', disabled: true}
       ]}/>
-      <form ref={formRef}>
+      <form onChange={() => { setErrors({}) }}>
         {renderDetails()}
       </form>
     </div>
