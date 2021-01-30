@@ -46,8 +46,8 @@ export default function VerifyToken() {
 
   return (
     <div className={classes.container}>
-    {loading && <React.Fragment><CircularProgress /><p>Verifying {email}</p></React.Fragment>}
-    {error && <React.Fragment><p>Verification Failed</p></React.Fragment>}
+    {loading && <React.Fragment><CircularProgress /><p>{email} verifizieren</p></React.Fragment>}
+    {error && <React.Fragment><p>Anmeldung fehlgeschlagen</p></React.Fragment>}
     {hasVerified && <Redirect to="/" />}
     </div>
   );

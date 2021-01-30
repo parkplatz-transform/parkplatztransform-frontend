@@ -44,14 +44,14 @@ export default function LoginForm({ open, setOpen }) {
         <DialogTitle id="form-dialog-title">Login</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To login to ParkplatzTransform, please enter your email address here.
+            Bitte gib deine E-Mail-Adresse ein, um dich bei ParkplatzTransform anzumelden.
           </DialogContentText>
           <TextField
             error={(email.length && !email.includes('@'))}
             autoFocus
             margin="dense"
             id="name"
-            label="Email Address"
+            label="E-Mail-Adresse"
             type="email"
             fullWidth
             value={email}
@@ -60,10 +60,10 @@ export default function LoginForm({ open, setOpen }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)} color="primary">
-            Cancel
+            Abbrechen
           </Button>
           <Button onClick={requestMagicLink} color="primary" disabled={!(email.length && email.includes('@'))}>
-            Request Link
+            Anmelden
           </Button>
         </DialogActions>
       </React.Fragment>
@@ -73,10 +73,10 @@ export default function LoginForm({ open, setOpen }) {
   function renderSuccess() {
     return (
       <div>
-        <DialogTitle id="form-dialog-title">Success</DialogTitle>
+        <DialogTitle id="form-dialog-title">E-Mail versendet</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            You will receive an email to {email} shortly. Please click the link in the email to complete the verification process. You can close this modal.
+            Wir haben dir eine E-Mail an {email} geschickt. Bitte klicke auf den Link in der E-Mail, um die Anmeldung abzuschließen. Du kannst dieses Fenster schließen.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -84,7 +84,7 @@ export default function LoginForm({ open, setOpen }) {
             setOpen(false) 
             setFormState(FORM_STATE.INITIAL)
           }} color="primary">
-            Done
+            Fertig
           </Button>
         </DialogActions>
       </div>
@@ -94,15 +94,15 @@ export default function LoginForm({ open, setOpen }) {
   function renderFailure() {
     return (
       <div>
-        <DialogTitle id="form-dialog-title">Verification Failed</DialogTitle>
+        <DialogTitle id="form-dialog-title">Login fehlgeschlagen</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please check the email and try again. During development, emails need to be manually whitelisted before you can verify yourself.
+            Bitte überprüfe die E-Mail-Adresse und probiere es noch einmal. Während der Entwickling müssen E-Mail-Adressen hinterlegt sein, bevor du dich einloggen kannst.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setFormState(FORM_STATE.INITIAL)} color="primary">
-            Try again
+            Erneut versuchen
           </Button>
         </DialogActions>
       </div>
