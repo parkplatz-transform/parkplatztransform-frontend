@@ -15,7 +15,7 @@ import { persistMapPosition, loadMapPosition } from '../../helpers/position-pers
 import 'leaflet-arrowheads'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitButton from '../components/SplitButton'
-import getString from '../../strings';
+import getString from '../../strings'
 // work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -172,15 +172,26 @@ export default function PTMap ({
     const zoom = leafletFG._map.getZoom()
     let weight
 
-    switch (zoom){
+    switch (zoom) {
       // max zoom is 19
       case MAX_ZOOM:
-      case 19: weight = 9; break
-      case 18: weight = 7; break
-      case 17: weight = 5; break
-      case 16: weight = 4; break
-      case 15: weight = 3; break
-      default: weight = 2
+      case 19:
+        weight = 9
+        break
+      case 18:
+        weight = 7
+        break
+      case 17:
+        weight = 5
+        break
+      case 16:
+        weight = 4
+        break
+      case 15:
+        weight = 3
+        break
+      default:
+        weight = 2
     }
 
     leafletGeojson.eachLayer(layer => {
@@ -221,6 +232,11 @@ export default function PTMap ({
   }
 
   function getEditOptions () {
+    // disable the "Clear all" button which would delete all visible segments
+    L.EditToolbar.Delete.include({
+      removeAllLayers: false
+    });
+
     return {
       edit: showEditControl,
       remove: showEditControl
