@@ -29,8 +29,9 @@ const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
 const MIN_ZOOM_FOR_EDITING = 16
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
-const SELECTED_FEATURE_COLOR = 'red' // ⚠️
-const UNSELECTED_FEATURE_COLOR = '#3388ff'  // default blue
+const SELECTED_SEGMENT_COLOR = 'red' // ⚠️
+const UNSELECTED_EMPTY_SEGMENT_COLOR = 'purple' // dark gray
+const UNSELECTED_SEGMENT_COLOR = '#3388ff'  // default blue
 
 const MAX_ZOOM = 19   // osm doesn't have maps on zoom level above 19
 
@@ -196,9 +197,16 @@ export default function PTMap ({
 
     leafletGeojson.eachLayer(layer => {
       const isSelected = selectedSegmentId === layer.feature.id
-      const color = isSelected
-        ? SELECTED_FEATURE_COLOR
-        : UNSELECTED_FEATURE_COLOR
+      let color
+      if (isSelected) {
+        color = SELECTED_SEGMENT_COLOR
+      }
+      else if (layer.feature.properties.subsegments.length === 0) {
+        color = UNSELECTED_EMPTY_SEGMENT_COLOR
+      }
+      else {
+        color = UNSELECTED_SEGMENT_COLOR
+      }
       layer.setStyle({color, weight: weight, lineJoin: 'square'})
       const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
 
