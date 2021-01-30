@@ -8,7 +8,7 @@ import {
 import { registerGermanYupLocale } from "@stephen-r/yup-i18n-de";
 import getString from '../../strings'
 
-//registerGermanYupLocale();
+registerGermanYupLocale();
 
 export default object().shape({
     parking_allowed: boolean().required(),
