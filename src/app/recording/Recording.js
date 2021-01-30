@@ -9,6 +9,7 @@ import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
 import { Snackbar } from '@material-ui/core'
 import getString from '../../strings'
+import { ALIGNMENT, createEmptySubsegment } from './Subsegments'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -185,17 +186,27 @@ function Recording () {
    */
   function sanitizeSegment (segment) {
     const copy = JSON.parse(JSON.stringify(segment))
+    const emptySubsegment = createEmptySubsegment()
 
     for (const subsegment of copy.properties.subsegments) {
       if (subsegment.parking_allowed === null) {
         return null
       }
       if (subsegment.parking_allowed === true) {
-        // TODO: remove all settings related to parking_allowed === false
-
+        subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
+        return subsegment
       } else {
-        // TODO: remove all settings related to parking_allowed === true
-
+        subsegment.car_count = emptySubsegment.car_count
+        subsegment.fee = emptySubsegment.fee
+        subsegment.street_location = emptySubsegment.street_location
+        subsegment.marked = emptySubsegment.marked
+        subsegment.alignment = emptySubsegment.alignment
+        subsegment.duration_constraint = emptySubsegment.duration_constraint
+        subsegment.user_restrictions = emptySubsegment.user_restrictions
+        subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
+        subsegment.time_constraint = emptySubsegment.time_constraint
+        subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
+        return subsegment
       }
     }
     return copy

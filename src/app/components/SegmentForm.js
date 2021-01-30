@@ -617,7 +617,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
   }
 
   return (
-    <div className={classes.formView} onMouseLeave={save}>
+    <div className={classes.formView} onMouseLeave={isChanged > 0 ? save : null}>
       <div className={classes.headerContainer}>
         <h4>Unterabschnitt</h4>
           <Button
