@@ -187,14 +187,14 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     delete newSubsegment.modified_at
 
     const newSubsegments = [...segment.properties.subsegments]
-    // Insert in the right position
-    newSubsegments
-      .splice(subsegment.order_number + 1, 0, newSubsegment)
+    // Insert in the right position  --> at end of list
+    const newOrderIndex = segment.properties.subsegments.length
+    newSubsegments.push(newSubsegment)
     //TODO: probably makes more sense to just set order_number server-side
     segment.properties.subsegments = newSubsegments 
       .map((sub, idx) => ({...sub, order_number: idx})) // Normalize the subsegment order
     setChanged()
-    setSelectedSubsegmentIndex(subsegment.order_number + 1)
+    setSelectedSubsegmentIndex(newOrderIndex)
   }
 
   function getButtonVariant (highlighted) {
