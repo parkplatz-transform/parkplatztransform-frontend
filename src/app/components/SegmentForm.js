@@ -237,6 +237,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
   }
 
+  function getKey () {
+    return selectedSubsegment().order_number || 'new_subsegment'
+  }
+
   function renderList () {
     if (segment.properties && segment.properties.subsegments) {
       const listItems = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number).map((subsegment) => {
@@ -294,11 +298,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     if (subsegment.parking_allowed) {
       return (
         <React.Fragment>
-
-          <TableRow key={`${subsegment.id}_length`}>
+          {getKey()}
+          <TableRow key={`${getKey()}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
-
               {/* Length in meters */}
               <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
                 <TextField
@@ -337,7 +340,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
 
           {/* Time Constraint*/}
-          <TableRow key={`${selectedSubsegment().id}_time_constraint`}>
+          <TableRow key={`${getKey()}_time_constraint`}>
             <TableCell align="left">
 
               <div className={classes.optionTitle}>Temporäres&nbsp;Parkverbot</div>
@@ -355,7 +358,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
               {selectedSubsegment().time_constraint
                 ? <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.wideTextField)}>
                   <FormLabel component="legend">Wann besteht Parkverbot?</FormLabel>
-                  <TextField id={`${selectedSubsegment().id}_time_constraint_reason`}
+                  <TextField id={`${getKey()}_time_constraint_reason`}
                              multiline variant={'outlined'} style={{width: '100%'}}
                              InputLabelProps={{shrink: true}}
                              rows={3}
@@ -392,7 +395,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           </TableRow>
 
           {/*Alignment*/}
-          <TableRow key={`${selectedSubsegment().id}_alignment`}>
+          <TableRow key={`${getKey()}_alignment`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Parkwinkel</div>
 
@@ -414,7 +417,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           </TableRow>
 
           {/* Other properties*/}
-          <TableRow key={`${selectedSubsegment().id}_fee`}>
+          <TableRow key={`${getKey()}_fee`}>
             <TableCell align="left">
 
               <div className={classes.optionTitle}>Weitere Eigenschaften</div>
@@ -511,7 +514,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
         <React.Fragment>
 
           {/*Length*/}
-          <TableRow key={`${subsegment.id}_length`}>
+          <TableRow key={`${getKey()}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.)</div>
 
@@ -531,7 +534,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           </TableRow>
 
           {/*No parking reason*/}
-          <TableRow key={`${subsegment.id}_noparking_reason`}>
+          <TableRow key={`${getKey()}_noparking_reason`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Gründe</div>
 
@@ -583,7 +586,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <TableBody>
-                <TableRow key={`${subsegment.id}_parking_allowed`}>
+                <TableRow key={`${getKey()}_parking_allowed`}>
                   <TableCell align="left">
                     <div className={classes.optionTitle}>Öffentliches Parken</div>
 
