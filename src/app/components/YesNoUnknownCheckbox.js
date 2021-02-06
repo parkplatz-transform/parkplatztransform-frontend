@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
+import CancelIcon from '@material-ui/icons/Cancel'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { Checkbox } from '@material-ui/core'
 
 export default function YesNoUnknownCheckbox ({checked, onChange}) {
@@ -28,6 +30,7 @@ export default function YesNoUnknownCheckbox ({checked, onChange}) {
   if (isChecked) {
     return <Checkbox
       checked
+      checkedIcon={<CheckCircleIcon />}
       color={'primary'}
       onChange={internalOnChange}
     />
@@ -36,7 +39,7 @@ export default function YesNoUnknownCheckbox ({checked, onChange}) {
   if (isChecked === false) {
     return <Checkbox
       checked
-      indeterminate
+      checkedIcon={<CancelIcon/>}
       color={'primary'}
       onChange={internalOnChange}
     />
