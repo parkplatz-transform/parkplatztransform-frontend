@@ -41,6 +41,7 @@ import {
 import clsx from 'clsx'
 import getString from '../../strings'
 import subsegmentSchema from '../recording/SubsegmentSchema'
+import YesNoUnknownCheckbox from './YesNoUnknownCheckbox'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -209,6 +210,13 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
   function updateSubsegment (subsegmentChangeFunction) {
     return (event) => {
       subsegmentChangeFunction(selectedSubsegment(), event?.target?.value || event?.target?.checked)
+      setChanged()
+    }
+  }
+
+  function updateSubsegmentByCheckbox (subsegmentChangeFunction) {
+    return (checked) => {
+      subsegmentChangeFunction(selectedSubsegment(), checked)
       setChanged()
     }
   }
@@ -425,10 +433,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
               {/* Parking space marking */}
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <YesNoUnknownCheckbox
                     checked={selectedSubsegment().marked}
                     color={'primary'}
-                    onChange={updateSubsegment(setIsMarked)}
+                    onChange={updateSubsegmentByCheckbox(setIsMarked)}
                   />
                 }
                 label="Parkplätze sind markiert"/>
