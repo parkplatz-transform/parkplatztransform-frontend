@@ -137,7 +137,7 @@ export function createEmptySubsegment (orderNumber) {
     quality: 1,
     fee: false,
     street_location: STREET_LOCATION.STREET,
-    marked: null,
+    marked: false, //null,
     alignment: ALIGNMENT.PARALLEL,
     duration_constraint: false,
     // TODO: should be singular?
