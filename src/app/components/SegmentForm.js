@@ -306,7 +306,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     if (subsegment.parking_allowed) {
       return (
         <React.Fragment>
-          {getKey()}
           <TableRow key={`${getKey()}_length`}>
             <TableCell align="left">
               <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
