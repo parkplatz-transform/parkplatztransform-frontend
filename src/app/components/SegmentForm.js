@@ -38,6 +38,7 @@ import {
   USAGE_WHEN_NO_PARKING,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
+import messages from '../../messages'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -565,7 +566,7 @@ export default function SegmentForm ({segment, onChanged}) {
       </div>
       <SplitButton optionsAndCallbacks={[
         {label: 'Abschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment)},
-        {label: 'Haltestelle', disabled: true},
+        {label: {messages.haltestelle} , disabled: true},
         {label: 'Busspur', disabled: true},
         {label: 'Einfahrt', disabled: true}
       ]}/>

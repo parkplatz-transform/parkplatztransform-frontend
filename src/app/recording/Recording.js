@@ -4,42 +4,49 @@ import { emptyBoundsArray } from './TypeSupport'
 import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Alert from '@material-ui/lab/Alert'
-import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
+import {
+  getSegment,
+  getSegments,
+  postSegment,
+  updateSegment,
+  deleteSegment,
+} from '../../helpers/api'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
-import {Snackbar} from '@material-ui/core'
+import { Snackbar } from '@material-ui/core'
+import messages from '../../messages'
 
 const useStyles = makeStyles({
   buttonGroup: {
     marginTop: 10,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   bottomButton: {
     marginLeft: 5,
-    marginRight: 5
+    marginRight: 5,
   },
   header: {
     margin: '20px auto',
     textAlign: 'center',
     fontEeight: 'bold',
-    fontSize: 20
+    fontSize: 20,
   },
   subheader: {
     margin: '20px auto',
     textAlign: 'center',
     fontEeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   container: {
     height: '100%',
     width: '100%',
-    display: 'flex'
+    display: 'flex',
   },
   verticalSpace: {
-    height: 30
+    height: 30,
   },
   mapArea: {
-    width: 'calc(100% - 360px)'
+    width: 'calc(100% - 360px)',
   },
   formArea: {
     width: 360,
@@ -48,11 +55,11 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%'
-  }
+    height: '100%',
+  },
 })
 
-function Recording () {
+function Recording() {
   const classes = useStyles()
 
   /*
@@ -62,7 +69,7 @@ function Recording () {
    * */
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
-  const segmentsByIdRef = useRef({});
+  const segmentsByIdRef = useRef({})
   segmentsByIdRef.current = segmentsById
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
@@ -70,18 +77,27 @@ function Recording () {
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
-  async function onSegmentCreated (segment) {
+  async function onSegmentCreated(segment) {
     try {
-      const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
+      const createdSegment = await postSegment({
+        ...segment,
+        properties: { subsegments: [] },
+      })
       addSegment(createdSegment)
       setSelectedSegmentId(createdSegment.id)
-      setAlertDisplayed({ severity: 'success', message: `Successfully created segment with id: ${createdSegment.id}` })
+      setAlertDisplayed({
+        severity: 'success',
+        message: `Successfully created segment with id: ${createdSegment.id}`,
+      })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to create segement' })
+      setAlertDisplayed({
+        severity: 'error',
+        message: 'Failed to create segement',
+      })
     }
   }
 
-  async function onBoundsChange (bounds) {
+  async function onBoundsChange(bounds) {
     const boundingBox = {
       swLng: bounds._southWest.lng,
       swLat: bounds._southWest.lat,
@@ -104,34 +120,51 @@ function Recording () {
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       setIsLoading(true)
-      const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
+      const geoJson = await getSegments(
+        boundingBoxString,
+        knownSegmentIdsInBounds
+      )
       addSegments(geoJson.features)
       setIsLoading(false)
-      setAlertDisplayed({ severity: 'success', message: 'Successfully loaded all segments.' })
+      setAlertDisplayed({
+        severity: 'success',
+        message: 'Successfully loaded all segments.',
+      })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Problem loading all segments.' })
+      setAlertDisplayed({
+        severity: 'error',
+        message: 'Problem loading all segments.',
+      })
       setIsLoading(false)
-      loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
+      loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(
+        (bbox) => bbox !== boundingBox
+      )
     }
   }
 
-  async function onSegmentEdited (changedGeojson) {
+  async function onSegmentEdited(changedGeojson) {
     setSelectedSegmentId(null)
     addSegments(changedGeojson?.features)
 
-    const promises = changedGeojson?.features.map(async segment => {
+    const promises = changedGeojson?.features.map(async (segment) => {
       return await updateSegment(segment)
     })
 
     try {
       await Promise.all(promises)
-      setAlertDisplayed({ severity: 'success', message: 'Successfully updated segment(s)' })
+      setAlertDisplayed({
+        severity: 'success',
+        message: 'Successfully updated segment(s)',
+      })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement(s)' })
+      setAlertDisplayed({
+        severity: 'error',
+        message: 'Failed to update segement(s)',
+      })
     }
   }
 
-  async function onSegmentSelect (id) {
+  async function onSegmentSelect(id) {
     console.log('selected segment id', id)
 
     setSelectedSegmentId(id)
@@ -146,28 +179,32 @@ function Recording () {
     }
   }
 
-  function checkIfBoundingBoxWasRequestedBefore (boundingBox) {
-    return loadedBoundingBoxesRef.current.some(bbox => bboxContainsBBox(bbox, boundingBox))
+  function checkIfBoundingBoxWasRequestedBefore(boundingBox) {
+    return loadedBoundingBoxesRef.current.some((bbox) =>
+      bboxContainsBBox(bbox, boundingBox)
+    )
   }
 
-  function getLoadedSegmentIdsInBounds (boundingBox) {
-    return Object.values(segmentsById).filter(segment => {
-      if (segment.bbox) {
-        const swLng = segment.bbox[0]
-        const swLat = segment.bbox[1]
-        const neLng = segment.bbox[2]
-        const neLat = segment.bbox[3]
-        return bboxIntersectsBBox(boundingBox, {swLng, swLat, neLng, neLat})
-      }
-      return false
-    }).map(segment => segment.id)
+  function getLoadedSegmentIdsInBounds(boundingBox) {
+    return Object.values(segmentsById)
+      .filter((segment) => {
+        if (segment.bbox) {
+          const swLng = segment.bbox[0]
+          const swLat = segment.bbox[1]
+          const neLng = segment.bbox[2]
+          const neLat = segment.bbox[3]
+          return bboxIntersectsBBox(boundingBox, { swLng, swLat, neLng, neLat })
+        }
+        return false
+      })
+      .map((segment) => segment.id)
   }
 
-  function addSegment (newOrUpdatedSegment) {
+  function addSegment(newOrUpdatedSegment) {
     addSegments([newOrUpdatedSegment])
   }
 
-  function addSegments (newOrUpdatedSegments) {
+  function addSegments(newOrUpdatedSegments) {
     const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
     for (const segment of newOrUpdatedSegments) {
       newSegmentsById[segment.id] = segment
@@ -178,33 +215,45 @@ function Recording () {
     setSegmentsById(newSegmentsById)
   }
 
-  async function onSegmentChanged (segment) {
+  async function onSegmentChanged(segment) {
     try {
       await updateSegment(segment)
-      setAlertDisplayed({ severity: 'success', message: `Successfully updated segment with id: ${segment.id}` })
+      setAlertDisplayed({
+        severity: 'success',
+        message: `Successfully updated segment with id: ${segment.id}`,
+      })
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: 'Failed to update segement.' })
+      setAlertDisplayed({
+        severity: 'error',
+        message: 'Failed to update segement.',
+      })
     }
   }
-  
+
   function onSegmentsDeleted(ids) {
     const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
-    const deletes = ids.map(async id => {
+    const deletes = ids.map(async (id) => {
       delete newSegmentsById[id]
       await deleteSegment(id)
     })
     setSegmentsById(newSegmentsById)
-    
+
     try {
-      setAlertDisplayed({ severity: 'success', message: `Successfully deleted ${deletes.length} segments.` })
+      setAlertDisplayed({
+        severity: 'success',
+        message: `Successfully deleted ${deletes.length} segments.`,
+      })
       return Promise.all(deletes)
     } catch (e) {
-      setAlertDisplayed({ severity: 'error', message: `Failed to delete ${deletes.length} segments` })
+      setAlertDisplayed({
+        severity: 'error',
+        message: `Failed to delete ${deletes.length} segments`,
+      })
       return Promise.reject(e)
     }
   }
 
-  function renderMapView () {
+  function renderMapView() {
     return (
       <div>
         <PTMap
@@ -221,54 +270,55 @@ function Recording () {
     )
   }
 
-  function renderFormView () {
+  function renderFormView() {
     if (isLoading) {
       return (
         <div className={classes.loadingContainer}>
-          <CircularProgress/>
+          <CircularProgress />
         </div>
       )
     }
     if (!selectedSegmentId) {
       return (
         <div>
-          <div className={classes.verticalSpace}/>
-          <div className={classes.header}>Willkommen bei ParkplatzTransform</div>
-          <div className={classes.subheader}>Wähle einen vorhandenen Abschnitt oder erstelle einen Neuen</div>
-          <div className={classes.subheader}>Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen</div>
+          <div className={classes.verticalSpace} />
+          <div className={classes.header}>{messages.greeting}</div>
+          <div className={classes.subheader}>{messages.firstInstruction}</div>
+          <div className={classes.subheader}>{messages.zoomInstruction}</div>
         </div>
-
       )
     }
-    return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged}/>
+    return (
+      <SegmentForm
+        segment={segmentsById[selectedSegmentId]}
+        onChanged={onSegmentChanged}
+      />
+    )
   }
 
-  function renderSnackBar () {
+  function renderSnackBar() {
     return (
-      <Snackbar 
-        open={!!alertDisplayed} 
-        autoHideDuration={3000} 
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
+      <Snackbar
+        open={!!alertDisplayed}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         onClose={() => setAlertDisplayed(null)}
       >
-        <Alert severity={alertDisplayed?.severity}>{alertDisplayed?.message}</Alert>
+        <Alert severity={alertDisplayed?.severity}>
+          {alertDisplayed?.message}
+        </Alert>
       </Snackbar>
     )
   }
 
   return (
     <>
-    {renderSnackBar()}
-    <div className={classes.container}>
-      <div className={classes.mapArea}>
-        {renderMapView()}
-      </div>
+      {renderSnackBar()}
+      <div className={classes.container}>
+        <div className={classes.mapArea}>{renderMapView()}</div>
 
-      <div className={classes.formArea}>
-        {renderFormView()}
+        <div className={classes.formArea}>{renderFormView()}</div>
       </div>
-
-    </div>
     </>
   )
 }
