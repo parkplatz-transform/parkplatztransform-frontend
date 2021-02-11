@@ -26,9 +26,9 @@ export default object().shape({
     quality: number().positive(),
     fee: boolean().required(),
     street_location: string().required(),
-    marked: boolean().required(),
+    marked: boolean().nullable(),
     alignment: string().required(),
-    duration_constraint: boolean().required(),
+    duration_constraint: boolean().nullable(),
     usage_restrictions: array().of(string()),
-    time_constraint: boolean().required(),
+    time_constraint: boolean().nullable(),
 }).required();
