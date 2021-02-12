@@ -1,4 +1,5 @@
 export const STREET_LOCATION = {
+  UNKNOWN: 'unknown',
   STREET: 'street',
   CURB: 'curb',
   SIDEWALK: 'sidewalk',
@@ -8,12 +9,14 @@ export const STREET_LOCATION = {
 }
 
 export const ALIGNMENT = {
+  UNKNOWN: 'unknown',
   PARALLEL: 'parallel',
   PERPENDICULAR: 'perpendicular',
   DIAGONAL: 'diagonal'
 }
 
 export const USER_RESTRICTIONS = {
+  UNKNOWN: 'unknown',
   HANDICAP: 'handicap',
   RESIDENTS: 'residents',
   CAR_SHARING: 'car_sharing',
@@ -24,6 +27,7 @@ export const USER_RESTRICTIONS = {
 }
 
 export const ALTERNATIVE_USAGE_REASON = {
+  UNKNOWN: 'unknown',
   BUS_STOP: 'bus_stop',
   BUS_LANE: 'bus_lane',
   MARKET: 'market',
@@ -33,6 +37,7 @@ export const ALTERNATIVE_USAGE_REASON = {
 }
 
 export const NO_PARKING_REASONS_AND_LABEL = {
+  'unknown': 'Unbekannt',
   'private_parking': 'Privatparkplatz',
   'bus_stop': 'Haltestelle',
   'bus_lane': 'Busspur',
@@ -103,6 +108,10 @@ export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
   subsegment.alternative_usage_reason = alternativeUsageReason
 }
 
+export function setAlignmentUnknown (subsegment) {
+  subsegment.alignment = ALIGNMENT.UNKNOWN
+}
+
 export function setAlignmentParallel (subsegment) {
   subsegment.alignment = ALIGNMENT.PARALLEL
 }
@@ -135,14 +144,14 @@ export function createEmptySubsegment (orderNumber) {
     length_in_meters: null,
     car_count: null,
     quality: 1,
-    fee: false,
-    street_location: STREET_LOCATION.STREET,
-    marked: false, //null,
-    alignment: ALIGNMENT.PARALLEL,
-    duration_constraint: false,
+    fee: null,
+    street_location: STREET_LOCATION.UNKNOWN,
+    marked: null, //null,
+    alignment: ALIGNMENT.UNKNOWN,
+    duration_constraint: null,
     // TODO: should be singular?
     usage_restrictions: [],
-    time_constraint: false,
+    time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
     usage_when_no_parking: null,
     no_parking_reasons: [],

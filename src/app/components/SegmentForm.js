@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-  Checkbox,
   FormControl, FormControlLabel, FormGroup, FormLabel, Input, InputAdornment,
   List, ListItem, ListItemSecondaryAction, ListItemText,
   MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField
@@ -19,6 +18,7 @@ import {
   createEmptySubsegment,
   getToggleNoParkingReasonFn,
   NO_PARKING_REASONS_AND_LABEL,
+  setAlignmentUnknown,
   setAlignmentDiagonal,
   setAlignmentParallel,
   setAlignmentPerpendicular,
@@ -354,7 +354,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <YesNoUnknownCheckbox
                     checked={selectedSubsegment().time_constraint}
                     color={'primary'}
                     onChange={updateSubsegment(setHasTimeConstraint)}
@@ -407,7 +407,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
               <div className={classes.optionTitle}>Parkwinkel</div>
 
               <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
-                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PARALLEL)}
+                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.UNKNOWN)}
+                        onClick={updateSubsegment(setAlignmentUnknown)} className={classes.thirdWidth}>
+                  Unbekannt
+                </Button><Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PARALLEL)}
                         onClick={updateSubsegment(setAlignmentParallel)} className={classes.thirdWidth}>
                   Parallel
                 </Button>
@@ -443,7 +446,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
               {/* Fee */}
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <YesNoUnknownCheckbox
                     checked={selectedSubsegment().fee}
                     color={'primary'}
                     onChange={updateSubsegment(setHasFee)}
@@ -454,7 +457,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
               {/* Duration constraint */}
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <YesNoUnknownCheckbox
                     checked={selectedSubsegment().duration_constraint}
                     color={'primary'}
                     onChange={updateSubsegment(setDurationConstraint)}
@@ -472,6 +475,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     onChange={updateSubsegment(setStreetLocation)}
                     variant={'outlined'}
                   >
+                    <MenuItem value={STREET_LOCATION.UNKNOWN}>unbekannt</MenuItem>
                     <MenuItem value={STREET_LOCATION.STREET}>auf der Straße</MenuItem>
                     <MenuItem value={STREET_LOCATION.CURB}>auf dem Bordstein (halb auf Straße)</MenuItem>
                     <MenuItem value={STREET_LOCATION.SIDEWALK}>auf dem Gehweg</MenuItem>
@@ -489,10 +493,11 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
+                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.UNKNOWN}
                     onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >
+                    <MenuItem value={USER_RESTRICTIONS.UNKNOWN}>Unbekannt</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
@@ -552,7 +557,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     <FormControlLabel
                       key={key}
                       control={
-                        <Checkbox
+                        <YesNoUnknownCheckbox
                           color={'primary'}
                           checked={reason === key}
                           onChange={updateSubsegment(getToggleNoParkingReasonFn(key))}
