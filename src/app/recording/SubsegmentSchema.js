@@ -24,10 +24,10 @@ export default object().shape({
         return value || length_in_meters
     }),
     quality: number().positive(),
-    fee: boolean().required(),
+    fee: boolean().nullable(),
     street_location: string().required(),
     marked: boolean().nullable(),
-    alignment: string().required(),
+    alignment: string().nullable(),
     duration_constraint: boolean().nullable(),
     usage_restrictions: array().of(string()),
     time_constraint: boolean().nullable(),
