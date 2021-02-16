@@ -18,10 +18,6 @@ import {
   createEmptySubsegment,
   getToggleNoParkingReasonFn,
   NO_PARKING_REASONS_AND_LABEL,
-  setAlignmentUnknown,
-  setAlignmentDiagonal,
-  setAlignmentParallel,
-  setAlignmentPerpendicular,
   setCarCount,
   setDurationConstraint,
   setHasFee,
@@ -36,7 +32,7 @@ import {
   setAlternativeUsageReason,
   STREET_LOCATION,
   USER_RESTRICTIONS,
-  ALTERNATIVE_USAGE_REASON,
+  ALTERNATIVE_USAGE_REASON, setAlignment,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
 import getString from '../../strings'
@@ -126,6 +122,10 @@ const useStyles = makeStyles((theme) => ({
   },
   json: {
     maxWidth: '100%'
+  },
+  bottomButton: {
+    width: 'calc(100% - 30px)',
+    margin: '10px 15px 70px'
   }
 }))
 
@@ -406,23 +406,20 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
             <TableCell align="left">
               <div className={classes.optionTitle}>Parkwinkel</div>
 
-              <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
-                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.UNKNOWN)}
-                        onClick={updateSubsegment(setAlignmentUnknown)} className={classes.thirdWidth}>
-                  Unbekannt
-                </Button><Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PARALLEL)}
-                        onClick={updateSubsegment(setAlignmentParallel)} className={classes.thirdWidth}>
-                  Parallel
-                </Button>
-                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.DIAGONAL)}
-                        onClick={updateSubsegment(setAlignmentDiagonal)} className={classes.thirdWidth}>
-                  Diagonal
-                </Button>
-                <Button variant={getButtonVariant(selectedSubsegment().alignment === ALIGNMENT.PERPENDICULAR)}
-                        onClick={updateSubsegment(setAlignmentPerpendicular)} className={classes.thirdWidth}>
-                  Quer
-                </Button>
-              </ButtonGroup>
+              <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
+                {/*Parkposition:*/}
+                <Select
+                  id="select_parking_position"
+                  value={selectedSubsegment().alignment}
+                  onChange={updateSubsegment(setAlignment)}
+                  variant={'outlined'}
+                >
+                  <MenuItem value={ALIGNMENT.UNKNOWN}>unbekannt</MenuItem>
+                  <MenuItem value={ALIGNMENT.PARALLEL}>parallel</MenuItem>
+                  <MenuItem value={ALIGNMENT.DIAGONAL}>diagonal</MenuItem>
+                  <MenuItem value={ALIGNMENT.PERPENDICULAR}>quer</MenuItem>
+                </Select>
+              </FormControl>
             </TableCell>
           </TableRow>
 
@@ -618,7 +615,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
                 {renderDetailsForParkingAllowed()}
                 {renderDetailsForParkingNotAllowed()}
-                <Button variant="contained" color="primary" onClick={save} className={classes.fullWidth}>
+                <Button variant="contained" color="primary" onClick={save} className={classes.bottomButton} >
                   {getString('save')}
                 </Button>
               </TableBody>
@@ -626,7 +623,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           </TableContainer>
         </div>
 
-        <pre className={clsx(classes.json, classes.margin)}>{JSON.stringify(segment, null, ' ')}</pre>
+        {/*<pre className={clsx(classes.json, classes.margin)}>{JSON.stringify(segment, null, ' ')}</pre>*/}
       </div>
     )
   }

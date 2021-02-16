@@ -66,7 +66,7 @@ export default function PTMap ({
 
   useEffect(() => {
     setFeaturesFromSegments()
-  }, [segments, setFeaturesFromSegments])
+  }, [segments])
 
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 

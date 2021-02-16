@@ -108,20 +108,8 @@ export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
   subsegment.alternative_usage_reason = alternativeUsageReason
 }
 
-export function setAlignmentUnknown (subsegment) {
-  subsegment.alignment = ALIGNMENT.UNKNOWN
-}
-
-export function setAlignmentParallel (subsegment) {
-  subsegment.alignment = ALIGNMENT.PARALLEL
-}
-
-export function setAlignmentPerpendicular (subsegment) {
-  subsegment.alignment = ALIGNMENT.PERPENDICULAR
-}
-
-export function setAlignmentDiagonal (subsegment) {
-  subsegment.alignment = ALIGNMENT.DIAGONAL
+export function setAlignment (subsegment, alignment) {
+  subsegment.alignment = alignment
 }
 
 export function getToggleNoParkingReasonFn (reason) {

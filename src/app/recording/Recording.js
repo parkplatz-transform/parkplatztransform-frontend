@@ -9,7 +9,7 @@ import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import SegmentForm from '../components/SegmentForm'
 import { Snackbar } from '@material-ui/core'
 import getString from '../../strings'
-import { ALIGNMENT, createEmptySubsegment } from './Subsegments'
+import { createEmptySubsegment } from './Subsegments'
 
 const useStyles = makeStyles({
   buttonGroup: {
