@@ -17,9 +17,9 @@ export default function YesNoUnknownCheckbox ({checked, onChange}) {
     if (isChecked === true) {
       nextValue = false
     }
-    // else if (isChecked === false) {
-    //   nextValue = null
-    // }
+    else if (isChecked === false) {
+      nextValue = null
+    }
     else {
       nextValue = true
     }
