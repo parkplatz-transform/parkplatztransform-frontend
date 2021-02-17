@@ -23,7 +23,7 @@ export const USER_RESTRICTIONS = {
   GENDER: 'gender',
   ELECTRIC_CARS: 'electric_cars',
   OTHER: 'other',
-  NO_RESTRICTION: 'no restriction'
+  NO_RESTRICTION: 'all_users'
 }
 
 export const ALTERNATIVE_USAGE_REASON = {
@@ -138,7 +138,7 @@ export function createEmptySubsegment (orderNumber) {
     alignment: ALIGNMENT.UNKNOWN,
     duration_constraint: null,
     // TODO: should be singular?
-    usage_restrictions: [],
+    usage_restrictions: USER_RESTRICTIONS.NO_RESTRICTION,
     time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
     usage_when_no_parking: null,

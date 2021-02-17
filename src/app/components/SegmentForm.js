@@ -150,7 +150,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
       if (isChanged && isFormValid(errors)) {
         onChanged(prevSegmentRef.current)
-      } 
+      }
       prevSegmentRef.current = segment
       //setChanged(false)
       setSelectedSubsegmentIndex(0)
@@ -192,7 +192,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     const newOrderIndex = segment.properties.subsegments.length
     newSubsegments.push(newSubsegment)
     //TODO: probably makes more sense to just set order_number server-side
-    segment.properties.subsegments = newSubsegments 
+    segment.properties.subsegments = newSubsegments
       .map((sub, idx) => ({...sub, order_number: idx})) // Normalize the subsegment order
     setChanged()
     setSelectedSubsegmentIndex(newOrderIndex)
@@ -237,7 +237,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }))
 
     setErrors(errs)
-  
+
     if (isFormValid(errs)) {
       const success = await onChanged(segment)
       console.log('success', success)
@@ -490,7 +490,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.UNKNOWN}
+                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
                     onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >
