@@ -209,7 +209,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
    */
   function updateSubsegment (subsegmentChangeFunction) {
     return (event) => {
-      subsegmentChangeFunction(selectedSubsegment(), event?.target?.value || event?.target?.checked)
+      subsegmentChangeFunction(selectedSubsegment(), event?.target?.value || event?.target?.checked || event)
       setChanged()
     }
   }
