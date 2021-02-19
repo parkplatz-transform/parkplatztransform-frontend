@@ -37,7 +37,7 @@ function RightPanel({ isLoading, segment, onSegmentChanged, setAlertDisplayed })
         setAlertDisplayed({severity: 'error', message})
     }
 
-    if (isLoading) {
+    if (isLoading && !segment) {
       return (
         <div className={classes.loadingContainer}>
           <CircularProgress/>

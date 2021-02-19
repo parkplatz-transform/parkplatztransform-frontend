@@ -1,10 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
 import CancelIcon from '@material-ui/icons/Cancel'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { Checkbox } from '@material-ui/core'
 
-export default function YesNoUnknownCheckbox ({checked, onChange}) {
+function YesNoUnknownCheckbox ({checked, onChange}) {
   function internalOnChange (e) {
     let nextValue
     if (checked === true) {
@@ -45,3 +46,10 @@ export default function YesNoUnknownCheckbox ({checked, onChange}) {
   />
 
 }
+
+YesNoUnknownCheckbox.propTypes = {
+  checked: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+}
+
+export default YesNoUnknownCheckbox
