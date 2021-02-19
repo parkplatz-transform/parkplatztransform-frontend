@@ -1,334 +1,219 @@
-/**
- * Map taken and changed from here: https://github.com/alex3165/react-leaflet-draw/blob/HEAD/example/edit-control.js
- *
- * TODO: localize language: https://stackoverflow.com/a/53401594
- *
- */
-
-import React, { useEffect, useRef, useState } from 'react'
-import { FeatureGroup, Map, TileLayer } from 'react-leaflet'
-import L from 'leaflet'
-import { EditControl } from 'react-leaflet-draw'
-
+import React, { useEffect, useRef } from 'react'
+import  L from 'leaflet'
+import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { useParams, useHistory } from 'react-router-dom'
 import { geoJsonFromSegments } from '../../helpers/geojson'
-import { persistMapPosition, loadMapPosition } from '../../helpers/position-persistence'
 
-// Leaflet plugins
 import 'leaflet-arrowheads'
-import { makeStyles } from '@material-ui/core/styles'
+import '@geoman-io/leaflet-geoman-free'
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import SplitButton from '../components/SplitButton'
 import getString from '../../strings'
-// work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
+import { makeStyles } from '@material-ui/core'
 
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png',
-})
+const tileServerURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+const attributtion = 'copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 
-const MAP_HEIGHT = 'calc(100vh - 64px)'  // fullscreen - app bar height
-const MIN_ZOOM_FOR_EDITING = 16
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
-const SELECTED_SEGMENT_COLOR = 'red' // ⚠️
-const UNSELECTED_EMPTY_SEGMENT_COLOR = 'purple' // dark gray
-const UNSELECTED_SEGMENT_COLOR = '#3388ff'  // default blue
-
-const MAX_ZOOM = 19   // osm doesn't have maps on zoom level above 19
-
-const position = loadMapPosition()
+const SELECTED_SEGMENT_COLOR = 'red'
+const UNSELECTED_EMPTY_SEGMENT_COLOR = 'purple'
+const UNSELECTED_SEGMENT_COLOR = '#3388ff'
 
 const useStyles = makeStyles({
   downloadButton: {
     zIndex: 1000,
-    position: 'absolute',
+    position: 'fixed',
     left: 10,
     bottom: 10
   }
 })
 
-export default function PTMap ({
-  segments,
-  onSegmentSelect,
-  selectedSegmentId,
-  onSegmentEdited,
-  onSegmentCreated,
-  onSegmentsDeleted,
-  onBoundsChanged
- }) {
+function DownloadSegmentsButton({ segments }) {
+    const classes = useStyles()
+    const map = useMap()
 
-  const [showEditControl, setShowEditControl] = useState(position.zoom >= MIN_ZOOM_FOR_EDITING)
-  const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
-  const visibleSegmentsRef = useRef([])
-  const editableFGRef = useRef(null)
-
-  const classes = useStyles()
-
-  useEffect(() => {
-    setFeaturesFromSegments()
-  }, [segments, setFeaturesFromSegments])
-
-  // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
-
-  function _onEdited (e) {
-    _onChange(true)
-  }
-
-  function _onCreated (e) {
-    _onChange()
-  }
-
-  async function _onDeleted (e) {
-    const layers = e.layers._layers
-    const idsToDelete = Object.keys(layers)
-      .filter(key => !!layers[key]?.feature && layers[key]?.feature?.id)
-      .map(key => layers[key]?.feature?.id)
-
-    await onSegmentsDeleted(idsToDelete)
-    setDeleteModeEnabled(false)
-  }
-
-  function _onMounted (drawControl) {
-    onBoundsChanged(drawControl._map.getBounds())
-  }
-
-  function _onMoveEnd (e) {
-    setShowEditControl(e.sourceTarget._zoom >= MIN_ZOOM_FOR_EDITING)
-    setFeaturesFromSegments()
-    onBoundsChanged(e.sourceTarget.getBounds())
-    const leafletFG = editableFGRef.current.leafletElement
-    const {lat, lng} = leafletFG._map.getCenter()
-    const zoom = leafletFG._map.getZoom()
-
-    if (lat && lng && zoom) {
-      persistMapPosition({lat, lng, zoom})
-    }
-  }
-
-  function _onDrawStart (e, f) {
-    console.log('on draw start', e)
-    console.log('on draw start2', f)
-    _onChange()
-  }
-
-  function _onDrawStop (e) {
-    // user finished drawing
-    console.log('on draw stop', e)
-
-    const geojsonData = editableFGRef.current.leafletElement.toGeoJSON()
-    const newFeature = geojsonData.features[geojsonData.features.length - 1]
-    console.log('newFeature', newFeature)
-    onSegmentCreated(newFeature)
-
-  }
-
-  function _onEditStop (e) {
-  }
-
-  function _onFeatureGroupReady (reactFGref) {
-
-    if (!reactFGref) {
-      // happens on leaving PTMap
-      return
+    function bboxToLeafletBounds(bbox) {
+        const corner1 = L.latLng(bbox[0], bbox[1])
+        const corner2 = L.latLng(bbox[2], bbox[3])
+        const bounds = L.latLngBounds(corner1, corner2);
+        return bounds
     }
 
-    // store the ref for future access to content
-    editableFGRef.current = reactFGref
-
-    setFeaturesFromSegments()
-  }
-
-  function _onChange (notify = false) {
-    // editableFGRef.current contains the edited geometry, which can be manipulated through the leaflet API
-    if (!editableFGRef.current) {
-      return
-    }
-
-    if (notify) {
-      const geojsonData = editableFGRef.current.leafletElement.toGeoJSON()
-      console.log('geojson', geojsonData)
-      onSegmentEdited(geojsonData)
-    }
-  }
-
-  /**
-   * TODO: In order to make editing lines work again, this function must not be doing anything
-   *       after editing / drawing started.
-   *       Also, getDrawOptions and getEditOptions must be stable during editing / drawing for not losing the tools
-   *       on zoom change.
-   */
-  function setFeaturesFromSegments () {
-    visibleSegmentsRef.current = []
-    if (editableFGRef.current == null) {
-      // not yet ready
-      return
-    }
-
-    const leafletGeojson = new L.GeoJSON(geoJsonFromSegments(segments))
-
-    // populate the leaflet FeatureGroup with the initialGeoJson layers
-    const leafletFG = editableFGRef.current.leafletElement
-    leafletFG.clearLayers()
-
-    // line weight depending on zoom. The closer you are, the thicker they're being displayed
-    const zoom = leafletFG._map.getZoom()
-    let weight
-
-    switch (zoom) {
-      // max zoom is 19
-      case MAX_ZOOM:
-      case 19:
-        weight = 9
-        break
-      case 18:
-        weight = 7
-        break
-      case 17:
-        weight = 5
-        break
-      case 16:
-        weight = 4
-        break
-      case 15:
-        weight = 3
-        break
-      default:
-        weight = 2
-    }
-
-    leafletGeojson.eachLayer(layer => {
-      const isSelected = selectedSegmentId === layer.feature.id
-      let color
-      if (isSelected) {
-        color = SELECTED_SEGMENT_COLOR
-      }
-      else if (layer.feature.properties.subsegments.length === 0) {
-        color = UNSELECTED_EMPTY_SEGMENT_COLOR
-      }
-      else {
-        color = UNSELECTED_SEGMENT_COLOR
-      }
-      layer.setStyle({color, weight: weight, lineJoin: 'square'})
-      const isInBounds = leafletFG._map.getBounds().isValid() && leafletFG._map.getBounds().intersects(layer.getBounds())
-
-      if (isInBounds) {
-        visibleSegmentsRef.current.push(layer.toGeoJSON())
-
-        // add a marker for start and end if selected
-        if (isSelected) {
-          layer.arrowheads({size: '8px', fill: true, frequency: 'endonly'})
+    function downloadSegments (_segments) {
+        const data = {
+        'type': 'FeatureCollection',
+        'features': _segments,
         }
-        leafletFG.addLayer(layer)
-        layer.off('click')
-        layer.on('click', function (event) {
-          if (!deleteModeEnabled) {
-            onSegmentSelect(layer.feature.id)
-          }
-        })
-      }
-    })
-  }
 
-  function getDrawOptions () {
-    return {
-      polyline: showEditControl,
-      polygon: false,
-      rectangle: false,
-      circle: false,
-      marker: false,
-      circlemarker: false
-    }
-  }
+        var element = document.createElement('a')
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, '    ')))
+        element.setAttribute('download', DOWNLOAD_FILENAME)
 
-  function getEditOptions () {
-    // disable the "Clear all" button which would delete all visible segments
-    L.EditToolbar.Delete.include({
-      removeAllLayers: false
-    });
+        element.style.display = 'none'
+        document.body.appendChild(element)
 
-    return {
-      edit: showEditControl,
-      remove: showEditControl
-    }
-  }
+        element.click()
 
-  function downloadSegments (segments) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': segments,
+        document.body.removeChild(element)
     }
 
-    var element = document.createElement('a')
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, '    ')))
-    element.setAttribute('download', DOWNLOAD_FILENAME)
+    function downloadAllSegments() {
+        downloadSegments(segments)
+    }
 
-    element.style.display = 'none'
-    document.body.appendChild(element)
+    function downloadVisibleSegments() {
+        const visible = segments.filter(segment =>
+            map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
+        )
+        downloadSegments(visible)
+    }
 
-    element.click()
+    function segmentsAreInBounds() {
+        return segments.some(segment =>
+            map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
+        )
+    }
 
-    document.body.removeChild(element)
-  }
-
-  function downloadVisibleSegments () {
-    downloadSegments(visibleSegmentsRef.current)
-  }
-
-  function downloadAllSegments () {
-    downloadSegments(segments)
-  }
-
-  console.log('hidden? ' + !editableFGRef.current || editableFGRef.current.leafletElement._map._zoom <= 16)
-  return (
-    <>
-      <Map
-        center={{lat: position.lat, lng: position.lng}}
-        zoom={position.zoom}
-        maxZoom={MAX_ZOOM}
-        zoomControl={true}
-        style={{height: MAP_HEIGHT}}
-        onMoveEnd={_onMoveEnd}
-        onZoomEnd={_onMoveEnd}
-      >
-        <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
-        />
-
-        <FeatureGroup ref={(reactFGref) => {_onFeatureGroupReady(reactFGref)}}>
-          <EditControl
-            position='topright'
-            onEdited={_onEdited}
-            onCreated={_onCreated}
-            onDeleted={_onDeleted}
-            onMounted={_onMounted}
-            onDrawStart={_onDrawStart}
-            onDrawStop={_onDrawStop}
-            onEditStart={() => onSegmentSelect(null)}
-            onEditStop={_onEditStop}
-            onDeleteStart={() => {
-              onSegmentSelect(null) // Clear any selected segment
-              setDeleteModeEnabled(true)
-            }}
-            onDeleteStop={() => setDeleteModeEnabled(false)}
-            draw={getDrawOptions()}
-            edit={getEditOptions()}
-          />
-        </FeatureGroup>
-      </Map>
+    return (
       <div className={classes.downloadButton}>
         <SplitButton optionsAndCallbacks={[
           {label: getString('download_geo_json')},
           {
             label: getString('download_visible_segments'),
-            disabled: visibleSegmentsRef.current.length === 0,
+            disabled: segmentsAreInBounds(),
             callback: downloadVisibleSegments
           },
           {label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments},
         ]}/>
       </div>
-    </>
-  )
-
+    )
 }
+
+// Headless controller component
+export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentEdited, selectedSegmentId }) {
+    const layerRef = useRef()
+    const history = useHistory()
+
+    // Position Controller
+    const map = useMapEvents({
+        moveend: (event) => {
+            const {lat, lng} = event.target.getCenter()
+            const zm = event.target.getZoom()
+
+            if (lat && lng && zm) {
+                history.push(`/${lat}/${lng}/${zm}`)
+                onBoundsChanged(event.target.getBounds())
+            }
+        }
+    })
+
+    // GeoJSON Controller
+    useEffect(() => {
+        // If the layer exists, clear it to avoid multiple layers
+        if (layerRef.current && layerRef.current.clearLayers) {
+            layerRef.current.clearLayers()
+        }
+        // Update the reference layer
+        layerRef.current = L.geoJSON(geoJsonFromSegments(segments))
+        // Add it to the map
+        layerRef.current.addTo(map)
+        // Bind click listeners for each layer / feature
+        layerRef.current.eachLayer(layer => {
+            const isSelected = !!selectedSegmentId && (layer.feature.id === selectedSegmentId)
+            let color
+            if (isSelected) {
+                color = SELECTED_SEGMENT_COLOR
+            }
+            else if (layer.feature.properties.subsegments.length === 0) {
+                color = UNSELECTED_EMPTY_SEGMENT_COLOR
+            }
+            else {
+                color = UNSELECTED_SEGMENT_COLOR
+            }
+            layer.setStyle({
+                color,
+                weight: '4',
+                lineJoin: 'square'
+            })
+            if (isSelected) {
+                layer.arrowheads({ size: '8px', fill: true, frequency: 'endonly' })
+            }
+            layer.on('pm:edit',() => {
+                onSegmentEdited(layer.toGeoJSON())
+            })
+            layer.on('click', () => {
+                if (map.pm._globalRemovalMode) {
+                    onSegmentDeleted(layer.feature.id)
+                } else {
+                    onSegmentSelect(layer.feature.id)
+                }
+            })
+        })
+    })
+
+    return null
+}
+
+function configureGeoman(map) {
+    //map.setLang('de');
+    map.setGlobalOptions({
+        allowSelfIntersection: false,
+        removeLayerBelowMinVertexCount: false,
+        snapping: false
+    })
+    map.addControls({
+        position: 'topright',
+        drawMarker: false,
+        drawCircleMarker: false,
+        drawPolyline: true,
+        drawRectangle: false,
+        drawPolygon: false,
+        editMode: true,
+        dragMode: false,
+        cutPolygon: false,
+        drawCircle: false,
+    });
+}
+
+function PTMap({ segments, onBoundsChanged, onSegmentSelect, onSegmentCreated, onSegmentDeleted, onSegmentEdited, selectedSegmentId }) {
+    const { lat, lng, zm } = useParams();
+
+    return (
+        <>
+            <MapContainer
+                center={[lat, lng]}
+                zoom={zm}
+                style={{position: 'static'}}
+                scrollWheelZoom={true}
+                whenReady={(map) => {
+                    onBoundsChanged(map.target.getBounds())
+                    configureGeoman(map.target.pm)
+                    // Setup geoman handlers
+                    map.target.on('pm:create', async ({ layer }) => {
+                        await onSegmentCreated(layer.toGeoJSON())
+                        layer.remove() // Remove this, since once the server's response comes back it will be rendered over the top
+                    });
+                }}
+            >
+            <DownloadSegmentsButton
+                segments={segments}
+            />
+            <MapController
+                onBoundsChanged={onBoundsChanged}
+                segments={segments}
+                onSegmentSelect={onSegmentSelect}
+                onSegmentDeleted={onSegmentDeleted}
+                onSegmentEdited={onSegmentEdited}
+                selectedSegmentId={selectedSegmentId}
+            />
+            <TileLayer
+                attribution={attributtion}
+                url={tileServerURL}
+            />
+            </MapContainer>
+        </>
+    )
+}
+
+export default PTMap

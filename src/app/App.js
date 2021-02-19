@@ -21,11 +21,8 @@ function App () {
         <Route exact path='/'>
           <Redirect to={`/${DEFAULT_MAP_POSITION.lat}/${DEFAULT_MAP_POSITION.lng}/${DEFAULT_MAP_POSITION.zm}`} />
         </Route>
-
         <Route path='/verify-token' component={VerifyToken} />
-
         <Route path='/:lat/:lng/:zm' component={Recording}/>
-
       </Router>
 
     </div>
