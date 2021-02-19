@@ -5,7 +5,6 @@ import './App.css'
 
 import Recording from './recording/Recording'
 import MainMenu from './components/MainMenu'
-import Welcome from './components/Welcome'
 import VerifyToken from './components/VerifyToken'
 
 function App () {
@@ -14,7 +13,6 @@ function App () {
       <Router>
         <Route path='/' component={MainMenu}/>
 
-        <Route path='/welcome' component={Welcome}/>
         <Route path='/verify-token' component={VerifyToken} />
 
         <Route exact path='/'>

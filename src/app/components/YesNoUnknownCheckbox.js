@@ -48,7 +48,7 @@ function YesNoUnknownCheckbox ({checked, onChange}) {
 }
 
 YesNoUnknownCheckbox.propTypes = {
-  checked: PropTypes.bool.isRequired,
+  checked: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
 }
 
