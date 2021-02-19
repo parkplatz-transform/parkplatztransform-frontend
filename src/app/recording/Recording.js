@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Alert from '@material-ui/lab/Alert'
+import { Snackbar } from '@material-ui/core'
+
 import PTMap from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
-import { makeStyles } from '@material-ui/core/styles'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Alert from '@material-ui/lab/Alert'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
+import RightPanel from '../components/RightPanel'
+import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
-import SegmentForm from '../components/SegmentForm'
-import { Snackbar } from '@material-ui/core'
 import getString from '../../strings'
-import { createEmptySubsegment } from './Subsegments'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -19,18 +19,6 @@ const useStyles = makeStyles({
   bottomButton: {
     marginLeft: 5,
     marginRight: 5
-  },
-  header: {
-    margin: '20px auto',
-    textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 20
-  },
-  subheader: {
-    margin: '20px auto',
-    textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 16
   },
   container: {
     height: '100%',
@@ -92,7 +80,6 @@ function Recording () {
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
-      console.log('was requested before')
       return
     }
 
@@ -135,10 +122,7 @@ function Recording () {
   }
 
   async function onSegmentSelect (id) {
-    console.log('selected segment id', id)
-
     setSelectedSegmentId(id)
-
     const segment = segmentsById[id]
     if (segment && (!segment.properties || segment.properties.length === 0)) {
       setIsLoading(true)
@@ -176,41 +160,9 @@ function Recording () {
       newSegmentsById[segment.id] = segment
     }
 
-    console.log('from', newOrUpdatedSegments, 'to', newSegmentsById)
-
     setSegmentsById(newSegmentsById)
   }
 
-  /**
-   * returns a sanitized copy or null if has invalid configurations
-   */
-  function sanitizeSegment (segment) {
-    const copy = JSON.parse(JSON.stringify(segment))
-    const emptySubsegment = createEmptySubsegment()
-
-    for (const subsegment of copy.properties.subsegments) {
-      if (subsegment.parking_allowed === null) {
-        return null
-      }
-      if (subsegment.parking_allowed === true) {
-        subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
-        return subsegment
-      } else {
-        subsegment.car_count = emptySubsegment.car_count
-        subsegment.fee = emptySubsegment.fee
-        subsegment.street_location = emptySubsegment.street_location
-        subsegment.marked = emptySubsegment.marked
-        subsegment.alignment = emptySubsegment.alignment
-        subsegment.duration_constraint = emptySubsegment.duration_constraint
-        subsegment.user_restrictions = emptySubsegment.user_restrictions
-        subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
-        subsegment.time_constraint = emptySubsegment.time_constraint
-        subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
-        return subsegment
-      }
-    }
-    return copy
-  }
 
   async function onSegmentChanged (segment) {
     try {
@@ -247,51 +199,8 @@ function Recording () {
     }
   }
 
-  function renderMapView () {
-    return (
-      <div>
-        <PTMap
-          key='map'
-          selectedSegmentId={selectedSegmentId}
-          onSegmentSelect={onSegmentSelect}
-          onSegmentEdited={onSegmentEdited}
-          onSegmentCreated={onSegmentCreated}
-          onSegmentsDeleted={onSegmentsDeleted}
-          onBoundsChanged={onBoundsChange}
-          segments={Object.values(segmentsById)}
-        />
-      </div>
-    )
-  }
-
-  function onValidationFailed(message) {
-    setAlertDisplayed({severity: 'error', message})
-  }
-
-  function renderFormView () {
-    if (isLoading) {
-      return (
-        <div className={classes.loadingContainer}>
-          <CircularProgress/>
-        </div>
-      )
-    }
-    if (!selectedSegmentId) {
-      return (
-        <div>
-          <div className={classes.verticalSpace}/>
-          <div className={classes.header}>{getString('welcome_title')}</div>
-          <div className={classes.subheader}>{getString('welcome_subtitle')}</div>
-          <div className={classes.subheader}>{getString('welcome_subtitle_2')}</div>
-        </div>
-
-      )
-    }
-    return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged} onValidationFailed={onValidationFailed}/>
-  }
-
-  function renderSnackBar () {
-    return (
+  return (
+    <>
       <Snackbar
         open={!!alertDisplayed}
         autoHideDuration={3000}
@@ -300,21 +209,27 @@ function Recording () {
       >
         <Alert severity={alertDisplayed?.severity}>{alertDisplayed?.message}</Alert>
       </Snackbar>
-    )
-  }
-
-  return (
-    <>
-      {renderSnackBar()}
       <div className={classes.container}>
         <div className={classes.mapArea}>
-          {renderMapView()}
+          <PTMap
+            key='map'
+            selectedSegmentId={selectedSegmentId}
+            onSegmentSelect={onSegmentSelect}
+            onSegmentEdited={onSegmentEdited}
+            onSegmentCreated={onSegmentCreated}
+            onSegmentsDeleted={onSegmentsDeleted}
+            onBoundsChanged={onBoundsChange}
+            segments={Object.values(segmentsById)}
+          />
         </div>
-
         <div className={classes.formArea}>
-          {renderFormView()}
+          <RightPanel
+            isLoading={isLoading}
+            segment={segmentsById[selectedSegmentId]}
+            onSegmentChanged={onSegmentChanged}
+            setAlertDisplayed={setAlertDisplayed}
+          />
         </div>
-
       </div>
     </>
   )
