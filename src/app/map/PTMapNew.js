@@ -10,13 +10,9 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 const tileServerURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const attributtion = 'copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 
-const DEFAULT_MAP_POSITION = {
-  lat: 52.501389, // Center of Berlin
-  lng: 13.402500,
-  zm: 10
-}
 
-function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentEdited }) {
+// Headless controller component
+export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentEdited }) {
     const layerRef = useRef()
     const history = useHistory()
 
@@ -36,16 +32,12 @@ function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDe
     // GeoJSON Controller
     useEffect(() => {
         // If the layer exists, clear it to avoid multiple layers
-        //console.log(layerRef.current)
         if (layerRef.current && layerRef.current.clearLayers) {
-            //console.log('CLEARING LAYERS')
             layerRef.current.clearLayers()
-            //map.removeLayer(layerRef.current)
         }
         // Update the reference layer
         layerRef.current = L.geoJSON(geoJsonFromSegments(segments))
         // Add it to the map
-        //console.log('ADDING LAYERS TO MAP', geoJsonFromSegments(segments))
         layerRef.current.addTo(map)
         // Bind click listeners for each layer / feature
         layerRef.current.eachLayer(layer => {
@@ -87,7 +79,7 @@ function configureGeoman(map) {
 }
 
 function PTMap({ segments, onBoundsChanged, onSegmentSelect, onSegmentCreated, onSegmentDeleted, onSegmentEdited }) {
-    const { lat = DEFAULT_MAP_POSITION.lat, lng = DEFAULT_MAP_POSITION.lng, zm = DEFAULT_MAP_POSITION.zm } = useParams();
+    const { lat, lng, zm } = useParams();
 
     return (
         <>
@@ -101,7 +93,7 @@ function PTMap({ segments, onBoundsChanged, onSegmentSelect, onSegmentCreated, o
                 // Setup geoman handlers
                 map.target.on('pm:create', async ({ layer }) => {
                     await onSegmentCreated(layer.toGeoJSON())
-                    layer.remove() // Important to remove this, since once the server's response comes back it will be rendered over the top
+                    layer.remove() // Remove this, since once the server's response comes back it will be rendered over the top
                 });
             }}
         >
