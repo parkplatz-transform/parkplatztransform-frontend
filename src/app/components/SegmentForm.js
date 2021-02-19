@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
+  Checkbox,
   FormControl, FormControlLabel, FormGroup, FormLabel, Input, InputAdornment,
   List, ListItem, ListItemSecondaryAction, ListItemText,
   MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField
@@ -554,7 +555,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     <FormControlLabel
                       key={key}
                       control={
-                        <YesNoUnknownCheckbox
+                        <Checkbox
                           color={'primary'}
                           checked={reason === key}
                           onChange={updateSubsegment(getToggleNoParkingReasonFn(key))}
