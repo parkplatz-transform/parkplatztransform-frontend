@@ -156,7 +156,7 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
 }
 
 function configureGeoman(map) {
-    //map.setLang('de');
+    map.setLang('de');
     map.setGlobalOptions({
         allowSelfIntersection: false,
         removeLayerBelowMinVertexCount: false,
