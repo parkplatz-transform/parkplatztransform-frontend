@@ -18,6 +18,9 @@ function App () {
         <Route exact path='/'>
           <Recording />
         </Route>
+        <Route exact path='/:lat/:lng/:zm'>
+          <Recording />
+        </Route>
 
       </Router>
 

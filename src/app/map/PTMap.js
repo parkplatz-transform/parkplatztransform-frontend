@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FeatureGroup, Map, TileLayer } from 'react-leaflet'
 import L from 'leaflet'
 import { EditControl } from 'react-leaflet-draw'
+
 import { geoJsonFromSegments } from '../../helpers/geojson'
 import { persistMapPosition, loadMapPosition } from '../../helpers/position-persistence'
 
@@ -48,14 +49,14 @@ const useStyles = makeStyles({
 })
 
 export default function PTMap ({
-                                 segments,
-                                 onSegmentSelect,
-                                 selectedSegmentId,
-                                 onSegmentEdited,
-                                 onSegmentCreated,
-                                 onSegmentsDeleted,
-                                 onBoundsChanged
-                               }) {
+  segments,
+  onSegmentSelect,
+  selectedSegmentId,
+  onSegmentEdited,
+  onSegmentCreated,
+  onSegmentsDeleted,
+  onBoundsChanged
+ }) {
 
   const [showEditControl, setShowEditControl] = useState(position.zoom >= MIN_ZOOM_FOR_EDITING)
   const [deleteModeEnabled, setDeleteModeEnabled] = useState(false)
@@ -66,7 +67,7 @@ export default function PTMap ({
 
   useEffect(() => {
     setFeaturesFromSegments()
-  }, [segments])
+  }, [segments, setFeaturesFromSegments])
 
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 
