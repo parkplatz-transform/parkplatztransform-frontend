@@ -133,9 +133,9 @@ export function createEmptySubsegment (orderNumber) {
     car_count: null,
     quality: 1,
     fee: null,
-    street_location: STREET_LOCATION.UNKNOWN,
+    street_location: STREET_LOCATION.STREET,
     marked: null, //null,
-    alignment: ALIGNMENT.UNKNOWN,
+    alignment: ALIGNMENT.PARALLEL,
     duration_constraint: null,
     // TODO: should be singular?
     usage_restrictions: USER_RESTRICTIONS.NO_RESTRICTION,

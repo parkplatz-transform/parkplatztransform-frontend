@@ -469,7 +469,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   Parkposition:
                   <Select
                     id="select_parking_position"
-                    value={selectedSubsegment().street_location}
+                    value={selectedSubsegment().street_location || STREET_LOCATION.STREET}
                     onChange={updateSubsegment(setStreetLocation)}
                     variant={'outlined'}
                   >
