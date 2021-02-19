@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import './App.css'
@@ -8,24 +8,7 @@ import MainMenu from './components/MainMenu'
 import Welcome from './components/Welcome'
 import VerifyToken from './components/VerifyToken'
 
-const APP_STATE = Object.freeze({
-  RECORDING: Symbol('RECORDING')
-})
-
 function App () {
-
-  const [appState, setAppState] = useState(APP_STATE.RECORDING)
-
-  function renderAppState () {
-    switch (appState) {
-      case APP_STATE.RECORDING:
-        return <Recording/>
-
-      default:
-        return 'Not yet implemented'
-    }
-  }
-
   return (
     <div>
       <Router>
@@ -35,7 +18,7 @@ function App () {
         <Route path='/verify-token' component={VerifyToken} />
 
         <Route exact path='/'>
-          {renderAppState()}
+          <Recording />
         </Route>
 
       </Router>

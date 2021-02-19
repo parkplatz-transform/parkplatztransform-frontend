@@ -34,7 +34,7 @@ export function setAuthCookie(token) {
 
 export function removeAuthCookie() {
   let cookieValue = document.cookie.replace(
-    /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+    /(?:(?:^|.*;\s*)access_token\s*=\s*([^;]*).*$)|^.*$/,
     '$1'
   )
   document.cookie = `access_token=${cookieValue};expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`

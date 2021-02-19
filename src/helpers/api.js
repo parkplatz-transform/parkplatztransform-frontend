@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
 import { getUserDataFromCookie } from './auth'
 
-const baseURL = 'https://api.xtransform.org'
-//const baseURL = 'http://localhost:8023'
+//const baseURL = 'https://api.xtransform.org'
+const baseURL = 'http://localhost:8023'
 
 export const routes = {
   users: `${baseURL}/users/`,
@@ -10,7 +10,7 @@ export const routes = {
   segments: `${baseURL}/segments/`
 }
 
-export const headers = () => new Headers({ 
+export const headers = () => new Headers({
   'Content-Type': 'application/json',
   'Authorization': `bearer ${getUserDataFromCookie()?.token}`
 })
@@ -28,7 +28,7 @@ async function withErrorHandling(response) {
 }
 
 export async function postSegment(segment) {
-  const response = await fetch(routes.segments, { 
+  const response = await fetch(routes.segments, {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify(segment)
