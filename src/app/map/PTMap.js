@@ -158,7 +158,7 @@ function configureGeoman(map) {
     map.setGlobalOptions({
         allowSelfIntersection: false,
         removeLayerBelowMinVertexCount: false,
-        snapping: false
+        snappable: false
     })
     map.addControls({
         position: 'topright',
