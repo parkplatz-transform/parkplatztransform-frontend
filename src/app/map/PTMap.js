@@ -1,8 +1,8 @@
 import React from 'react'
 import  L from 'leaflet'
-import { MapContainer, TileLayer, useMap, useMapEvents, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, useMapEvents, Polyline, Tooltip } from 'react-leaflet'
 import { useParams, useHistory } from 'react-router-dom'
-
+import * as turf from '@turf/turf';
 import 'leaflet-arrowheads'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -15,7 +15,7 @@ const attributtion = 'copy; <a href="http://osm.org/copyright">OpenStreetMap</a>
 
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
-const SELECTED_SEGMENT_COLOR = 'red'
+const SELECTED_SEGMENT_COLOR = '#f00' // https://github.com/geoman-io/leaflet-geoman/issues/751
 const UNSELECTED_EMPTY_SEGMENT_COLOR = 'purple'
 const UNSELECTED_SEGMENT_COLOR = '#3388ff'
 
@@ -89,7 +89,6 @@ export function DownloadSegmentsButton({ segments }) {
     )
 }
 
-// Headless controller component
 export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentCreated, onSegmentEdited, selectedSegmentId }) {
     const history = useHistory()
 
@@ -124,33 +123,38 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
         return styles
     }
 
-    return segments.map(segment => <Polyline
-        pathOptions={setSegmentStyle(segment)}
-        key={segment.id}
-        eventHandlers={{
-            'pm:edit': (event) => {
-                // Need to merge the old segment with new geometry
-                onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
-            },
-            'pm:remove': (event) => {
-                const confirmDelete = window.confirm(getString('segment_delete_confirm'))
-                if (confirmDelete) {
-                    onSegmentDeleted(segment.id)
-                } else {
-                    // Add the layer back
-                    map.addLayer(event.layer)
+    return segments.map(segment => {
+        var line = turf.lineString(segment.geometry.coordinates);
+        var length = turf.length(line, {units: 'meters'});
+        return <Polyline
+            pathOptions={setSegmentStyle(segment)}
+            key={segment.id}
+            eventHandlers={{
+                'pm:edit': (event) => {
+                    // Need to merge the old segment with new geometry
+                    onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+                },
+                'pm:remove': async (event) => {
+                    const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+                    if (confirmDelete) {
+                        await onSegmentDeleted(segment.id)
+                    } else {
+                        // Add the layer back
+                        map.addLayer(event.layer)
+                    }
+                },
+                click: (event) => {
+                    if (!map.pm._globalRemovalMode) {
+                        onSegmentSelect(segment.id)
+                    }
                 }
-            },
-            click: (event) => {
-                if (!map.pm._globalRemovalMode) {
-                    onSegmentSelect(segment.id)
-                }
-            }
-        }}
-        positions={segment.geometry.coordinates.map(([lat, lng]) => {
-            return [lng, lat] // Flip the coords
-        })}
-    />)
+            }}
+            positions={segment.geometry.coordinates.map(([lat, lng]) => [lng, lat])}>
+            <Tooltip>
+                Length: {Math.round((length + Number.EPSILON) * 100) / 100} m
+            </Tooltip>
+        </Polyline>
+    })
 }
 
 function configureGeoman(map) {
