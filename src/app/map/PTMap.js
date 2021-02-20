@@ -132,11 +132,17 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
                 // Need to merge the old segment with new geometry
                 onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
             },
-            click: (event) => {
-                if (map.pm._globalRemovalMode) {
+            'pm:remove': (event) => {
+                const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+                if (confirmDelete) {
                     onSegmentDeleted(segment.id)
                 } else {
-                    console.log(event)
+                    // Add the layer back
+                    map.addLayer(event.layer)
+                }
+            },
+            click: (event) => {
+                if (!map.pm._globalRemovalMode) {
                     onSegmentSelect(segment.id)
                 }
             }
@@ -168,7 +174,7 @@ function configureGeoman(map) {
     });
 }
 
-function PTMap({  onBoundsChanged, onSegmentCreated, children }) {
+function PTMap({  onBoundsChanged, children }) {
     const { lat, lng, zm } = useParams();
 
     return (
