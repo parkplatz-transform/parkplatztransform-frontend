@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import  L from 'leaflet'
-import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, useMapEvents, Polyline } from 'react-leaflet'
 import { useParams, useHistory } from 'react-router-dom'
-import { geoJsonFromSegments } from '../../helpers/geojson'
 
 import 'leaflet-arrowheads'
 import '@geoman-io/leaflet-geoman-free'
@@ -29,7 +28,7 @@ const useStyles = makeStyles({
   }
 })
 
-function DownloadSegmentsButton({ segments }) {
+export function DownloadSegmentsButton({ segments }) {
     const classes = useStyles()
     const map = useMap()
 
@@ -92,7 +91,6 @@ function DownloadSegmentsButton({ segments }) {
 
 // Headless controller component
 export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentEdited, selectedSegmentId }) {
-    const layerRef = useRef()
     const history = useHistory()
 
     // Position Controller
@@ -108,51 +106,41 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
         }
     })
 
-    // GeoJSON Controller
-    useEffect(() => {
-        // If the layer exists, clear it to avoid multiple layers
-        if (layerRef.current && layerRef.current.clearLayers) {
-            layerRef.current.clearLayers()
+    function setSegmentStyle(segment) {
+        const styles = {
+            color: UNSELECTED_SEGMENT_COLOR,
+            weight: '4',
+            lineJoin: 'square'
         }
-        // Update the reference layer
-        layerRef.current = L.geoJSON(geoJsonFromSegments(segments))
-        // Add it to the map
-        layerRef.current.addTo(map)
-        // Bind click listeners for each layer / feature
-        layerRef.current.eachLayer(layer => {
-            const isSelected = !!selectedSegmentId && (layer.feature.id === selectedSegmentId)
-            let color
-            if (isSelected) {
-                color = SELECTED_SEGMENT_COLOR
-            }
-            else if (layer.feature.properties.subsegments.length === 0) {
-                color = UNSELECTED_EMPTY_SEGMENT_COLOR
-            }
-            else {
-                color = UNSELECTED_SEGMENT_COLOR
-            }
-            layer.setStyle({
-                color,
-                weight: '4',
-                lineJoin: 'square'
-            })
-            if (isSelected) {
-                layer.arrowheads({ size: '8px', fill: true, frequency: 'endonly' })
-            }
-            layer.on('pm:edit',() => {
-                onSegmentEdited(layer.toGeoJSON())
-            })
-            layer.on('click', () => {
-                if (map.pm._globalRemovalMode) {
-                    onSegmentDeleted(layer.feature.id)
-                } else {
-                    onSegmentSelect(layer.feature.id)
-                }
-            })
-        })
-    })
+        if (segment.id === selectedSegmentId) {
+            styles.color = SELECTED_SEGMENT_COLOR
+        } else if (segment.properties?.subsegments?.length === 0) {
+            styles.color = UNSELECTED_EMPTY_SEGMENT_COLOR
+        }
+        return styles
+    }
 
-    return null
+    return segments.map(segment => <Polyline
+        pathOptions={setSegmentStyle(segment)}
+        key={segment.id}
+        eventHandlers={{
+            'pm:edit': (event) => {
+                // Need to merge the old segment with new geometry
+                onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            },
+            click: (event) => {
+                if (map.pm._globalRemovalMode) {
+                    onSegmentDeleted(segment.id)
+                } else {
+                    console.log(event)
+                    onSegmentSelect(segment.id)
+                }
+            }
+        }}
+        positions={segment.geometry.coordinates.map(([lat, lng]) => {
+            return [lng, lat] // Flip the coords
+        })}
+    />)
 }
 
 function configureGeoman(map) {
@@ -176,7 +164,7 @@ function configureGeoman(map) {
     });
 }
 
-function PTMap({ segments, onBoundsChanged, onSegmentSelect, onSegmentCreated, onSegmentDeleted, onSegmentEdited, selectedSegmentId }) {
+function PTMap({  onBoundsChanged, onSegmentCreated, children }) {
     const { lat, lng, zm } = useParams();
 
     return (
@@ -196,21 +184,11 @@ function PTMap({ segments, onBoundsChanged, onSegmentSelect, onSegmentCreated, o
                     });
                 }}
             >
-            <DownloadSegmentsButton
-                segments={segments}
-            />
-            <MapController
-                onBoundsChanged={onBoundsChanged}
-                segments={segments}
-                onSegmentSelect={onSegmentSelect}
-                onSegmentDeleted={onSegmentDeleted}
-                onSegmentEdited={onSegmentEdited}
-                selectedSegmentId={selectedSegmentId}
-            />
             <TileLayer
                 attribution={attributtion}
                 url={tileServerURL}
             />
+            {children}
             </MapContainer>
         </>
     )

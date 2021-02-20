@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
 
-import PTMap from '../map/PTMap'
+import PTMap, { MapController, DownloadSegmentsButton } from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import RightPanel from '../components/RightPanel'
@@ -197,14 +197,21 @@ function Recording () {
         <div className={classes.mapArea}>
           <PTMap
             key='map'
-            selectedSegmentId={selectedSegmentId}
-            onSegmentSelect={onSegmentSelect}
-            onSegmentEdited={onSegmentEdited}
             onSegmentCreated={onSegmentCreated}
-            onSegmentDeleted={onSegmentDeleted}
             onBoundsChanged={onBoundsChange}
-            segments={Object.values(segmentsById)}
-          />
+          >
+            <MapController
+                onBoundsChanged={onBoundsChange}
+                segments={Object.values(segmentsById)}
+                onSegmentSelect={onSegmentSelect}
+                onSegmentDeleted={onSegmentDeleted}
+                onSegmentEdited={onSegmentEdited}
+                selectedSegmentId={selectedSegmentId}
+            />
+            <DownloadSegmentsButton
+              segments={Object.values(segmentsById)}
+            />
+          </PTMap>
         </div>
         <div className={classes.formArea}>
           <RightPanel
