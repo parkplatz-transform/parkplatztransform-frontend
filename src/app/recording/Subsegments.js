@@ -37,7 +37,6 @@ export const ALTERNATIVE_USAGE_REASON = {
 }
 
 export const NO_PARKING_REASONS_AND_LABEL = {
-  'unknown': 'Unbekannt',
   'private_parking': 'Privatparkplatz',
   'bus_stop': 'Haltestelle',
   'bus_lane': 'Busspur',
@@ -133,9 +132,9 @@ export function createEmptySubsegment (orderNumber) {
     car_count: null,
     quality: 1,
     fee: null,
-    street_location: STREET_LOCATION.UNKNOWN,
+    street_location: STREET_LOCATION.STREET,
     marked: null, //null,
-    alignment: ALIGNMENT.UNKNOWN,
+    alignment: ALIGNMENT.PARALLEL,
     duration_constraint: null,
     // TODO: should be singular?
     usage_restrictions: USER_RESTRICTIONS.NO_RESTRICTION,

@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
 
-import PTMap from '../map/PTMap'
+import PTMap, { MapController, DownloadSegmentsButton } from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
 import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
 import RightPanel from '../components/RightPanel'
@@ -45,15 +45,8 @@ const useStyles = makeStyles({
 function Recording () {
   const classes = useStyles()
 
-  /*
-   * As far as I can tell the react-leaflet-draw event listeners only get bound on initial mounting of the components,
-   * so they're all set to the initial segment state of `{}` leading to all kinds of weird bugs.
-   * I've used a Ref bellow to keep track of up to date segment values, when reading from segmentsById use segmentsByIdRef instead.
-   * */
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
-  const segmentsByIdRef = useRef({})
-  segmentsByIdRef.current = segmentsById
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -104,18 +97,12 @@ function Recording () {
     }
   }
 
-  async function onSegmentEdited (changedGeojson) {
+  async function onSegmentEdited (updatedSegment) {
     setSelectedSegmentId(null)
-    addSegments(changedGeojson?.features)
-
-    const promises = changedGeojson?.features.map(async segment => {
-      return await updateSegment(segment)
-    })
-
+    addSegments([updatedSegment])
     try {
-      const updatedSegments = await Promise.all(promises)
-      addSegments(updatedSegments)
       setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
+      await updateSegment(updatedSegment)
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
     }
@@ -155,7 +142,7 @@ function Recording () {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
+    const newSegmentsById = Object.assign({}, segmentsById)
     for (const segment of newOrUpdatedSegments) {
       newSegmentsById[segment.id] = segment
     }
@@ -182,19 +169,16 @@ function Recording () {
     }
   }
 
-  function onSegmentsDeleted (ids) {
-    const newSegmentsById = Object.assign({}, segmentsByIdRef.current)
-    const deletes = ids.map(async id => {
-      delete newSegmentsById[id]
-      await deleteSegment(id)
-    })
-    setSegmentsById(newSegmentsById)
+  async function onSegmentDeleted (id) {
+    const newSegmentsById = Object.assign({}, segmentsById)
 
     try {
-      setAlertDisplayed({severity: 'success', message: getString('segment_delete_success', deletes.length)})
-      return Promise.all(deletes)
+      setAlertDisplayed({severity: 'success', message: getString('segment_delete_success', 1)})
+      await deleteSegment(id)
+      delete newSegmentsById[id]
+      await setSegmentsById(newSegmentsById)
     } catch (e) {
-      setAlertDisplayed({severity: 'error', message: getString('segment_delete_failure', deletes.length)})
+      setAlertDisplayed({severity: 'error', message: getString('segment_delete_failure', 1)})
       return Promise.reject(e)
     }
   }
@@ -213,14 +197,21 @@ function Recording () {
         <div className={classes.mapArea}>
           <PTMap
             key='map'
-            selectedSegmentId={selectedSegmentId}
-            onSegmentSelect={onSegmentSelect}
-            onSegmentEdited={onSegmentEdited}
-            onSegmentCreated={onSegmentCreated}
-            onSegmentsDeleted={onSegmentsDeleted}
             onBoundsChanged={onBoundsChange}
-            segments={Object.values(segmentsById)}
-          />
+          >
+            <MapController
+                onBoundsChanged={onBoundsChange}
+                segments={Object.values(segmentsById)}
+                onSegmentSelect={onSegmentSelect}
+                onSegmentDeleted={onSegmentDeleted}
+                onSegmentEdited={onSegmentEdited}
+                onSegmentCreated={onSegmentCreated}
+                selectedSegmentId={selectedSegmentId}
+            />
+            <DownloadSegmentsButton
+              segments={Object.values(segmentsById)}
+            />
+          </PTMap>
         </div>
         <div className={classes.formArea}>
           <RightPanel

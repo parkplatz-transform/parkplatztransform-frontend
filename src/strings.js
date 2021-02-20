@@ -4,7 +4,7 @@ const strings = {
     welcome_title: () => 'Willkommen bei ParkplatzTransform',
     welcome_subtitle: () => 'Wähle einen vorhandenen Abschnitt oder erstelle einen Neuen',
     welcome_subtitle_2: () => 'Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen',
-    
+
     // Alert success messages
     segment_create_success: () => 'Abschnitt erfolgreich erstellt.',
     segment_update_success: () => `Abschnitt erfolgreich gespeichert.`,
@@ -15,7 +15,9 @@ const strings = {
         return `${num} Abschnitte gelöscht.`
     },
     segment_loaded_success: () => 'Abschnitte erfolgreich geladen.',
-   
+
+    segment_delete_confirm: () => 'Segment löschen?',
+
     // Alert failure messages
     segment_create_failure: () => 'Abschnitt konnte nicht erstellt werden.',
     segment_update_failure: () => 'Abschnitt konnte nicht gespeichert werden.',
