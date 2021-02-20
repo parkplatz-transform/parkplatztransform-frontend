@@ -37,7 +37,6 @@ export const ALTERNATIVE_USAGE_REASON = {
 }
 
 export const NO_PARKING_REASONS_AND_LABEL = {
-  'unknown': 'Unbekannt',
   'private_parking': 'Privatparkplatz',
   'bus_stop': 'Haltestelle',
   'bus_lane': 'Busspur',
