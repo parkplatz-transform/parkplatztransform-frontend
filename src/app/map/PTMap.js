@@ -90,11 +90,15 @@ export function DownloadSegmentsButton({ segments }) {
 }
 
 // Headless controller component
-export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentEdited, selectedSegmentId }) {
+export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentCreated, onSegmentEdited, selectedSegmentId }) {
     const history = useHistory()
 
     // Position Controller
     const map = useMapEvents({
+        'pm:create': async ({ layer }) => {
+            await onSegmentCreated(layer.toGeoJSON())
+            layer.remove() // Remove this, since once the server's response comes back it will be rendered over the top
+        },
         moveend: (event) => {
             const {lat, lng} = event.target.getCenter()
             const zm = event.target.getZoom()
@@ -177,11 +181,6 @@ function PTMap({  onBoundsChanged, onSegmentCreated, children }) {
                 whenReady={(map) => {
                     onBoundsChanged(map.target.getBounds())
                     configureGeoman(map.target.pm)
-                    // Setup geoman handlers
-                    map.target.on('pm:create', async ({ layer }) => {
-                        await onSegmentCreated(layer.toGeoJSON())
-                        layer.remove() // Remove this, since once the server's response comes back it will be rendered over the top
-                    });
                 }}
             >
             <TileLayer

@@ -197,7 +197,6 @@ function Recording () {
         <div className={classes.mapArea}>
           <PTMap
             key='map'
-            onSegmentCreated={onSegmentCreated}
             onBoundsChanged={onBoundsChange}
           >
             <MapController
@@ -206,6 +205,7 @@ function Recording () {
                 onSegmentSelect={onSegmentSelect}
                 onSegmentDeleted={onSegmentDeleted}
                 onSegmentEdited={onSegmentEdited}
+                onSegmentCreated={onSegmentCreated}
                 selectedSegmentId={selectedSegmentId}
             />
             <DownloadSegmentsButton
