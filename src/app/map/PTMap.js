@@ -96,7 +96,7 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
     const map = useMapEvents({
         'pm:create': async ({ layer }) => {
             await onSegmentCreated(layer.toGeoJSON())
-            layer.remove() // Remove this, since once the server's response comes back it will be rendered over the top
+            layer.remove() // since once the server's response comes back it will be rendered over the top
         },
         moveend: (event) => {
             const {lat, lng} = event.target.getCenter()
@@ -113,7 +113,7 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
         const styles = {
             color: UNSELECTED_SEGMENT_COLOR,
             weight: '4',
-            lineJoin: 'square'
+            lineJoin: 'square',
         }
         if (segment.id === selectedSegmentId) {
             styles.color = SELECTED_SEGMENT_COLOR
@@ -124,11 +124,23 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
     }
 
     return segments.map(segment => {
-        var line = turf.lineString(segment.geometry.coordinates);
-        var length = turf.length(line, {units: 'meters'});
+        const line = turf.lineString(segment.geometry.coordinates);
+        const length = turf.length(line, { units: 'meters' });
         return <Polyline
             pathOptions={setSegmentStyle(segment)}
             key={segment.id}
+            ref={(el) => {
+                if (el && selectedSegmentId && (segment.id === selectedSegmentId)) {
+                    el.arrowheads({
+                        color: SELECTED_SEGMENT_COLOR,
+                        frequency: 'endonly',
+                        size: '5%',
+                        yawn: 80,
+                    })
+                } else if (el) {
+                    el.deleteArrowheads()
+                }
+            }}
             eventHandlers={{
                 'pm:edit': (event) => {
                     // Need to merge the old segment with new geometry
