@@ -16,7 +16,8 @@ export const ALIGNMENT = {
 }
 
 export const USER_RESTRICTIONS = {
-  UNKNOWN: 'unknown',
+  UNKNOWN: null,
+  RESTRICTED_FOR_UNKNOWN_USERS: 'unknown',
   HANDICAP: 'handicap',
   RESIDENTS: 'residents',
   CAR_SHARING: 'car_sharing',
@@ -98,9 +99,17 @@ export function setStreetLocation (subsegment, street_location) {
 }
 
 export function setUserRestriction (subsegment, userRestriction) {
-  subsegment.user_restrictions = userRestriction === USER_RESTRICTIONS.NO_RESTRICTION
-    ? null
-    : userRestriction
+  let valueToSet
+  if (userRestriction === true) {
+    valueToSet = USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS
+  }
+  else if (userRestriction === false) {
+    valueToSet = USER_RESTRICTIONS.NO_RESTRICTION
+  }
+  else {
+    valueToSet = userRestriction
+  }
+  subsegment.user_restrictions = valueToSet
 }
 
 export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {

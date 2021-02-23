@@ -250,6 +250,18 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     return selectedSubsegment().order_number || 'new_subsegment'
   }
 
+  function getCheckboxValueForUserRestrictions() {
+    const subsegment = selectedSubsegment()
+    if (subsegment.user_restrictions === USER_RESTRICTIONS.UNKNOWN) {
+      return null
+    }
+    if (subsegment.user_restrictions === USER_RESTRICTIONS.NO_RESTRICTION) {
+      return false
+    }
+    return true
+
+  }
+
   function renderList () {
     if (segment.properties && segment.properties.subsegments) {
       const listItems = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number).map((subsegment) => {
@@ -486,7 +498,16 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
               {/* usage restriction */}
               <div>
-                <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
+                <FormControlLabel
+                  control={
+                    <YesNoUnknownCheckbox
+                      checked={getCheckboxValueForUserRestrictions()}
+                      color={'primary'}
+                      onChange={updateSubsegment(setUserRestriction)}
+                    />
+                  }
+                  label="Eingeschränkte Nutzergruppe"/>
+                <FormControl className={clsx(classes.formControl, classes.fullWidth)} disabled={!getCheckboxValueForUserRestrictions()}>
                   Nutzergruppe:
                   <Select
                     labelId="demo-simple-select-label"
@@ -495,8 +516,8 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >
-                    <MenuItem value={USER_RESTRICTIONS.UNKNOWN}>Unbekannt</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
+                    <MenuItem value={USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS}>Unbekannte Nutzergruppe</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>
