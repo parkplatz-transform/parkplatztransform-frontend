@@ -80,6 +80,10 @@ export function setDurationConstraint (subsegment, hasDurationConstraint) {
   subsegment.duration_constraint = hasDurationConstraint
 }
 
+export function setDurationConstraintDetails (subsegment, details) {
+  subsegment.duration_constraint_details = details && details.trim().length > 0 ? details.trim() : null
+}
+
 export function setLengthInMeters (subsegment, length) {
   // due to too much generification we get a `false` here if the string is empty...
   subsegment.length_in_meters = length === false ? null : Number(length)
@@ -150,6 +154,7 @@ export function createEmptySubsegment (orderNumber) {
     marked: null, //null,
     alignment: ALIGNMENT.UNKNOWN,
     duration_constraint: null,
+    duration_constraint_details: null,
     // TODO: should be singular?
     user_restrictions: USER_RESTRICTIONS.UNKNOWN,
     time_constraint: null,

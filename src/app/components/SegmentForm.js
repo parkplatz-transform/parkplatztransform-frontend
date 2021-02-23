@@ -33,7 +33,7 @@ import {
   setAlternativeUsageReason,
   STREET_LOCATION,
   USER_RESTRICTIONS,
-  ALTERNATIVE_USAGE_REASON, setAlignment,
+  ALTERNATIVE_USAGE_REASON, setAlignment, setDurationConstraintDetails,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
 import getString from '../../strings'
@@ -476,6 +476,21 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   />
                 }
                 label="Zeitlich beschränkte Parkdauer"/>
+
+              {selectedSubsegment().duration_constraint
+                ? <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.wideTextField)}>
+                  <FormLabel component="legend">Details zur zeitlichen Beschränkung</FormLabel>
+                  <TextField id={`${getKey()}_time_constraint_reason`}
+                             multiline variant={'outlined'} style={{width: '100%'}}
+                             InputLabelProps={{shrink: true}}
+                             rows={3}
+                             rowsMax={5}
+                             value={selectedSubsegment().duration_constraint_details}
+                             onChange={updateSubsegment(setDurationConstraintDetails)}
+                  />
+                </FormControl>
+                : null
+              }
 
               {/* Street location */}
               <div>
