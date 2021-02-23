@@ -9,11 +9,10 @@ export function sanitizeSegment (segment) {
 
     for (const subsegment of copy.properties.subsegments) {
         if (subsegment.parking_allowed === null) {
-            return null
+            continue
         }
         if (subsegment.parking_allowed === true) {
             subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
-            return subsegment
         } else {
             subsegment.car_count = emptySubsegment.car_count
             subsegment.fee = emptySubsegment.fee
@@ -25,7 +24,6 @@ export function sanitizeSegment (segment) {
             subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
             subsegment.time_constraint = emptySubsegment.time_constraint
             subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
-            return subsegment
         }
     }
     return copy

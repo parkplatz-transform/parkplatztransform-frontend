@@ -159,7 +159,7 @@ function Recording () {
         setAlertDisplayed({severity: 'error', message: getString('subsegment_invalid')})
       }
 
-      const updatedSegment = await updateSegment(segment)
+      const updatedSegment = await updateSegment(sanitizedSegment)
       addSegment(updatedSegment)
       setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
       return true
