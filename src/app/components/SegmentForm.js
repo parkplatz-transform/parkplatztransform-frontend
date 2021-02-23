@@ -43,12 +43,12 @@ import YesNoUnknownCheckbox from './YesNoUnknownCheckbox'
 const useStyles = makeStyles((theme) => ({
   formView: {
     maxHeight: 'calc(100vh - 64px)',
-    overflowY: 'scroll'
+    overflowY: 'auto'
   },
   list: {
     height: '25vh',
     maxHeight: 'calc(100% - 400px)',
-    overflowY: 'scroll'
+    overflowY: 'auto'
   },
 
   marginTop: {
