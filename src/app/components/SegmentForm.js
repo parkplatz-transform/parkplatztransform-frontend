@@ -423,7 +423,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                 {/*Parkposition:*/}
                 <Select
                   id="select_parking_position"
-                  value={selectedSubsegment().alignment}
+                  value={selectedSubsegment().alignment || ALIGNMENT.UNKNOWN}
                   onChange={updateSubsegment(setAlignment)}
                   variant={'outlined'}
                 >
