@@ -163,7 +163,7 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
             }}
             positions={segment.geometry.coordinates.map(([lat, lng]) => [lng, lat])}>
             <Tooltip>
-                Length: {Math.round((length + Number.EPSILON) * 100) / 100} m
+                Länge: {Math.round(length + Number.EPSILON)} m
             </Tooltip>
         </Polyline>
     })
