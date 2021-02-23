@@ -396,15 +396,17 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   <Select
                     labelId="select_alternative_usage_reason"
                     id="select_alternative_usage_reason"
-                    value={selectedSubsegment().alternative_usage_reason}
+                    value={selectedSubsegment().alternative_usage_reason || ALTERNATIVE_USAGE_REASON.UNKNOWN}
                     onChange={updateSubsegment(setAlternativeUsageReason)}
                     // variant={'outlined'}
                   >
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.UNKNOWN}>Unbekannt</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_STOP}>Haltestelle</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_LANE}>Busspur</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.MARKET}>Markt</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.LANE}>Fahrspur</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.TAXI}>Taxi</MenuItem>
+                    <MenuItem value={ALTERNATIVE_USAGE_REASON.LOADING_ZONE}>Ladezone i.S.v. Lieferzone</MenuItem>
                     <MenuItem value={ALTERNATIVE_USAGE_REASON.OTHER}>Sonstiges</MenuItem>
                   </Select>
                 </FormControl>
