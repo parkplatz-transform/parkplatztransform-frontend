@@ -84,7 +84,7 @@ export function setLengthInMeters (subsegment, length) {
 
 export function setCarCount (subsegment, car_count) {
   // due to too much generification we get a `false` here if the string is empty...
-  subsegment.car_count = car_count === false  ? null : Number(car_count)
+  subsegment.car_count = car_count === false ? null : Number(car_count)
 }
 
 /**
@@ -102,11 +102,9 @@ export function setUserRestriction (subsegment, userRestriction) {
   let valueToSet
   if (userRestriction === true) {
     valueToSet = USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS
-  }
-  else if (userRestriction === false) {
+  } else if (userRestriction === false) {
     valueToSet = USER_RESTRICTIONS.NO_RESTRICTION
-  }
-  else {
+  } else {
     valueToSet = userRestriction
   }
   subsegment.user_restrictions = valueToSet
@@ -117,7 +115,9 @@ export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
 }
 
 export function setAlignment (subsegment, alignment) {
-  subsegment.alignment = alignment
+  subsegment.alignment = alignment === ALIGNMENT.UNKNOWN
+    ? null
+    : alignment
 }
 
 export function getToggleNoParkingReasonFn (reason) {
@@ -143,7 +143,7 @@ export function createEmptySubsegment (orderNumber) {
     fee: null,
     street_location: STREET_LOCATION.STREET,
     marked: null, //null,
-    alignment: ALIGNMENT.PARALLEL,
+    alignment: ALIGNMENT.UNKNOWN,
     duration_constraint: null,
     // TODO: should be singular?
     user_restrictions: USER_RESTRICTIONS.UNKNOWN,
