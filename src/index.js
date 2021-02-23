@@ -19,7 +19,6 @@ Sentry.init({
 ReactDOM.render(
   <React.StrictMode>
     <App />
-    {/*<PTMapTest />*/}
   </React.StrictMode>,
   document.getElementById('root')
 );
