@@ -51,7 +51,9 @@ export const NO_PARKING_REASONS_AND_LABEL = {
   'standing_zone': '"Standing Zone"',
   'emergency_exit': 'Notausgang',
   'lowered_curb_side': 'Abgesenkter Bordstein',
-  'lane': 'Fahrspur'
+  'lane': 'Fahrspur',
+  'no_stopping': 'Halteverbot',
+  'pedestrian_zone': 'Fußgängerzone'
 }
 
 export function setParkingIsAllowed (subsegment) {
