@@ -13,6 +13,12 @@ export function sanitizeSegment (segment) {
         }
         if (subsegment.parking_allowed === true) {
             subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
+            if (subsegment.duration_constraint !== true) {
+                subsegment.duration_constraint_details = emptySubsegment.duration_constraint_details
+            }
+            if (subsegment.time_constraint !== true) {
+                subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
+            }
         } else {
             subsegment.car_count = emptySubsegment.car_count
             subsegment.fee = emptySubsegment.fee
@@ -20,6 +26,7 @@ export function sanitizeSegment (segment) {
             subsegment.marked = emptySubsegment.marked
             subsegment.alignment = emptySubsegment.alignment
             subsegment.duration_constraint = emptySubsegment.duration_constraint
+            subsegment.duration_constraint_details = emptySubsegment.duration_constraint_details
             subsegment.user_restrictions = emptySubsegment.user_restrictions
             subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
             subsegment.time_constraint = emptySubsegment.time_constraint
