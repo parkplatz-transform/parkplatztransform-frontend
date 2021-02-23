@@ -488,7 +488,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     variant={'outlined'}
                   >
                     <MenuItem value={STREET_LOCATION.UNKNOWN}>unbekannt</MenuItem>
-                    <MenuItem value={STREET_LOCATION.STREET}>auf der Straße</MenuItem>
+                    <MenuItem value={STREET_LOCATION.STREET}>auf der Fahrbahn</MenuItem>
                     <MenuItem value={STREET_LOCATION.CURB}>auf dem Bordstein (halb auf Straße)</MenuItem>
                     <MenuItem value={STREET_LOCATION.SIDEWALK}>auf dem Gehweg</MenuItem>
                     <MenuItem value={STREET_LOCATION.PARKING_BAY}>in einer Parkbucht</MenuItem>
