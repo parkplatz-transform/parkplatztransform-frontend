@@ -29,6 +29,6 @@ export default object().shape({
     marked: boolean().nullable(),
     alignment: string().nullable(),
     duration_constraint: boolean().nullable(),
-    usage_restrictions: array().of(string()).nullable(),
+    user_restrictions: array().of(string()).nullable(),
     time_constraint: boolean().nullable(),
 }).required();

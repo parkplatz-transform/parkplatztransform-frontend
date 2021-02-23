@@ -512,7 +512,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.NO_RESTRICTION}
+                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS}
                     onChange={updateSubsegment(setUserRestriction)}
                     variant={'outlined'}
                   >

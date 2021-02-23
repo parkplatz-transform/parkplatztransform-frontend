@@ -146,7 +146,7 @@ export function createEmptySubsegment (orderNumber) {
     alignment: ALIGNMENT.PARALLEL,
     duration_constraint: null,
     // TODO: should be singular?
-    usage_restrictions: USER_RESTRICTIONS.NO_RESTRICTION,
+    user_restrictions: USER_RESTRICTIONS.UNKNOWN,
     time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
     usage_when_no_parking: null,
