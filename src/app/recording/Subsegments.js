@@ -34,6 +34,7 @@ export const ALTERNATIVE_USAGE_REASON = {
   MARKET: 'market',
   LANE: 'lane',
   TAXI: 'taxi',
+  LOADING_ZONE: 'loading',
   OTHER: 'other'
 }
 
@@ -111,7 +112,9 @@ export function setUserRestriction (subsegment, userRestriction) {
 }
 
 export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
-  subsegment.alternative_usage_reason = alternativeUsageReason
+  subsegment.alternative_usage_reason = alternativeUsageReason === ALTERNATIVE_USAGE_REASON.UNKNOWN
+    ? null
+    : alternativeUsageReason
 }
 
 export function setAlignment (subsegment, alignment) {
@@ -149,7 +152,7 @@ export function createEmptySubsegment (orderNumber) {
     user_restrictions: USER_RESTRICTIONS.UNKNOWN,
     time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
-    usage_when_no_parking: null,
+    alternative_usage_reason: null,
     no_parking_reasons: [],
   }
 }
