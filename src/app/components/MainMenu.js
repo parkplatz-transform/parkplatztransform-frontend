@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import './components.css'
 import { makeStyles } from '@material-ui/core/styles'
@@ -10,10 +10,11 @@ import Typography from '@material-ui/core/Typography'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import LoginForm from './LoginForm'
-import { removeAuthCookie } from '../../helpers/auth'
-import { getUserDataFromCookie } from '../../helpers/auth'
 import { Link } from '@material-ui/core'
+
+import LoginForm from './LoginForm'
+import { UserContext } from '../context/UserContext'
+import { removeAuthCookie } from '../../helpers/auth'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +39,7 @@ function MainMenu() {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [loginModalOpen, setLoginModalOpen] = React.useState(false)
-  const userData = getUserDataFromCookie()
+  const user = useContext(UserContext)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -64,14 +65,14 @@ function MainMenu() {
             Impressum
           </Link>
         </Typography>
-        {!userData.loggedIn && (
+        {!user && (
           <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
             Login
           </Button>
         )}
 
-        {userData.loggedIn && userData.email}
-        {userData.loggedIn && (
+        {user && user.email}
+        {user && (
           <>
             <IconButton
               edge='start'
