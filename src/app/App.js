@@ -6,6 +6,7 @@ import './App.css'
 import Recording from './recording/Recording'
 import MainMenu from './components/MainMenu'
 import VerifyToken from './components/VerifyToken'
+import { UserProvider } from './context/UserContext'
 
 export const DEFAULT_MAP_POSITION = {
   lat: 52.501389, // Center of Berlin
@@ -15,7 +16,7 @@ export const DEFAULT_MAP_POSITION = {
 
 function App () {
   return (
-    <div>
+    <UserProvider>
       <Router>
         <Route path='/' component={MainMenu}></Route>
         <Route exact path='/'>
@@ -25,7 +26,7 @@ function App () {
         <Route path='/:lat/:lng/:zm' component={Recording}/>
       </Router>
 
-    </div>
+    </UserProvider>
   )
 }
 

@@ -1,17 +1,16 @@
 import * as Sentry from '@sentry/react';
-import { getUserDataFromCookie } from './auth'
 
 const baseURL = process.env.REACT_APP_API_URL || 'https://api.xtransform.org'
 
 export const routes = {
   users: `${baseURL}/users/`,
   usersVerify: `${baseURL}/users/verify/`,
+  usersData: `${baseURL}/users/me/`,
   segments: `${baseURL}/segments/`
 }
 
 export const headers = () => new Headers({
   'Content-Type': 'application/json',
-  'Authorization': `bearer ${getUserDataFromCookie()?.token}`
 })
 
 async function withErrorHandling(response) {
@@ -29,10 +28,22 @@ async function withErrorHandling(response) {
 export async function postSegment(segment) {
   const response = await fetch(routes.segments, {
     method: 'POST',
-    headers: headers(),
-    body: JSON.stringify(segment)
+    credentials: "include",
+    body: JSON.stringify(segment),
   })
   return withErrorHandling(response)
+}
+
+export async function getUserData() {
+  try {
+    const response = await fetch(routes.usersData, { credentials: "include" })
+    if (response.ok) {
+      return response.json()
+    }
+    return null
+  } catch {
+    return null
+  }
 }
 
 export async function getSegments(boundingBox = null, excludedSegmentIds = [], details = false) {
@@ -59,7 +70,7 @@ export async function getSegment(segmentId) {
 export async function deleteSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}`, {
     method: 'DELETE',
-    headers: headers()
+    credentials: "include",
   })
   return withErrorHandling(response)
 }
@@ -67,7 +78,7 @@ export async function deleteSegment(segmentId) {
 export async function updateSegment(segment) {
   const response = await fetch(`${routes.segments}${segment.id}`, {
     method: 'PUT',
-    headers: headers(),
+    credentials: "include",
     body: JSON.stringify(segment)
   })
   return withErrorHandling(response)
