@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/react';
 
 const baseURL = process.env.REACT_APP_API_URL || ''
-
 export const routes = {
   users: `${baseURL}/users/`,
   usersVerify: `${baseURL}/users/verify/`,
   usersData: `${baseURL}/users/me/`,
+  usersLogout: `${baseURL}/users/logout/`,
   segments: `${baseURL}/segments/`
 }
 
@@ -37,6 +37,18 @@ export async function postSegment(segment) {
 export async function getUserData() {
   try {
     const response = await fetch(routes.usersData, { credentials: "include" })
+    if (response.ok) {
+      return response.json()
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+export async function logoutUser() {
+  try {
+    const response = await fetch(routes.usersLogout, { credentials: "include", method: "POST" })
     if (response.ok) {
       return response.json()
     }

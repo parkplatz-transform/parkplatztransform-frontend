@@ -14,7 +14,7 @@ import { Link } from '@material-ui/core'
 
 import LoginForm from './LoginForm'
 import { UserContext } from '../context/UserContext'
-import { removeAuthCookie } from '../../helpers/auth'
+import { logoutUser } from '../../helpers/api'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,8 +49,8 @@ function MainMenu() {
     setAnchorEl(null)
   }
 
-  const handleLogout = () => {
-    removeAuthCookie()
+  const handleLogout = async () => {
+    await logoutUser()
     window.location.href = '/'
   }
 
