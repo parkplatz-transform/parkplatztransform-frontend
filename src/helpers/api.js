@@ -1,7 +1,7 @@
+import * as Sentry from '@sentry/react';
 import { getUserDataFromCookie } from './auth'
 
-const baseURL = 'https://parkplatztransform-api.herokuapp.com'
-//const baseURL = 'http://localhost:8023'
+const baseURL = process.env.REACT_APP_API_URL || 'https://api.xtransform.org'
 
 export const routes = {
   users: `${baseURL}/users/`,
@@ -9,18 +9,30 @@ export const routes = {
   segments: `${baseURL}/segments/`
 }
 
-export const headers = () => new Headers({ 
+export const headers = () => new Headers({
   'Content-Type': 'application/json',
   'Authorization': `bearer ${getUserDataFromCookie()?.token}`
 })
 
+async function withErrorHandling(response) {
+  const json = await response.json()
+  if (!response.ok) {
+    json.detail.forEach(error => {
+      console.error(error)
+    })
+    Sentry.captureException(json.detail)
+    throw new Error(json.detail)
+  }
+  return json
+}
+
 export async function postSegment(segment) {
-  const response = await fetch(routes.segments, { 
+  const response = await fetch(routes.segments, {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify(segment)
   })
-  return await response.json()
+  return withErrorHandling(response)
 }
 
 export async function getSegments(boundingBox = null, excludedSegmentIds = [], details = false) {
@@ -36,20 +48,20 @@ export async function getSegments(boundingBox = null, excludedSegmentIds = [], d
   }
   const searchParams = new URLSearchParams(params)
   const response = await fetch(`${url}?${searchParams.toString()}`)
-  return await response.json()
+  return withErrorHandling(response)
 }
 
 export async function getSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}`)
-  return await response.json()
+  return withErrorHandling(response)
 }
 
-export async function deleteSegments(segmentId) {
+export async function deleteSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}`, {
     method: 'DELETE',
     headers: headers()
   })
-  return await response.json()
+  return withErrorHandling(response)
 }
 
 export async function updateSegment(segment) {
@@ -58,6 +70,6 @@ export async function updateSegment(segment) {
     headers: headers(),
     body: JSON.stringify(segment)
   })
-  return await response.json()
+  return withErrorHandling(response)
 }
 

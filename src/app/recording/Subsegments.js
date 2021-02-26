@@ -1,4 +1,5 @@
 export const STREET_LOCATION = {
+  UNKNOWN: 'unknown',
   STREET: 'street',
   CURB: 'curb',
   SIDEWALK: 'sidewalk',
@@ -8,27 +9,32 @@ export const STREET_LOCATION = {
 }
 
 export const ALIGNMENT = {
+  UNKNOWN: 'unknown',
   PARALLEL: 'parallel',
   PERPENDICULAR: 'perpendicular',
   DIAGONAL: 'diagonal'
 }
 
-export const USAGE_RESTRICTIONS = {
+export const USER_RESTRICTIONS = {
+  UNKNOWN: null,
+  RESTRICTED_FOR_UNKNOWN_USERS: 'unknown',
   HANDICAP: 'handicap',
   RESIDENTS: 'residents',
   CAR_SHARING: 'car_sharing',
   GENDER: 'gender',
   ELECTRIC_CARS: 'electric_cars',
   OTHER: 'other',
-  NO_RESTRICTION: 'no restriction'
+  NO_RESTRICTION: 'all_users'
 }
 
-export const USAGE_WHEN_NO_PARKING = {
+export const ALTERNATIVE_USAGE_REASON = {
+  UNKNOWN: 'unknown',
   BUS_STOP: 'bus_stop',
   BUS_LANE: 'bus_lane',
   MARKET: 'market',
   LANE: 'lane',
   TAXI: 'taxi',
+  LOADING_ZONE: 'loading',
   OTHER: 'other'
 }
 
@@ -45,7 +51,9 @@ export const NO_PARKING_REASONS_AND_LABEL = {
   'standing_zone': '"Standing Zone"',
   'emergency_exit': 'Notausgang',
   'lowered_curb_side': 'Abgesenkter Bordstein',
-  'lane': 'Fahrspur'
+  'lane': 'Fahrspur',
+  'no_stopping': 'Halteverbot',
+  'pedestrian_zone': 'Fußgängerzone'
 }
 
 export function setParkingIsAllowed (subsegment) {
@@ -72,45 +80,53 @@ export function setDurationConstraint (subsegment, hasDurationConstraint) {
   subsegment.duration_constraint = hasDurationConstraint
 }
 
+export function setDurationConstraintDetails (subsegment, details) {
+  subsegment.duration_constraint_details = details && details.trim().length > 0 ? details.trim() : null
+}
+
 export function setLengthInMeters (subsegment, length) {
-  subsegment.length_in_meters = length === '' ? '' : Number(length)
+  // due to too much generification we get a `false` here if the string is empty...
+  subsegment.length_in_meters = length === false ? null : Number(length)
 }
 
 export function setCarCount (subsegment, car_count) {
-  subsegment.car_count = car_count === '' ? '' : Number(car_count)
+  // due to too much generification we get a `false` here if the string is empty...
+  subsegment.car_count = car_count === false ? null : Number(car_count)
 }
 
 /**
  * TODO: rename to setTimeConstraintDetails
  */
-export function setTimeConstraintReason (subsegment, details) {
-  subsegment.details = details
+export function setTimeConstraintReason (subsegment, reason) {
+  subsegment.time_constraint_reason = reason
 }
 
 export function setStreetLocation (subsegment, street_location) {
   subsegment.street_location = street_location
 }
 
-export function setUsageRestriction (subsegment, usageRestriction) {
-  subsegment.usage_restrictions = usageRestriction === USAGE_RESTRICTIONS.NO_RESTRICTION
+export function setUserRestriction (subsegment, userRestriction) {
+  let valueToSet
+  if (userRestriction === true) {
+    valueToSet = USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS
+  } else if (userRestriction === false) {
+    valueToSet = USER_RESTRICTIONS.NO_RESTRICTION
+  } else {
+    valueToSet = userRestriction
+  }
+  subsegment.user_restrictions = valueToSet
+}
+
+export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
+  subsegment.alternative_usage_reason = alternativeUsageReason === ALTERNATIVE_USAGE_REASON.UNKNOWN
     ? null
-    : usageRestriction
+    : alternativeUsageReason
 }
 
-export function setUsageWhenNoParking (subsegment, usageWhenNoParking) {
-  subsegment.usage_when_no_parking = usageWhenNoParking
-}
-
-export function setAlignmentParallel (subsegment) {
-  subsegment.alignment = ALIGNMENT.PARALLEL
-}
-
-export function setAlignmentPerpendicular (subsegment) {
-  subsegment.alignment = ALIGNMENT.PERPENDICULAR
-}
-
-export function setAlignmentDiagonal (subsegment) {
-  subsegment.alignment = ALIGNMENT.DIAGONAL
+export function setAlignment (subsegment, alignment) {
+  subsegment.alignment = alignment === ALIGNMENT.UNKNOWN
+    ? null
+    : alignment
 }
 
 export function getToggleNoParkingReasonFn (reason) {
@@ -128,22 +144,23 @@ export function getToggleNoParkingReasonFn (reason) {
 
 export function createEmptySubsegment (orderNumber) {
   return {
-    parking_allowed: null,
+    parking_allowed: true,
     order_number: orderNumber,
-    length_in_meters: 0,
-    car_count: 0,
+    length_in_meters: null,
+    car_count: null,
     quality: 1,
-    fee: false,
+    fee: null,
     street_location: STREET_LOCATION.STREET,
-    marked: false,
-    alignment: ALIGNMENT.PARALLEL,
-    duration_constraint: false,
+    marked: null, //null,
+    alignment: ALIGNMENT.UNKNOWN,
+    duration_constraint: null,
+    duration_constraint_details: null,
     // TODO: should be singular?
-    usage_restrictions: null,
-    time_constraint: false,
+    user_restrictions: USER_RESTRICTIONS.UNKNOWN,
+    time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
-    usage_when_no_parking: null,
-    no_parking_reasons: null,
+    alternative_usage_reason: null,
+    no_parking_reasons: [],
   }
 }
 

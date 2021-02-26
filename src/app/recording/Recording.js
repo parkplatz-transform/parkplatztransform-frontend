@@ -1,10 +1,15 @@
 import React, { useState, useRef } from 'react'
-import PTMap from '../map/PTMap'
-import { emptyBoundsArray } from './TypeSupport'
 import { makeStyles } from '@material-ui/core/styles'
-import { getSegment, getSegments, postSegment, updateSegment } from '../../helpers/api'
+import Alert from '@material-ui/lab/Alert'
+import { Snackbar } from '@material-ui/core'
+
+import PTMap, { MapController, DownloadSegmentsButton } from '../map/PTMap'
+import { emptyBoundsArray } from './TypeSupport'
+import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
+import RightPanel from '../components/RightPanel'
+import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
-import SegmentForm from '../components/SegmentForm'
+import getString from '../../strings'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -15,18 +20,6 @@ const useStyles = makeStyles({
     marginLeft: 5,
     marginRight: 5
   },
-  header: {
-    margin: '20px auto',
-    textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 20
-  },
-  subheader: {
-    margin: '20px auto',
-    textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 16
-  },
   container: {
     height: '100%',
     width: '100%',
@@ -36,11 +29,16 @@ const useStyles = makeStyles({
     height: 30
   },
   mapArea: {
-    width: '70%'
+    width: 'calc(100% - 360px)'
   },
   formArea: {
-    width: '30%',
-    minWidth: 300
+    width: 360,
+  },
+  loadingContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%'
   }
 })
 
@@ -48,15 +46,22 @@ function Recording () {
   const classes = useStyles()
 
   const [segmentsById, setSegmentsById] = useState({})
+  const [alertDisplayed, setAlertDisplayed] = useState(null)
+
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
   async function onSegmentCreated (segment) {
-    const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
-    addSegment(createdSegment)
-    setSelectedSegmentId(createdSegment.id)
+    try {
+      const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
+      addSegment(createdSegment)
+      setSelectedSegmentId(createdSegment.id)
+      setAlertDisplayed({severity: 'success', message: getString('segment_create_success', createdSegment.id)})
+    } catch (e) {
+      setAlertDisplayed({severity: 'error', message: getString('segment_create_failure')})
+    }
   }
 
   async function onBoundsChange (bounds) {
@@ -68,7 +73,6 @@ function Recording () {
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
-      console.log('was requested before')
       return
     }
 
@@ -85,21 +89,27 @@ function Recording () {
       const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
       addSegments(geoJson.features)
       setIsLoading(false)
+      setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
     } catch (e) {
+      setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
+      setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
   }
 
-  function onSegmentEdited (changedGeojson) {
-    // TODO: merge existing geoJson with new geoJson
+  async function onSegmentEdited (updatedSegment) {
     setSelectedSegmentId(null)
+    addSegments([updatedSegment])
+    try {
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
+      await updateSegment(updatedSegment)
+    } catch (e) {
+      setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
+    }
   }
 
   async function onSegmentSelect (id) {
-    console.log('selected segment id', id)
-
     setSelectedSegmentId(id)
-
     const segment = segmentsById[id]
     if (segment && (!segment.properties || segment.properties.length === 0)) {
       setIsLoading(true)
@@ -137,62 +147,82 @@ function Recording () {
       newSegmentsById[segment.id] = segment
     }
 
-    console.log('from', newOrUpdatedSegments, 'to', newSegmentsById)
-
     setSegmentsById(newSegmentsById)
   }
 
+
   async function onSegmentChanged (segment) {
-    await updateSegment(segment)
+    try {
+      const sanitizedSegment = sanitizeSegment(segment)
+
+      if (!sanitizedSegment) {
+        setAlertDisplayed({severity: 'error', message: getString('subsegment_invalid')})
+      }
+
+      const updatedSegment = await updateSegment(sanitizedSegment)
+      addSegment(updatedSegment)
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
+      return true
+    } catch (e) {
+      setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
+      return false
+    }
   }
 
-  function renderMapView () {
-    return (
-      <div>
-        <PTMap
-          key='map'
-          selectedSegmentId={selectedSegmentId}
-          onSegmentSelect={onSegmentSelect}
-          onSegmentEdited={onSegmentEdited}
-          onSegmentCreated={onSegmentCreated}
-          onBoundsChanged={onBoundsChange}
-          segments={Object.values(segmentsById)}
-        />
-      </div>
-    )
-  }
+  async function onSegmentDeleted (id) {
+    const newSegmentsById = Object.assign({}, segmentsById)
 
-  function renderFormView () {
-    if (isLoading) {
-      return (
-        <div>Loading...</div>
-      )
+    try {
+      setAlertDisplayed({severity: 'success', message: getString('segment_delete_success', 1)})
+      await deleteSegment(id)
+      delete newSegmentsById[id]
+      await setSegmentsById(newSegmentsById)
+    } catch (e) {
+      setAlertDisplayed({severity: 'error', message: getString('segment_delete_failure', 1)})
+      return Promise.reject(e)
     }
-    if (!selectedSegmentId) {
-      return (
-        <div>
-          <div className={classes.verticalSpace}/>
-          <div className={classes.header}>Willkommen bei ParkplatzTransport</div>
-          <div className={classes.subheader}>Wähle einen vorhandenen Abschnitt oder erstelle einen Neuen</div>
-          <div className={classes.subheader}>Zoome in die Karte um die Bearbeitungswerkzeuge zu sehen</div>
-        </div>
-
-      )
-    }
-    return <SegmentForm segment={segmentsById[selectedSegmentId]} onChanged={onSegmentChanged}/>
   }
 
   return (
-    <div className={classes.container}>
-      <div className={classes.mapArea}>
-        {renderMapView()}
+    <>
+      <Snackbar
+        open={!!alertDisplayed}
+        autoHideDuration={3000}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+        onClose={() => setAlertDisplayed(null)}
+      >
+        <Alert severity={alertDisplayed?.severity}>{alertDisplayed?.message}</Alert>
+      </Snackbar>
+      <div className={classes.container}>
+        <div className={classes.mapArea}>
+          <PTMap
+            key='map'
+            onBoundsChanged={onBoundsChange}
+          >
+            <MapController
+                onBoundsChanged={onBoundsChange}
+                segments={Object.values(segmentsById)}
+                onSegmentSelect={onSegmentSelect}
+                onSegmentDeleted={onSegmentDeleted}
+                onSegmentEdited={onSegmentEdited}
+                onSegmentCreated={onSegmentCreated}
+                selectedSegmentId={selectedSegmentId}
+            />
+            <DownloadSegmentsButton
+              segments={Object.values(segmentsById)}
+            />
+          </PTMap>
+        </div>
+        <div className={classes.formArea}>
+          <RightPanel
+            isLoading={isLoading}
+            segment={segmentsById[selectedSegmentId]}
+            onSegmentChanged={onSegmentChanged}
+            setAlertDisplayed={setAlertDisplayed}
+          />
+        </div>
       </div>
-
-      <div className={classes.formArea}>
-        {renderFormView()}
-      </div>
-
-    </div>
+    </>
   )
 }
 

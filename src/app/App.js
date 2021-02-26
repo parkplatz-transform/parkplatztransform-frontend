@@ -1,44 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import { Redirect } from 'react-router'
+
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 import './App.css'
 
 import Recording from './recording/Recording'
 import MainMenu from './components/MainMenu'
-import Welcome from './components/Welcome'
 import VerifyToken from './components/VerifyToken'
 
-const APP_STATE = Object.freeze({
-  RECORDING: Symbol('RECORDING'),
-})
 
-function App() {
-  const [appState, setAppState] = useState(APP_STATE.RECORDING)
+export const DEFAULT_MAP_POSITION = {
+  lat: 52.501389, // Center of Berlin
+  lng: 13.402500,
+  zm: 10
+}
 
-  function renderAppState() {
-    switch (appState) {
-      case APP_STATE.RECORDING:
-        return <Recording />
-
-      default:
-        return 'Not yet implemented'
-    }
-  }
-
+function App () {
   return (
     <div>
       <Router>
-        <Route path='/' component={MainMenu} />
-        <Route exact path='/home'>
-          <Redirect to='/' />
-        </Route>
-        <Route path='/welcome' component={Welcome} />
-        <Route path='/verify-token' component={VerifyToken} />
+        <Route path='/' component={MainMenu}></Route>
         <Route exact path='/'>
-          {renderAppState()}
+          <Redirect to={`/${DEFAULT_MAP_POSITION.lat}/${DEFAULT_MAP_POSITION.lng}/${DEFAULT_MAP_POSITION.zm}`} />
         </Route>
+        <Route path='/verify-token' component={VerifyToken} />
+        <Route path='/:lat/:lng/:zm' component={Recording}/>
       </Router>
+
     </div>
   )
 }
