@@ -14,6 +14,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@turf/turf": "^6.3.0",
+    "http-proxy-middleware": "^1.0.6",
     "jwt-decode": "^3.1.2",
     "leaflet": "1.7.1",
     "leaflet-arrowheads": "^1.2.2",
@@ -28,6 +29,7 @@
     "restful-react": "^15.1.2",
     "yup": "^0.32.8"
   },
+  "proxy": "https://api.xtransform.org",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
