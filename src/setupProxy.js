@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     ['^/segments/*', '^/users/*'],
     createProxyMiddleware({
-      target: 'https://api.xtransform.org',
+      target: process.env.REACT_APP_API_URL || 'https://api.xtransform.org',
       changeOrigin: true,
     })
   );
