@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { getUserDataFromCookie } from './auth'
 
-const baseURL = process.env.REACT_APP_API_URL || 'https://api.xtransform.org'
+const baseURL = process.env.REACT_APP_API_URL || ''
 
 export const routes = {
   users: `${baseURL}/users/`,
