@@ -29,7 +29,6 @@
     "restful-react": "^15.1.2",
     "yup": "^0.32.8"
   },
-  "proxy": "https://api.xtransform.org",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
