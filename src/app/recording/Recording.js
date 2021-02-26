@@ -111,7 +111,7 @@ function Recording () {
   async function onSegmentSelect (id) {
     setSelectedSegmentId(id)
     const segment = segmentsById[id]
-    if (segment && (!segment.properties || segment.properties.length === 0)) {
+    if (segment && (!segment?.properties?.subsegments || segment.properties.subsegments.length === 0)) {
       setIsLoading(true)
       const segmentWithDetails = await getSegment(id)
       addSegment(segmentWithDetails)
