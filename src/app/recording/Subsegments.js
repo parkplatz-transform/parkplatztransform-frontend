@@ -81,7 +81,11 @@ export function setDurationConstraint (subsegment, hasDurationConstraint) {
 }
 
 export function setDurationConstraintDetails (subsegment, details) {
-  subsegment.duration_constraint_details = details && details.trim().length > 0 ? details.trim() : null
+  if (typeof details === "string") {
+    subsegment.duration_constraint_details = details && details.trim().length > 0 ? details.trim() : null
+  } else {
+    subsegment.duration_constraint_details = null
+  }
 }
 
 export function setLengthInMeters (subsegment, length) {
@@ -106,7 +110,11 @@ export function setCarCount (subsegment, car_count) {
  * TODO: rename to setTimeConstraintDetails
  */
 export function setTimeConstraintReason (subsegment, reason) {
-  subsegment.time_constraint_reason = reason
+  if (typeof reason === "string") {
+    subsegment.time_constraint_reason = reason
+  } else {
+    subsegment.time_constraint_reason = null
+  }
 }
 
 export function setStreetLocation (subsegment, street_location) {
@@ -132,9 +140,7 @@ export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
 }
 
 export function setAlignment (subsegment, alignment) {
-  subsegment.alignment = alignment === ALIGNMENT.UNKNOWN
-    ? null
-    : alignment
+  subsegment.alignment = alignment
 }
 
 export function getToggleNoParkingReasonFn (reason) {
