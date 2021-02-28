@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 
 import List from '@material-ui/core/List'
-import Divider from '@material-ui/core/Divider'
+
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import IconButton from '@material-ui/core/IconButton'
@@ -46,9 +46,9 @@ export default function TemporaryDrawer() {
       onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {['Home', 'Welcome', 'About'].map((text, index) => (
+        {['Home', 'Howto', 'Impressum'].map((text, index) => (
           <ListItem button key={text}>
-            <Link className={classes.link} to={text}>
+            <Link className={classes.link} to={`/${text.toLowerCase()}`}>
               <ListItemText primary={text} />
             </Link>
           </ListItem>

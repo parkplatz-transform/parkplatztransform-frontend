@@ -17,7 +17,6 @@ import { getUserDataFromCookie } from '../../helpers/auth'
 import TemporaryDrawer from './Drawer'
 import { Link } from '@material-ui/core'
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -33,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
   legalnotice: {
     marginLeft: 10,
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))
 
 function MainMenu() {
@@ -56,27 +55,21 @@ function MainMenu() {
     window.location.href = '/'
   }
 
-
   return (
     <AppBar position='static'>
       <Toolbar>
-
         <TemporaryDrawer />
 
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
 
         <Typography variant='h6' className={classes.title}>
           ParkplatzTransform
-          <Link className={classes.legalnotice} target="_blank" href="https://www.xtransform.org/impressum.html" color="inherit">
-            Impressum
-          </Link>
         </Typography>
         {!userData.loggedIn && (
           <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
             Login
           </Button>
         )}
-
 
         {userData.loggedIn && userData.email}
         {userData.loggedIn && (
