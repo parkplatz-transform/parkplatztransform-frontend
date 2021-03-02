@@ -47,11 +47,11 @@ export default function TemporaryDrawer() {
     >
       <List>
         {['Home', 'Howto', 'Impressum'].map((text, index) => (
-          <ListItem button key={text}>
-            <Link className={classes.link} to={`/${text.toLowerCase()}`}>
+          <Link className={classes.link} to={`/${text.toLowerCase()}`}>
+            <ListItem button key={text}>
               <ListItemText primary={text} />
-            </Link>
-          </ListItem>
+            </ListItem>
+          </Link>
         ))}
       </List>
     </div>
