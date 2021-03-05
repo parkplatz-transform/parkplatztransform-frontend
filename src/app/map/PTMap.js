@@ -89,8 +89,17 @@ export function DownloadSegmentsButton({ segments }) {
     )
 }
 
-export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSegmentDeleted, onSegmentCreated, onSegmentEdited, selectedSegmentId }) {
+export function MapController({
+    segments,
+    onBoundsChanged,
+    onSegmentSelect,
+    onSegmentDeleted,
+    onSegmentCreated,
+    onSegmentEdited,
+    selectedSegmentId
+}) {
     const history = useHistory()
+
 
     // Position Controller
     const map = useMapEvents({
@@ -109,10 +118,22 @@ export function MapController({ segments, onBoundsChanged, onSegmentSelect, onSe
         }
     })
 
+    function setLineWeight() {
+        const zm = map._zoom
+        if (zm <= 14) {
+            return '1'
+        }
+        if (zm === 18) {
+            return '7'
+        }
+        return '4'
+    }
+
+
     function setSegmentStyle(segment) {
         const styles = {
             color: UNSELECTED_SEGMENT_COLOR,
-            weight: '4',
+            weight: setLineWeight(),
             lineJoin: 'square',
         }
         if (segment.id === selectedSegmentId) {

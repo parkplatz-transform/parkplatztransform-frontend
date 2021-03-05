@@ -8,6 +8,7 @@ import MainMenu from './components/MainMenu'
 import HowTo from './components/HowTo'
 import Impressum from './components/Impressum'
 import VerifyToken from './components/VerifyToken'
+import { UserProvider } from './context/UserContext'
 
 export const DEFAULT_MAP_POSITION = {
   lat: 52.501389, // Center of Berlin
@@ -17,7 +18,7 @@ export const DEFAULT_MAP_POSITION = {
 
 function App() {
   return (
-    <div>
+    <UserProvider>
       <Router>
         <Route path='/' component={MainMenu}></Route>
         <Route path='/home'>
@@ -34,7 +35,9 @@ function App() {
         <Route path='/verify-token' component={VerifyToken} />
         <Route exact path='/:lat/:lng/:zm' component={Recording} />
       </Router>
-    </div>
+
+
+    </UserProvider>
   )
 }
 
