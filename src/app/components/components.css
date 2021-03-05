@@ -1,8 +1,38 @@
-a{
+a {
   text-decoration: none;
 }
 
-.intro{
-  height: 500px;
+.mt {
+  margin-top: 1.2rem;
+}
+.mt-2 {
+  margin-top: 2.4rem;
+}
 
+.mrAuto {
+  margin-right: auto !important;
+}
+
+.image {
+  padding: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.43);
+  border-radius: 4px;
+}
+
+@media screen and (max-width: 600px) {
+  .marginTopSmall {
+    margin-top: 20px;
+  }
+}
+
+.underline {
+  text-decoration: underline;
+}
+.textRight {
+  text-align: right;
+}
+
+.listStyleNone {
+  list-style: none;
+  padding-inline-start: 0px;
 }

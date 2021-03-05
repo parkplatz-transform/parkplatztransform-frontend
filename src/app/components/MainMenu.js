@@ -10,9 +10,13 @@ import Typography from '@material-ui/core/Typography'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import { Link } from '@material-ui/core'
 
 import LoginForm from './LoginForm'
+import { removeAuthCookie } from '../../helpers/auth'
+import { getUserDataFromCookie } from '../../helpers/auth'
+import TemporaryDrawer from './Drawer'
+import { Link } from '@material-ui/core'
+
 import { UserContext } from '../context/UserContext'
 import { logoutUser } from '../../helpers/api'
 
@@ -31,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
   },
   legalnotice: {
     marginLeft: 10,
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))
 
 function MainMenu() {
@@ -57,13 +61,12 @@ function MainMenu() {
   return (
     <AppBar position='static'>
       <Toolbar>
+        <TemporaryDrawer />
+
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
 
         <Typography variant='h6' className={classes.title}>
           ParkplatzTransform
-          <Link className={classes.legalnotice} target="_blank" href="https://www.xtransform.org/impressum.html" color="inherit">
-            Impressum
-          </Link>
         </Typography>
         {!user && (
           <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
