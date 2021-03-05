@@ -17,7 +17,6 @@ import { getUserDataFromCookie } from '../../helpers/auth'
 import TemporaryDrawer from './Drawer'
 import { Link } from '@material-ui/core'
 
-import LoginForm from './LoginForm'
 import { UserContext } from '../context/UserContext'
 import { logoutUser } from '../../helpers/api'
 
