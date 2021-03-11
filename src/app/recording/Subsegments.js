@@ -156,10 +156,10 @@ export function getToggleNoParkingReasonFn (reason) {
 
 }
 
-export function createEmptySubsegment (orderNumber) {
+export function createEmptySubsegment () {
   return {
     parking_allowed: true,
-    order_number: orderNumber,
+    order_number: null,   // to be set by caller
     length_in_meters: null,
     car_count: null,
     quality: 1,
@@ -176,16 +176,4 @@ export function createEmptySubsegment (orderNumber) {
     alternative_usage_reason: null,
     no_parking_reasons: [],
   }
-}
-
-export function createParkingSubsegment (orderNumber) {
-  return Object.assign(createEmptySubsegment(orderNumber), {
-    parking_allowed: true,
-  })
-}
-
-export function createNonParkingSubsegment (orderNumber) {
-  return Object.assign(createEmptySubsegment(orderNumber), {
-    parking_allowed: false
-  })
 }

@@ -2,43 +2,68 @@ import React, { useEffect, useReducer, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Checkbox,
-  FormControl, FormControlLabel, FormGroup, FormLabel, Input, InputAdornment,
-  List, ListItem, ListItemSecondaryAction, ListItemText,
-  MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Input,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  MenuItem,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  TextField
 } from '@material-ui/core'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
+import StarIcon from '@material-ui/icons/Star'
 import Button from '@material-ui/core/Button'
 import SplitButton from './SplitButton'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Paper from '@material-ui/core/Paper'
-import red from '@material-ui/core/colors/red';
+import red from '@material-ui/core/colors/red'
 import {
   ALIGNMENT,
+  ALTERNATIVE_USAGE_REASON,
   createEmptySubsegment,
   getToggleNoParkingReasonFn,
   NO_PARKING_REASONS_AND_LABEL,
+  setAlignment,
+  setAlternativeUsageReason,
   setCarCount,
   setDurationConstraint,
+  setDurationConstraintDetails,
   setHasFee,
-  setLengthInMeters,
+  setHasTimeConstraint,
   setIsMarked,
+  setLengthInMeters,
   setParkingIsAllowed,
   setParkingIsNotAllowed,
   setStreetLocation,
-  setHasTimeConstraint,
   setTimeConstraintReason,
   setUserRestriction,
-  setAlternativeUsageReason,
   STREET_LOCATION,
   USER_RESTRICTIONS,
-  ALTERNATIVE_USAGE_REASON, setAlignment, setDurationConstraintDetails,
 } from '../recording/Subsegments'
 import clsx from 'clsx'
 import getString from '../../strings'
 import subsegmentSchema from '../recording/SubsegmentSchema'
 import YesNoUnknownCheckbox from './YesNoUnknownCheckbox'
+import DialogContentText from '@material-ui/core/DialogContentText'
+
+const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -134,9 +159,14 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
+  const [favorites, setFavorites] = React.useState([])
+  const [subsegmentToAddToFavorites, setSubsegmentToAddToFavorites] = React.useState(null)
+  const [subsegmentNameForFavorites, setSubsegmentNameForFavorites] = React.useState(null)
   const [isChanged, setChanged] = useReducer((updateValue, changed = true) => {
     return changed ? updateValue + 1 : 0
   }, 0)
+
+  console.log('favorites', favorites)
 
   const prevSegmentRef = useRef(segment)
   const selectedSubsegment = () => {
@@ -146,6 +176,13 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
   const isFormValid = (errs) => {
     return Object.keys(errs).length === 0
   }
+
+  useEffect(() => {
+    const favoritesString = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITES)
+    if (favoritesString) {
+      setFavorites(JSON.parse(favoritesString))
+    }
+  }, [])
 
   useEffect(() => {
     if (prevSegmentRef.current?.id && segment?.id !== prevSegmentRef.current?.id) {
@@ -159,17 +196,28 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
   }, [isChanged, errors, onChanged, segment])
 
-  /**
-   * @param segmentCreationFunction A function with order_number as first parameter.
-   */
-  function addSubsegment (segmentCreationFunction) {
+  function addFavorite (name, subsegment) {
+    console.log('addFavorite', name, subsegment)
+    const updatedFavorites = favorites.concat({name, subsegment})
+    console.log('updated', updatedFavorites)
+    setFavorites(updatedFavorites)
+    localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITES, JSON.stringify(updatedFavorites))
+  }
+
+  function removeFavorite (name) {
+    const updatedFavorites = favorites.filter(favorite => favorite.name !== name)
+    setFavorites(updatedFavorites)
+    localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITES, JSON.stringify(updatedFavorites))
+  }
+
+  function addSubsegment (subsegment) {
     if (!segment.properties) {
       segment.properties = {}
     }
     if (!segment.properties.subsegments) {
       segment.properties.subsegments = []
     }
-    const subsegment = segmentCreationFunction(segment.properties.subsegments.length)
+    subsegment.order_number = segment.properties.subsegments.length
     segment.properties.subsegments.push(subsegment)
     setSelectedSubsegmentIndex(subsegment.order_number)
     setChanged()
@@ -222,7 +270,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
   }
 
-  async function save() {
+  async function save () {
     let errs = {}
     await Promise.all(segment.properties.subsegments.map(async (sub, idx) => {
       try {
@@ -250,7 +298,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     return selectedSubsegment().order_number || 'new_subsegment'
   }
 
-  function getCheckboxValueForUserRestrictions() {
+  function getCheckboxValueForUserRestrictions () {
     const subsegment = selectedSubsegment()
     if (subsegment.user_restrictions === USER_RESTRICTIONS.UNKNOWN) {
       return null
@@ -260,6 +308,58 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
     return true
 
+  }
+
+  function renderAddToFavoriteDialog () {
+
+    const closeDialog = () => {
+      setSubsegmentToAddToFavorites(null)
+      setSubsegmentNameForFavorites(null)
+    }
+
+    const onSave = () => {
+      console.log('on save')
+      debugger
+      addFavorite(subsegmentNameForFavorites, subsegmentToAddToFavorites)
+      closeDialog()
+    }
+
+    const errorText = subsegmentNameForFavorites && favorites.map(favorite => favorite.name).includes(subsegmentNameForFavorites)
+      ? 'Name ist bereits vergeben'
+      : null
+
+    const saveable = !errorText && subsegmentNameForFavorites
+
+    return (
+      <Dialog open={subsegmentToAddToFavorites !== null} onClose={closeDialog} aria-labelledby="form-dialog-title">
+        <DialogTitle id="dialog-add-subsegment-to-favorites">Neuer Favorit</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Unter welchem Namen soll dieser Unterabschnitt gespeichert werden?
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            fullWidth
+            defaultValue={''}
+            error={errorText}
+            helperText={errorText}
+            onChange={(event) => setSubsegmentNameForFavorites(event.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog} color="primary">
+            Abbrechen
+          </Button>
+          <Button onClick={onSave} color="primary" disabled={!saveable}>
+            Speichern
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+    )
   }
 
   function renderList () {
@@ -273,11 +373,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
         } else {
           title = 'Neuer Unterabschnitt'
         }
-        let details = "";
+        let details = ''
         if (subsegment.length_in_meters) {
           details = `${subsegment.length_in_meters} m`
-        }
-        else if (subsegment.car_count) {
+        } else if (subsegment.car_count) {
           details = `${subsegment.car_count} Stellplätze`
         }
 
@@ -287,7 +386,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
           <ListItem
             key={subsegment.order_number}
             button
-            style={{ backgroundColor: error ? red[100] : null }}
+            style={{backgroundColor: error ? red[100] : null}}
             selected={subsegment?.order_number === selectedSubsegmentIndex}
             onClick={() => setSelectedSubsegmentIndex(subsegment.order_number)}
           >
@@ -524,7 +623,8 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     />
                   }
                   label="Eingeschränkte Nutzergruppe"/>
-                <FormControl className={clsx(classes.formControl, classes.fullWidth)} disabled={!getCheckboxValueForUserRestrictions()}>
+                <FormControl className={clsx(classes.formControl, classes.fullWidth)}
+                             disabled={!getCheckboxValueForUserRestrictions()}>
                   Nutzergruppe:
                   <Select
                     labelId="demo-simple-select-label"
@@ -628,6 +728,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
       <div>
         <div className={classes.headerContainer}>
           <h4>Details</h4>
+          <IconButton onClick={() => setSubsegmentToAddToFavorites(Object.assign({}, subsegment))} edge="end"
+                      aria-label="duplicate">
+            <StarIcon/>
+          </IconButton>
         </div>
         <div className={classes.marginLeftRight}>
 
@@ -639,7 +743,8 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                     <div className={classes.optionTitle}>Öffentliches Parken</div>
 
 
-                    <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.fullWidth}>
+                    <ButtonGroup color="primary" aria-label="outlined primary button group"
+                                 className={classes.fullWidth}>
                       <Button variant={getButtonVariant(subsegment.parking_allowed === true)}
                               onClick={updateSubsegment(setParkingIsAllowed)} className={classes.halfWidth}>
                         Erlaubt
@@ -654,7 +759,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
                 {renderDetailsForParkingAllowed()}
                 {renderDetailsForParkingNotAllowed()}
-                <Button variant="contained" color="primary" onClick={save} className={classes.bottomButton} >
+                <Button variant="contained" color="primary" onClick={save} className={classes.bottomButton}>
                   {getString('save')}
                 </Button>
               </TableBody>
@@ -671,27 +776,30 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     <div className={classes.formView} onMouseLeave={isChanged > 0 ? save : null}>
       <div className={classes.headerContainer}>
         <h4>Unterabschnitt</h4>
-          <Button
-            onClick={save}
-            disabled={isChanged === 0}
-            color="primary"
-            variant="contained"
-            size="small">
-            {getString('save')}
-          </Button>
+        <Button
+          onClick={save}
+          disabled={isChanged === 0}
+          color="primary"
+          variant="contained"
+          size="small">
+          {getString('save')}
+        </Button>
       </div>
       <div className={classes.list}>
         {renderList()}
       </div>
-      <SplitButton optionsAndCallbacks={[
-        {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment)},
-        {label: 'Haltestelle', disabled: true},
-        {label: 'Busspur', disabled: true},
-        {label: 'Einfahrt', disabled: true}
-      ]}/>
+      <SplitButton optionsAndCallbacks={
+        [
+          {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment())},
+          ...favorites.map(favorite => {
+            return {label: favorite.name, callback: () => addSubsegment(Object.assign({}, favorite.subsegment))}
+          })
+        ]
+      }/>
       <form onChange={() => { setErrors({}) }}>
         {renderDetails()}
       </form>
+      {renderAddToFavoriteDialog()}
     </div>
   )
 }
