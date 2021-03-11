@@ -166,8 +166,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     return changed ? updateValue + 1 : 0
   }, 0)
 
-  console.log('favorites', favorites)
-
   const prevSegmentRef = useRef(segment)
   const selectedSubsegment = () => {
     return segment.properties.subsegments[selectedSubsegmentIndex]
@@ -318,8 +316,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
 
     const onSave = () => {
-      console.log('on save')
-      debugger
       addFavorite(subsegmentNameForFavorites, subsegmentToAddToFavorites)
       closeDialog()
     }
@@ -792,7 +788,11 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
         [
           {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment())},
           ...favorites.map(favorite => {
-            return {label: favorite.name, callback: () => addSubsegment(Object.assign({}, favorite.subsegment))}
+            return {
+              label: favorite.name,
+              callback: () => addSubsegment(Object.assign({}, favorite.subsegment)),
+              deleteCallback: (name) => removeFavorite(name)
+            }
           })
         ]
       }/>
