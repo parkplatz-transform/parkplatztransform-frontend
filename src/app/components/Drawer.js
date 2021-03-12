@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
-
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import List from '@material-ui/core/List'
 
 import ListItem from '@material-ui/core/ListItem'
@@ -20,6 +20,13 @@ const useStyles = makeStyles({
   },
   link: {
     fontSize: '1.2rem',
+    color: 'rgba(0, 0, 0, 0.87)',
+  },
+  icon: {
+    fill: 'rgba(0, 0, 0, 0.4)',
+  },
+  paddingLeft: {
+    paddingLeft: '0.25rem',
   },
 })
 
@@ -49,7 +56,8 @@ export default function TemporaryDrawer() {
         {['Home', 'Howto', 'Impressum'].map((text, index) => (
           <Link className={classes.link} to={`/${text.toLowerCase()}`}>
             <ListItem button key={text}>
-              <ListItemText primary={text} />
+              <ArrowForwardIcon className={classes.icon} />
+              <ListItemText className={classes.paddingLeft} primary={text} />
             </ListItem>
           </Link>
         ))}
