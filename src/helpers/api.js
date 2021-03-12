@@ -57,8 +57,11 @@ export async function logoutUser() {
     return null
   }
 }
-
-export async function getSegments(boundingBox = null, excludedSegmentIds = [], details = false) {
+/*
+* details = true means all subsegments are fetched with segments,
+* a future optimisation would be to not fetch this and return a count from the server.
+*/
+export async function getSegments(boundingBox = null, excludedSegmentIds = [], details = true) {
   const url = routes.segments
   const params = {
     details: details ? 1 : 0
