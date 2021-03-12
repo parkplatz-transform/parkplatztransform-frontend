@@ -64,9 +64,9 @@ function HowTo() {
                 <Grid container>
                   <Grid item sm={7} className='mrAuto'>
                     <p>
-                      Melde dich mit deiner E-Mail-Adresse im Feld LOGIN an. Du
-                      bekommst einen Link an diese Adresse zugeschickt, mit dem
-                      du in die Bearbeitungsansicht der App gelangst.
+                      Melde dich mit deiner E-Mail-Adresse im Feld <i>LOGIN</i>{' '}
+                      an. Du bekommst einen Link an diese Adresse zugeschickt,
+                      mit dem du in die Bearbeitungsansicht der App gelangst.
                     </p>
                   </Grid>
                 </Grid>
@@ -83,14 +83,14 @@ function HowTo() {
                     <div className='mt'>
                       Wenn Du weit genug in die Karte hineingezoomt hast,
                       erscheinen{' '}
-                      <span className='underline'>
+                      <span className='bold'>
                         oben rechts die Bearbeitungswerkzeuge.
                       </span>
                     </div>
                     <div className='mt'>
                       Klicke auf das{' '}
-                      <span className='underline'>oberste der drei Icons</span>{' '}
-                      um einen neuen Abschnitt in die Karte einzuzeichnen.
+                      <span className='bold'>oberste der drei Icons</span> um
+                      einen neuen Abschnitt in die Karte einzuzeichnen.
                     </div>
                   </Grid>
                   <Grid item sm={7} className='mrAuto'>
@@ -110,7 +110,7 @@ function HowTo() {
                   <ul>
                     <li className='mt'>
                       Ein neuer Abschnitt wird – wenn möglich –{' '}
-                      <span className='underline'>
+                      <span className='bold'>
                         von Straßenecke zu Straßenecke
                       </span>{' '}
                       bzw. Kreuzung zu Kreuzung gezeichnet, sollten sich in
@@ -126,9 +126,7 @@ function HowTo() {
                       sowohl auf der rechten als auch der linken Straßenseite
                       der gleiche Parkplatztyp befindet, nehmen wir die
                       Parkplätze trotzdem in getrennte{' '}
-                      <span className='underline'>
-                        Abschnitte je Straßenseite
-                      </span>{' '}
+                      <span className='bold'>Abschnitte je Straßenseite</span>{' '}
                       in die App auf.
                     </li>
                   </ul>
@@ -142,16 +140,16 @@ function HowTo() {
                 <Grid container>
                   <Grid item sm={7} className='mrAuto'>
                     <div>
-                      Nachdem Du auf das oberste Icon (draw a polyline) geklickt
-                      hast, musst du einen Startpunkt des Abschnittes durch
-                      Klicken – am besten eine Straßenecke, siehe oben –
+                      Nachdem Du auf das oberste Icon (Polyline zeichnen)
+                      geklickt hast, musst du einen Startpunkt des Abschnittes
+                      durch Klicken – am besten eine Straßenecke, siehe oben –
                       bestimmen (im Beispiel unten ist der Startpunkt an der
-                      Ecke Laubacher Straße/Offenbacher Straße)
+                      Ecke Gubener Straße/Wedekindstraße)
                     </div>
                     <div className='mt'>
                       Danach musst Du einen (vorläufigen) Endpunkt des
                       Abschnittes – wieder durch Klicken – bestimmen (im
-                      Beispiel die Ecke Offenbacher Straße/Spessartstraße);
+                      Beispiel die Ecke Wedekindstraße/Marchlewskistraße);
                     </div>
                   </Grid>
                   <Grid item sm={7}>
@@ -168,7 +166,7 @@ function HowTo() {
                   <ul>
                     <li className='mt'>
                       sollte der Abschnitt tatsächlich hier beendet sein,{' '}
-                      <span className='underline'>
+                      <span className='bold'>
                         musst du ein zweites Mal auf den gerade definierten
                         Endpunkt klicken,
                       </span>{' '}
@@ -185,7 +183,7 @@ function HowTo() {
                       sollte die Straße eine Biegung haben, zeichne trotzdem
                       erstmal ganz normal deinen Start und Endpunkt in die Karte
                       ein. Du kannst{' '}
-                      <span className='underline'>
+                      <span className='bold'>
                         später über das zweite Icon oben Links deinen Abschnitt
                         bearbeiten
                       </span>{' '}
@@ -264,7 +262,7 @@ function HowTo() {
                     </div>
                     <div className='mt'>
                       <strong>Wichtig:</strong> Die Unterabschnitte werden{' '}
-                      <span className='underline'>
+                      <span className='bold'>
                         der Reihenfolge nach in Pfeilrichtung
                       </span>{' '}
                       des von dir eingezeichneten Abschnitts eingetragen.

@@ -25,8 +25,8 @@ a {
   }
 }
 
-.underline {
-  text-decoration: underline;
+.bold {
+  font-weight: bold;
 }
 .textRight {
   text-align: right;
