@@ -194,10 +194,9 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
     }
   }, [isChanged, errors, onChanged, segment])
 
-  function addFavorite (name, subsegment) {
-    console.log('addFavorite', name, subsegment)
+  function addFavorite (name, subsegmentToFavorite) {
+    const subsegment = { ...subsegmentToFavorite, id: null, order_number: null }
     const updatedFavorites = favorites.concat({name, subsegment})
-    console.log('updated', updatedFavorites)
     setFavorites(updatedFavorites)
     localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITES, JSON.stringify(updatedFavorites))
   }
