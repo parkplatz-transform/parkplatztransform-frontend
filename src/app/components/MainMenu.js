@@ -12,8 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 
 import LoginForm from './LoginForm'
-import { removeAuthCookie } from '../../helpers/auth'
-import { getUserDataFromCookie } from '../../helpers/auth'
 import TemporaryDrawer from './Drawer'
 import { Link } from '@material-ui/core'
 
@@ -32,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  titleLink: {
+    color: 'white',
+    '&:hover': {
+      textDecoration: 'none',
+    },
   },
   legalnotice: {
     marginLeft: 10,
@@ -66,8 +70,11 @@ function MainMenu() {
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
 
         <Typography variant='h6' className={classes.title}>
-          ParkplatzTransform
+          <Link className={classes.titleLink} href='/' color='inherit'>
+            ParkplatzTransform
+          </Link>
         </Typography>
+
         {!user && (
           <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
             Login
