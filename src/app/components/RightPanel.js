@@ -2,20 +2,22 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import IconButton from '@material-ui/core/IconButton'
+import { Link } from 'react-router-dom'
 import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
 
 const useStyles = makeStyles({
   header: {
     margin: '20px auto',
-    textAlign: 'center',
-    fontEeight: 'bold',
-    fontSize: 20,
+    textAlign: 'left',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
   subheader: {
     margin: '20px auto',
-    textAlign: 'center',
+    textAlign: 'left',
     fontEeight: 'bold',
     fontSize: 16,
   },
@@ -27,6 +29,20 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
+  },
+  container: {
+    padding: '20px',
+    textAlign: 'left',
+  },
+  orderdList: {
+    paddingInlineStart: '20px',
+  },
+  bottom: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  paddingLeft: {
+    paddingLeft: '0.25rem',
   },
 })
 
@@ -51,7 +67,7 @@ function RightPanel({
   }
   if (!segment) {
     return (
-      <div>
+      <div className={classes.container}>
         <div className={classes.verticalSpace} />
         <div className={classes.header}>
           <p>{getString('welcome_title')}</p>
@@ -62,23 +78,41 @@ function RightPanel({
         <div className={classes.subheader}>
           <p>{getString('welcome_hints')}</p>
         </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hint_1')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hint_2')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hint_3')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hint_4')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hint_5')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_to_howto')}</p>
+
+        <ol className={classes.orderdList}>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_1')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_2')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_3')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_4')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_5')}</p>
+            </div>
+          </li>
+        </ol>
+        <div className={classes.bottom}>
+          <Link className={classes.link} to={`/howto`}>
+            <IconButton aria-label='delete'>
+              <ArrowForwardIcon />
+            </IconButton>
+          </Link>
+          <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
         </div>
       </div>
     )
