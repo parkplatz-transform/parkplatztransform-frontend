@@ -58,13 +58,6 @@ function RightPanel({
     setAlertDisplayed({ severity: 'error', message })
   }
 
-  if (isLoading && !segment) {
-    return (
-      <div className={classes.loadingContainer}>
-        <CircularProgress />
-      </div>
-    )
-  }
   if (!segment) {
     return (
       <div className={classes.container}>
@@ -117,6 +110,7 @@ function RightPanel({
       </div>
     )
   }
+
   return (
     <SegmentForm
       segment={segment}
