@@ -6,13 +6,13 @@ const strings = {
   welcome_hint_1: () =>
     'Lege einen Account an, indem du dich mit deiner E-MailAdresse einloggst – ein Passwort ist nicht nötig.',
   welcome_hint_2: () =>
-    'Um Zählergebnisse einzutragen, wähle zunächst einenvorhandenen Abschnitt aus oder erstelle einen neuen.',
+    'Um Zählergebnisse einzutragen, wähle zunächst einen vorhandenen Abschnitt aus oder erstelle einen neuen.',
   welcome_hint_3: () =>
-    'Zoome dafür in die Karte. Rechts oben siehst du Icons für dieBearbeitungswerkzeuge, die du zum Abschnitt einzeichnenbenötigst.',
+    'Zoome dafür in die Karte. Rechts oben siehst du Icons für die Bearbeitungswerkzeuge, die du zum Abschnitt einzeichnenbenötigst.',
   welcome_hint_4: () =>
-    'Um nun in dem ausgewählten Abschnitt die gezähltenParkplätze zu erfassen, charakterisiere Unterabschnitte und definiere Parkplatztypen. Um den Aufwand gering zu halten, kannst du ganze Unterabschnitte kopieren, falls ein Parkplatzmuster mehr als einmal auftaucht.',
+    'Um nun in dem ausgewählten Abschnitt die gezählten Parkplätze zu erfassen, charakterisiere Unterabschnitte und definiere Parkplatztypen. Um den Aufwand gering zu halten, kannst du ganze Unterabschnitte kopieren, falls ein Parkplatzmuster mehr als einmal auftaucht.',
   welcome_hint_5: () =>
-    'Es findet eine automatische Sicherung der eingetragenenDaten statt. Speichern und aktives Ausloggen ist nichtnotwendig.',
+    'Es findet eine automatische Sicherung der eingetragenen Daten statt. Speichern und aktives Ausloggen ist nicht notwendig.',
   welcome_to_howto: () =>
     'Hier geht es zu einer detaillierten Nutzer*innenanleitung',
 
