@@ -8,7 +8,7 @@ const strings = {
   welcome_hint_2: () =>
     'Um Zählergebnisse einzutragen, wähle zunächst einen vorhandenen Abschnitt aus oder erstelle einen neuen.',
   welcome_hint_3: () =>
-    'Zoome dafür in die Karte. Rechts oben siehst du Icons für die Bearbeitungswerkzeuge, die du zum Abschnitt einzeichnenbenötigst.',
+    'Zoome dafür in die Karte. Rechts oben siehst du Icons für die Bearbeitungswerkzeuge, die du zum Abschnitt einzeichnen benötigst.',
   welcome_hint_4: () =>
     'Um nun in dem ausgewählten Abschnitt die gezählten Parkplätze zu erfassen, charakterisiere Unterabschnitte und definiere Parkplatztypen. Um den Aufwand gering zu halten, kannst du ganze Unterabschnitte kopieren, falls ein Parkplatzmuster mehr als einmal auftaucht.',
   welcome_hint_5: () =>
