@@ -1,4 +1,4 @@
-import { createEmptySubsegment } from "./Subsegments"
+import { ALIGNMENT, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
 
 /**
  * returns a sanitized copy or null if has invalid configurations
@@ -13,6 +13,15 @@ export function sanitizeSegment (segment) {
         }
         if (subsegment.parking_allowed === true) {
             subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
+            if (subsegment.alignment === ALIGNMENT.UNKNOWN) {
+                subsegment.alignment = null
+            }
+            if (subsegment.street_location === STREET_LOCATION.UNKNOWN) {
+                subsegment.street_location = null
+            }
+            if (subsegment.user_restriction_reason === USER_RESTRICTIONS.UNKNOWN) {
+                subsegment.user_restriction_reason = null
+            }
             if (subsegment.duration_constraint !== true) {
                 subsegment.duration_constraint_details = emptySubsegment.duration_constraint_details
             }

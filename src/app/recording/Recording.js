@@ -161,7 +161,9 @@ function Recording () {
 
       const updatedSegment = await updateSegment(sanitizedSegment)
       addSegment(updatedSegment)
+      console.log("From client:")
       console.table(segment.properties.subsegments)
+      console.log("Server returned:")
       console.table(updatedSegment.properties.subsegments)
       setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
       return true

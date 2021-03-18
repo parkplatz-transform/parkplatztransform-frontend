@@ -54,6 +54,7 @@ import {
   setStreetLocation,
   setTimeConstraintReason,
   setUserRestriction,
+  setUserRestrictionReason,
   STREET_LOCATION,
   USER_RESTRICTIONS,
 } from '../recording/Subsegments'
@@ -286,25 +287,12 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
     if (isFormValid(errs)) {
       const success = await onChanged(segment)
-      console.log('success', success)
       setChanged(!success)
     }
   }
 
   function getKey () {
     return selectedSubsegment().order_number || 'new_subsegment'
-  }
-
-  function getCheckboxValueForUserRestrictions () {
-    const subsegment = selectedSubsegment()
-    if (subsegment.user_restrictions === USER_RESTRICTIONS.UNKNOWN) {
-      return null
-    }
-    if (subsegment.user_restrictions === USER_RESTRICTIONS.NO_RESTRICTION) {
-      return false
-    }
-    return true
-
   }
 
   function renderAddToFavoriteDialog () {
@@ -592,7 +580,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                   Parkposition:
                   <Select
                     id="select_parking_position"
-                    value={selectedSubsegment().street_location || STREET_LOCATION.STREET}
+                    value={selectedSubsegment().street_location || STREET_LOCATION.UNKNOWN}
                     onChange={updateSubsegment(setStreetLocation)}
                     variant={'outlined'}
                   >
@@ -612,24 +600,24 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                 <FormControlLabel
                   control={
                     <YesNoUnknownCheckbox
-                      checked={getCheckboxValueForUserRestrictions()}
+                      checked={selectedSubsegment().user_restriction}
                       color={'primary'}
                       onChange={updateSubsegment(setUserRestriction)}
                     />
                   }
                   label="Eingeschränkte Nutzergruppe"/>
                 <FormControl className={clsx(classes.formControl, classes.fullWidth)}
-                             disabled={!getCheckboxValueForUserRestrictions()}>
+                             disabled={!selectedSubsegment().user_restriction}>
                   Nutzergruppe:
                   <Select
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
-                    value={selectedSubsegment().user_restrictions || USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS}
-                    onChange={updateSubsegment(setUserRestriction)}
+                    value={selectedSubsegment().user_restriction_reason || USER_RESTRICTIONS.UNKNOWN}
+                    onChange={updateSubsegment(setUserRestrictionReason)}
                     variant={'outlined'}
                   >
-                    <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>
-                    <MenuItem value={USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS}>Unbekannte Nutzergruppe</MenuItem>
+                    {selectedSubsegment().user_restriction === false && <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>}
+                    <MenuItem value={USER_RESTRICTIONS.UNKNOWN}>Unbekannte Nutzergruppe</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.CAR_SHARING}>Car Sharing</MenuItem>

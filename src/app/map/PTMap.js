@@ -193,7 +193,7 @@ export function MapController({
 function configureGeoman(map) {
     map.setLang('de');
     map.setGlobalOptions({
-        allowSelfIntersection: false,
+        // allowSelfIntersection: false, <-- I don't know why this causes issues.
         removeLayerBelowMinVertexCount: false,
         snappable: false
     })

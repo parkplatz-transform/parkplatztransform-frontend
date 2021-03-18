@@ -25,7 +25,7 @@ export default object().shape({
     }),
     quality: number().positive(),
     fee: boolean().nullable(),
-    street_location: string().required(),
+    street_location: string().nullable(),
     marked: boolean().nullable(),
     alignment: string().nullable(),
     duration_constraint: boolean().nullable(),

@@ -16,8 +16,7 @@ export const ALIGNMENT = {
 }
 
 export const USER_RESTRICTIONS = {
-  UNKNOWN: null,
-  RESTRICTED_FOR_UNKNOWN_USERS: 'unknown',
+  UNKNOWN: 'unknown',
   HANDICAP: 'handicap',
   RESIDENTS: 'residents',
   CAR_SHARING: 'car_sharing',
@@ -90,7 +89,7 @@ export function setDurationConstraintDetails (subsegment, details) {
 
 export function setLengthInMeters (subsegment, length) {
   // due to too much generification we get a `false` here if the string is empty...
-  if (Number.isInteger(Number(length))) {
+  if (Number(length)) {
     subsegment.length_in_meters = length
   } else {
     subsegment.length_in_meters = null
@@ -122,15 +121,17 @@ export function setStreetLocation (subsegment, street_location) {
 }
 
 export function setUserRestriction (subsegment, userRestriction) {
-  let valueToSet
-  if (userRestriction === true) {
-    valueToSet = USER_RESTRICTIONS.RESTRICTED_FOR_UNKNOWN_USERS
-  } else if (userRestriction === false) {
-    valueToSet = USER_RESTRICTIONS.NO_RESTRICTION
-  } else {
-    valueToSet = userRestriction
+  if (userRestriction === false) {
+    subsegment.user_restriction_reason = USER_RESTRICTIONS.NO_RESTRICTION
   }
-  subsegment.user_restrictions = valueToSet
+  if (userRestriction === null) {
+    subsegment.user_restriction_reason = USER_RESTRICTIONS.UNKNOWN
+  }
+  subsegment.user_restriction = userRestriction
+}
+
+export function setUserRestrictionReason (subsegment, userRestrictionReason) {
+  subsegment.user_restriction_reason = userRestrictionReason
 }
 
 export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
@@ -166,11 +167,12 @@ export function createEmptySubsegment () {
     fee: null,
     street_location: STREET_LOCATION.STREET,
     marked: null, //null,
-    alignment: ALIGNMENT.UNKNOWN,
+    alignment: ALIGNMENT.PARALLEL,
     duration_constraint: null,
-    duration_constraint_details: null,
+    duration_constraint_reason: null,
     // TODO: should be singular?
-    user_restrictions: USER_RESTRICTIONS.UNKNOWN,
+    user_restriction: null,
+    user_restriction_reason: USER_RESTRICTIONS.UNKNOWN,
     time_constraint: null,
     time_constraint_reason: null,   // TODO: should be renamed to `time_constraint_details`
     alternative_usage_reason: null,
