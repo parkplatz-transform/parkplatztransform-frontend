@@ -230,9 +230,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
   function duplicateSubsegment (subsegment) {
     const newSubsegment = {...subsegment}
-    delete newSubsegment.id
-    delete newSubsegment.created_at
-    delete newSubsegment.modified_at
 
     const newSubsegments = [...segment.properties.subsegments]
     // Insert in the right position  --> at end of list
@@ -567,7 +564,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
                              InputLabelProps={{shrink: true}}
                              rows={3}
                              rowsMax={5}
-                             value={selectedSubsegment().duration_constraint_details}
+                             value={selectedSubsegment().duration_constraint_reason}
                              onChange={updateSubsegment(setDurationConstraintDetails)}
                   />
                 </FormControl>
