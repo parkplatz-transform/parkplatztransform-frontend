@@ -161,7 +161,7 @@ function Recording () {
 
       const updatedSegment = await updateSegment(sanitizedSegment)
       addSegment(updatedSegment)
-      console.log("From client:")
+      console.log("Client set:")
       console.table(segment.properties.subsegments)
       console.log("Server returned:")
       console.table(updatedSegment.properties.subsegments)
