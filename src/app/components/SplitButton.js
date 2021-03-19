@@ -73,7 +73,7 @@ export default function SplitButton ({optionsAndCallbacks}) {
             : null
           }
         </ButtonGroup>
-        <Popper style={{zIndex: 100}} open={open} anchorEl={anchorRef.current} role={undefined} transition
+        <Popper style={{zIndex: 400}} open={open} anchorEl={anchorRef.current} role={undefined} transition
                 disablePortal>
           {({TransitionProps, placement}) => (
             <Grow
