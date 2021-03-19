@@ -25,6 +25,7 @@ import {
   TableRow,
   TextField
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
@@ -153,10 +154,13 @@ const useStyles = makeStyles((theme) => ({
   bottomButton: {
     width: 'calc(100% - 30px)',
     margin: '10px 15px 70px'
+  },
+  closeButton: {
+    float: 'right'
   }
 }))
 
-export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
+export default function SegmentForm ({segment, onChanged, onValidationFailed, onClose}) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -754,8 +758,11 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed}) {
 
   return (
     <div className={classes.formView} onMouseLeave={isChanged > 0 ? save : null}>
+      <div className={classes.closeButton}>
+        <IconButton onClick={onClose}><CloseIcon/></IconButton>
+      </div>
       <div className={classes.headerContainer}>
-        <h4>Unterabschnitt</h4>
+        <h4>Abschnitt</h4>
         <Button
           onClick={save}
           disabled={isChanged === 0}

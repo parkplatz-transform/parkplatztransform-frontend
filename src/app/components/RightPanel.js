@@ -51,6 +51,7 @@ function RightPanel({
   segment,
   onSegmentChanged,
   setAlertDisplayed,
+  onSegmentClose
 }) {
   const classes = useStyles()
 
@@ -116,6 +117,7 @@ function RightPanel({
       segment={segment}
       onChanged={onSegmentChanged}
       onValidationFailed={onValidationFailed}
+      onClose={onSegmentClose}
     />
   )
 }

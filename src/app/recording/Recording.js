@@ -223,6 +223,7 @@ function Recording () {
             segment={segmentsById[selectedSegmentId]}
             onSegmentChanged={onSegmentChanged}
             setAlertDisplayed={setAlertDisplayed}
+            onSegmentClose={() => setSelectedSegmentId(null)}
           />
         </div>
       </div>
