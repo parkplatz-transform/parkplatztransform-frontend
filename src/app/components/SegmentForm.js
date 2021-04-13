@@ -64,6 +64,7 @@ import getString from '../../strings'
 import subsegmentSchema from '../recording/SubsegmentSchema'
 import YesNoUnknownCheckbox from './YesNoUnknownCheckbox'
 import DialogContentText from '@material-ui/core/DialogContentText'
+import { DATA_SOURCES, setDataSource, setFurtherComments } from '../recording/Segment'
 
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites'
 
@@ -97,6 +98,11 @@ const useStyles = makeStyles((theme) => ({
   header: {
     margin: '20px',
     textAlign: 'center',
+    fontWeight: 'normal'
+  },
+  headerLeftAligned: {
+    margin: '20px',
+    textAlign: 'left',
     fontWeight: 'normal'
   },
   headerContainer: {
@@ -137,6 +143,9 @@ const useStyles = makeStyles((theme) => ({
   },
   fullWidth: {
     width: '100%',
+  },
+  twoThirdWidth: {
+    width: 'calc(100% * 2 / 3)'
   },
   halfWidth: {
     width: 'calc(100% / 2)'
@@ -200,7 +209,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
   }, [isChanged, errors, onChanged, segment])
 
   function addFavorite (name, subsegmentToFavorite) {
-    const subsegment = { ...subsegmentToFavorite, id: null, order_number: null }
+    const subsegment = {...subsegmentToFavorite, id: null, order_number: null}
     const updatedFavorites = favorites.concat({name, subsegment})
     setFavorites(updatedFavorites)
     localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITES, JSON.stringify(updatedFavorites))
@@ -248,6 +257,18 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
 
   function getButtonVariant (highlighted) {
     return highlighted ? 'contained' : 'outlined'
+  }
+
+  /**
+   *
+   * @param segmentChangeFunction - A function that takes a segment as first argument. A optional second arg
+   *   takes the event's value
+   */
+  function updateSegment (segmentChangeFunction) {
+    return (event) => {
+      segmentChangeFunction(segment, event?.target?.value)
+      setChanged()
+    }
   }
 
   /**
@@ -346,7 +367,43 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
     )
   }
 
-  function renderList () {
+  function renderSegmentProperties () {
+
+    return (
+      <React.Fragment>
+        {/* data source */}
+        <FormControl key={'data_source'} className={clsx(classes.formControl, classes.twoThirdWidth)}>
+          <FormLabel component="legend">Datenquelle</FormLabel>
+          <Select
+            labelId="select_data_source"
+            id="select_data_source"
+            value={segment.properties?.data_source || null}
+            onChange={updateSegment(setDataSource)}
+            variant={'outlined'}
+          >
+            <MenuItem value={null}>&nbsp;</MenuItem>
+            <MenuItem value={DATA_SOURCES.OWN_COUNTING}>Eigene Zählung</MenuItem>
+            <MenuItem value={DATA_SOURCES.PARKPLATZ_TRANSFORM}>Parkplatz Transform</MenuItem>
+            <MenuItem value={DATA_SOURCES.HOFFMANN_LEICHTER}>Hoffmann leichter</MenuItem>
+            <MenuItem value={DATA_SOURCES.LK_ARGUS}>LK Argus</MenuItem>
+            <MenuItem value={DATA_SOURCES.OTHER}>Sonstiges</MenuItem>
+          </Select>
+        </FormControl>
+
+      {/*  futher comments*/}
+        <FormControl className={clsx(classes.withoutLabel, classes.marginLeftRight, classes.twoThirdWidth)}>
+          <TextField
+            label="Kommentar"
+            type="text"
+            value={segment.properties?.further_comments}
+            onChange={updateSegment(setFurtherComments)}
+          />
+        </FormControl>
+      </React.Fragment>
+    )
+  }
+
+  function renderSubsegmentList () {
     if (segment.properties && segment.properties.subsegments) {
       const listItems = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number).map((subsegment) => {
         let title
@@ -617,7 +674,8 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
                     onChange={updateSubsegment(setUserRestrictionReason)}
                     variant={'outlined'}
                   >
-                    {selectedSubsegment().user_restriction === false && <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>}
+                    {selectedSubsegment().user_restriction === false &&
+                    <MenuItem value={USER_RESTRICTIONS.NO_RESTRICTION}>Alle Nutzer*innen</MenuItem>}
                     <MenuItem value={USER_RESTRICTIONS.UNKNOWN}>Unbekannte Nutzergruppe</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.HANDICAP}>Behinderung</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.RESIDENTS}>Anwohner*innen mit Parkausweis</MenuItem>
@@ -698,7 +756,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
     return null
   }
 
-  function renderDetails () {
+  function renderSubsegmentDetails () {
     const subsegment = selectedSubsegment()
     if (!selectedSubsegment()) {
       return (
@@ -762,7 +820,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
         <IconButton onClick={onClose}><CloseIcon/></IconButton>
       </div>
       <div className={classes.headerContainer}>
-        <h4>Abschnitt</h4>
         <Button
           onClick={save}
           disabled={isChanged === 0}
@@ -772,8 +829,12 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           {getString('save')}
         </Button>
       </div>
+      <div className={classes.marginTop}>
+        {renderSegmentProperties()}
+      </div>
+      <h4 className={clsx(classes.headerLeftAligned)}>Unterabschnitte:</h4>
       <div className={classes.list}>
-        {renderList()}
+        {renderSubsegmentList()}
       </div>
       <SplitButton optionsAndCallbacks={
         [
@@ -788,7 +849,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
         ]
       }/>
       <form onChange={() => { setErrors({}) }}>
-        {renderDetails()}
+        {renderSubsegmentDetails()}
       </form>
       {renderAddToFavoriteDialog()}
     </div>

@@ -1,5 +1,21 @@
 import { ALIGNMENT, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
 
+export const DATA_SOURCES = {
+    PARKPLATZ_TRANSFORM: "parkplatz_transform",
+    OWN_COUNTING: "own_counting",
+    LK_ARGUS: "lk_argus",
+    HOFFMANN_LEICHTER: "hoffmann_leichter",
+    OTHER: 'other'
+}
+
+export function setDataSource (segment, dataSource) {
+    segment.properties.data_source = dataSource
+}
+
+export function setFurtherComments (segment, comments) {
+    segment.properties.further_comments = comments
+}
+
 /**
  * returns a sanitized copy or null if has invalid configurations
  */
