@@ -313,6 +313,10 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
     }
   }
 
+  function getSegmentKey () {
+    return segment.id || 'new segment'
+  }
+
   function getKey () {
     return selectedSubsegment().order_number || 'new_subsegment'
   }
@@ -372,7 +376,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
     return (
       <React.Fragment>
         {/* data source */}
-        <FormControl key={'data_source'} className={clsx(classes.formControl, classes.twoThirdWidth)}>
+        <FormControl key={`${getSegmentKey()}_data_source`} className={clsx(classes.formControl, classes.twoThirdWidth)}>
           <FormLabel component="legend">Datenquelle</FormLabel>
           <Select
             labelId="select_data_source"
@@ -391,7 +395,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
         </FormControl>
 
       {/*  futher comments*/}
-        <FormControl className={clsx(classes.withoutLabel, classes.marginLeftRight, classes.twoThirdWidth)}>
+        <FormControl key={`${getSegmentKey()}_comment`} className={clsx(classes.withoutLabel, classes.marginLeftRight, classes.twoThirdWidth)}>
           <TextField
             label="Kommentar"
             type="text"
