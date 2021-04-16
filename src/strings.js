@@ -44,7 +44,7 @@ const strings = {
 
   // Download & Save buttons
   download_geo_json: () => 'Daten herunterladen',
-  download_visible_segments: () => 'GeoJSON - sichtbaren Bereich',
+  download_visible_segments: () => 'GeoJSON - sichtbarer Bereich',
   download_all_segments: () => 'GeoJSON - alle geladenen Bereiche',
   save: () => 'Speichern',
 
