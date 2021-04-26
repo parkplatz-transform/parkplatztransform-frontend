@@ -53,7 +53,7 @@ export default function TemporaryDrawer() {
       onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {['Home', 'Howto', 'Impressum'].map((text, index) => (
+        {['Home', 'Howto', 'Impressum', 'Datenschutz'].map((text, index) => (
           <Link className={classes.link} to={`/${text.toLowerCase()}`}>
             <ListItem button key={text}>
               <ArrowForwardIcon className={classes.icon} />

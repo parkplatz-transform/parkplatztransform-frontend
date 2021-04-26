@@ -7,6 +7,7 @@ import Recording from './recording/Recording'
 import MainMenu from './components/MainMenu'
 import HowTo from './components/HowTo'
 import Impressum from './components/Impressum'
+import DataPolicy from './components/DataPolicy'
 import VerifyToken from './components/VerifyToken'
 import { UserProvider } from './context/UserContext'
 
@@ -32,11 +33,10 @@ function App() {
         </Route>
         <Route exact path='/howto' component={HowTo} />
         <Route exact path='/impressum' component={Impressum} />
+        <Route exact path='/datenschutz' component={DataPolicy} />
         <Route path='/verify-token' component={VerifyToken} />
         <Route exact path='/:lat/:lng/:zm' component={Recording} />
       </Router>
-
-
     </UserProvider>
   )
 }
