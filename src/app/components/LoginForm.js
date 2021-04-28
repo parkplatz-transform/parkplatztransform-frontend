@@ -1,6 +1,10 @@
 import React from 'react';
 import { useMutate } from 'restful-react';
 import Button from '@material-ui/core/Button';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Link } from '@material-ui/core'
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -18,6 +22,7 @@ const FORM_STATE = Object.freeze({
 
 export default function LoginForm({ open, setOpen }) {
   const [email, setEmail] = React.useState('')
+  const [accepted, setAccepted] = React.useState(false)
   const [formState, setFormState] = React.useState(FORM_STATE.INITIAL)
   const { mutate } = useMutate({
     verb: 'POST',
@@ -25,9 +30,12 @@ export default function LoginForm({ open, setOpen }) {
     headers: headers.contentJSON
   });
 
+  function isValid() {
+    return (email.length > 0) && accepted
+  }
+
   const requestMagicLink = () => {
-    mutate({ email }).catch((error) => {
-      console.error(error)
+    mutate({ email, accepted_terms_and_conditions: accepted }).catch((error) => {
       setFormState(FORM_STATE.FAILURE)
     }).then((response) => {
       if (response?.email) {
@@ -45,7 +53,7 @@ export default function LoginForm({ open, setOpen }) {
         <DialogContent>
           <DialogContentText>
             Bitte gib deine E-Mail-Adresse ein, um dich bei ParkplatzTransform anzumelden.
-          </DialogContentText>
+            </DialogContentText>
           <TextField
             error={(email.length && !email.includes('@'))}
             autoFocus
@@ -57,12 +65,21 @@ export default function LoginForm({ open, setOpen }) {
             value={email}
             onChange={(event) => setEmail(event.currentTarget.value)}
           />
+          <FormControlLabel control={
+            <Checkbox
+              checked={accepted}
+              onChange={() => setAccepted(!accepted)}
+              color="primary"
+            />
+          } label={
+            <p>Ich habe die <Link href="/datenschutz">Datenschutzerklärung</Link> gelesen und akzeptiere sie</p>
+          } />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)} color="primary">
             Abbrechen
           </Button>
-          <Button onClick={requestMagicLink} color="primary" disabled={!(email.length && email.includes('@'))}>
+          <Button onClick={requestMagicLink} color="primary" disabled={!isValid()}>
             Anmelden
           </Button>
         </DialogActions>
@@ -80,8 +97,8 @@ export default function LoginForm({ open, setOpen }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { 
-            setOpen(false) 
+          <Button onClick={() => {
+            setOpen(false)
             setFormState(FORM_STATE.INITIAL)
           }} color="primary">
             Fertig
@@ -90,7 +107,7 @@ export default function LoginForm({ open, setOpen }) {
       </div>
     )
   }
-  
+
   function renderFailure() {
     return (
       <div>

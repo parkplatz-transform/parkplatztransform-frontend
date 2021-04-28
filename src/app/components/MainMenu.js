@@ -59,7 +59,6 @@ function MainMenu() {
 
   const handleLogout = async () => {
     await logoutUser()
-    window.location.href = '/'
   }
 
   return (
