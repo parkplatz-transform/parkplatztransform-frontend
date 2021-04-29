@@ -8,18 +8,18 @@ export const DATA_SOURCES = {
     OTHER: 'other'
 }
 
-export function setDataSource (segment, dataSource) {
+export function setDataSource(segment, dataSource) {
     segment.properties.data_source = dataSource
 }
 
-export function setFurtherComments (segment, comments) {
+export function setFurtherComments(segment, comments) {
     segment.properties.further_comments = comments
 }
 
 /**
  * returns a sanitized copy or null if has invalid configurations
  */
-export function sanitizeSegment (segment) {
+export function sanitizeSegment(segment) {
     const copy = JSON.parse(JSON.stringify(segment))
     const emptySubsegment = createEmptySubsegment()
 
@@ -48,7 +48,7 @@ export function sanitizeSegment (segment) {
             subsegment.marked = emptySubsegment.marked
             subsegment.alignment = emptySubsegment.alignment
             subsegment.duration_constraint = emptySubsegment.duration_constraint
-            subsegment.duration_constraint_reason = emptySubsegment.duration_constraint_details
+            subsegment.duration_constraint_reason = emptySubsegment.duration_constraint_reason
             subsegment.user_restriction = emptySubsegment.user_restrictions
             subsegment.user_restriction_reason = emptySubsegment.user_restrictions
             subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason

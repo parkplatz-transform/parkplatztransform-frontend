@@ -55,39 +55,39 @@ export const NO_PARKING_REASONS_AND_LABEL = {
   'pedestrian_zone': 'Fußgängerzone'
 }
 
-export function setParkingIsAllowed (subsegment) {
+export function setParkingIsAllowed(subsegment) {
   subsegment.parking_allowed = true
 }
 
-export function setParkingIsNotAllowed (subsegment) {
+export function setParkingIsNotAllowed(subsegment) {
   subsegment.parking_allowed = false
 }
 
-export function setIsMarked (subsegment, isMarked) {
+export function setIsMarked(subsegment, isMarked) {
   subsegment.marked = isMarked
 }
 
-export function setHasTimeConstraint (subsegment, hasTimeConstraint) {
+export function setHasTimeConstraint(subsegment, hasTimeConstraint) {
   subsegment.time_constraint = hasTimeConstraint
 }
 
-export function setHasFee (subsegment, hasFee) {
+export function setHasFee(subsegment, hasFee) {
   subsegment.fee = hasFee
 }
 
-export function setDurationConstraint (subsegment, hasDurationConstraint) {
+export function setDurationConstraint(subsegment, hasDurationConstraint) {
   subsegment.duration_constraint = hasDurationConstraint
 }
 
-export function setDurationConstraintDetails (subsegment, details) {
+export function setDurationConstraintDetails(subsegment, details) {
   if (typeof details === "string") {
-    subsegment.duration_constraint_details = details && details.trim().length > 0 ? details.trim() : null
+    subsegment.duration_constraint_reason = details && details.trim().length > 0 ? details.trim() : null
   } else {
-    subsegment.duration_constraint_details = null
+    subsegment.duration_constraint_reason = null
   }
 }
 
-export function setLengthInMeters (subsegment, length) {
+export function setLengthInMeters(subsegment, length) {
   // due to too much generification we get a `false` here if the string is empty...
   if (Number(length)) {
     subsegment.length_in_meters = length
@@ -96,7 +96,7 @@ export function setLengthInMeters (subsegment, length) {
   }
 }
 
-export function setCarCount (subsegment, car_count) {
+export function setCarCount(subsegment, car_count) {
   // due to too much generification we get a `false` here if the string is empty...
   if (Number.isInteger(Number(car_count))) {
     subsegment.car_count = car_count
@@ -108,7 +108,7 @@ export function setCarCount (subsegment, car_count) {
 /**
  * TODO: rename to setTimeConstraintDetails
  */
-export function setTimeConstraintReason (subsegment, reason) {
+export function setTimeConstraintReason(subsegment, reason) {
   if (typeof reason === "string") {
     subsegment.time_constraint_reason = reason
   } else {
@@ -116,11 +116,11 @@ export function setTimeConstraintReason (subsegment, reason) {
   }
 }
 
-export function setStreetLocation (subsegment, street_location) {
+export function setStreetLocation(subsegment, street_location) {
   subsegment.street_location = street_location
 }
 
-export function setUserRestriction (subsegment, userRestriction) {
+export function setUserRestriction(subsegment, userRestriction) {
   if (userRestriction === false) {
     subsegment.user_restriction_reason = USER_RESTRICTIONS.NO_RESTRICTION
   }
@@ -130,21 +130,21 @@ export function setUserRestriction (subsegment, userRestriction) {
   subsegment.user_restriction = userRestriction
 }
 
-export function setUserRestrictionReason (subsegment, userRestrictionReason) {
+export function setUserRestrictionReason(subsegment, userRestrictionReason) {
   subsegment.user_restriction_reason = userRestrictionReason
 }
 
-export function setAlternativeUsageReason (subsegment, alternativeUsageReason) {
+export function setAlternativeUsageReason(subsegment, alternativeUsageReason) {
   subsegment.alternative_usage_reason = alternativeUsageReason === ALTERNATIVE_USAGE_REASON.UNKNOWN
     ? null
     : alternativeUsageReason
 }
 
-export function setAlignment (subsegment, alignment) {
+export function setAlignment(subsegment, alignment) {
   subsegment.alignment = alignment
 }
 
-export function getToggleNoParkingReasonFn (reason) {
+export function getToggleNoParkingReasonFn(reason) {
   return (subsegment) => {
     if (!subsegment.no_parking_reasons) {
       subsegment.no_parking_reasons = [reason]
@@ -157,7 +157,7 @@ export function getToggleNoParkingReasonFn (reason) {
 
 }
 
-export function createEmptySubsegment () {
+export function createEmptySubsegment() {
   return {
     parking_allowed: true,
     order_number: null,   // to be set by caller
