@@ -1,5 +1,6 @@
 import React from 'react'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { MapContainer, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { useHistory, useParams } from 'react-router-dom'
 import * as turf from '@turf/turf'
@@ -74,37 +75,37 @@ export function DownloadSegmentsButton ({segments}) {
   return (
     <div className={classes.downloadButton}>
       <SplitButton optionsAndCallbacks={[
-        {label: getString('download_geo_json')},
+        { label: getString('download_geo_json') },
         {
           label: getString('download_visible_segments'),
           disabled: !segmentsAreInBounds(),
           callback: downloadVisibleSegments
         },
-        {label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments},
-      ]}/>
+        { label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments },
+      ]} />
     </div>
   )
 }
 
-export function MapController ({
-                                 segments,
-                                 onBoundsChanged,
-                                 onSegmentSelect,
-                                 onSegmentDeleted,
-                                 onSegmentCreated,
-                                 onSegmentEdited,
-                                 selectedSegmentId
-                               }) {
+export function MapController({
+  segments,
+  onBoundsChanged,
+  onSegmentSelect,
+  onSegmentDeleted,
+  onSegmentCreated,
+  onSegmentEdited,
+  selectedSegmentId
+}) {
   const history = useHistory()
 
   // Position Controller
   const map = useMapEvents({
-    'pm:create': async ({layer}) => {
+    'pm:create': async ({ layer }) => {
       await onSegmentCreated(layer.toGeoJSON())
       layer.remove() // since once the server's response comes back it will be rendered over the top
     },
     moveend: (event) => {
-      const {lat, lng} = event.target.getCenter()
+      const { lat, lng } = event.target.getCenter()
       const zm = event.target.getZoom()
 
       if (lat && lng && zm) {
@@ -114,7 +115,7 @@ export function MapController ({
     }
   })
 
-  function setLineWeight () {
+  function setLineWeight() {
     const zm = map._zoom
     if (zm <= 14) {
       return '1'
@@ -125,7 +126,7 @@ export function MapController ({
     return '4'
   }
 
-  function setSegmentStyle (segment) {
+  function setSegmentStyle(segment) {
     const styles = {
       color: UNSELECTED_SEGMENT_COLOR,
       weight: setLineWeight(),
@@ -141,7 +142,7 @@ export function MapController ({
 
   return segments.map(segment => {
     const line = turf.lineString(segment.geometry.coordinates)
-    const length = turf.length(line, {units: 'meters'})
+    const length = turf.length(line, { units: 'meters' })
     return <Polyline
       pathOptions={setSegmentStyle(segment)}
       key={segment.id}
@@ -160,7 +161,7 @@ export function MapController ({
       eventHandlers={{
         'pm:edit': (event) => {
           // Need to merge the old segment with new geometry
-          onSegmentEdited({...segment, geometry: event.layer.toGeoJSON().geometry})
+          onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
         },
         'pm:remove': async (event) => {
           const confirmDelete = window.confirm(getString('segment_delete_confirm'))
@@ -185,7 +186,7 @@ export function MapController ({
   })
 }
 
-function configureGeoman (map) {
+function configureGeoman(map) {
   map.setLang('de')
   map.setGlobalOptions({
     // allowSelfIntersection: false, <-- I don't know why this causes issues.
@@ -206,15 +207,15 @@ function configureGeoman (map) {
   })
 }
 
-function PTMap ({onBoundsChanged, children}) {
-  const {lat, lng, zm} = useParams()
+function PTMap({ onBoundsChanged, children }) {
+  const { lat, lng, zm } = useParams()
 
   return (
     <>
       <MapContainer
         center={[lat, lng]}
         zoom={zm}
-        style={{position: 'static'}}
+        style={{ position: 'static' }}
         scrollWheelZoom={true}
         whenReady={(map) => {
           onBoundsChanged(map.target.getBounds())

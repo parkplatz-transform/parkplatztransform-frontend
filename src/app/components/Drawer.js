@@ -54,8 +54,8 @@ export default function TemporaryDrawer() {
     >
       <List>
         {['Home', 'Howto', 'Impressum', 'Datenschutz'].map((text, index) => (
-          <Link className={classes.link} to={`/${text.toLowerCase()}`}>
-            <ListItem button key={text}>
+          <Link key={`${text}-${index}`} className={classes.link} to={`/${text.toLowerCase()}`}>
+            <ListItem button>
               <ArrowForwardIcon className={classes.icon} />
               <ListItemText className={classes.paddingLeft} primary={text} />
             </ListItem>
