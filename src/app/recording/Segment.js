@@ -38,9 +38,6 @@ export function sanitizeSegment (segment) {
             if (subsegment.user_restriction_reason === USER_RESTRICTIONS.UNKNOWN) {
                 subsegment.user_restriction_reason = null
             }
-            if (subsegment.duration_constraint !== true) {
-                subsegment.duration_constraint_details = emptySubsegment.duration_constraint_details
-            }
             if (subsegment.time_constraint !== true) {
                 subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
             }
@@ -51,8 +48,9 @@ export function sanitizeSegment (segment) {
             subsegment.marked = emptySubsegment.marked
             subsegment.alignment = emptySubsegment.alignment
             subsegment.duration_constraint = emptySubsegment.duration_constraint
-            subsegment.duration_constraint_details = emptySubsegment.duration_constraint_details
-            subsegment.user_restrictions = emptySubsegment.user_restrictions
+            subsegment.duration_constraint_reason = emptySubsegment.duration_constraint_details
+            subsegment.user_restriction = emptySubsegment.user_restrictions
+            subsegment.user_restriction_reason = emptySubsegment.user_restrictions
             subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
             subsegment.time_constraint = emptySubsegment.time_constraint
             subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason
