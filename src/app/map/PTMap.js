@@ -1,7 +1,7 @@
 import React from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapContainer, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, Polyline, Polygon, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { useHistory, useParams } from 'react-router-dom'
 import * as turf from '@turf/turf'
 import 'leaflet-arrowheads'
@@ -29,17 +29,17 @@ const useStyles = makeStyles({
   }
 })
 
-export function DownloadSegmentsButton ({segments}) {
+export function DownloadSegmentsButton({ segments }) {
   const classes = useStyles()
   const map = useMap()
 
-  function bboxToLeafletBounds (bbox) {
+  function bboxToLeafletBounds(bbox) {
     const corner1 = L.latLng(bbox[1], bbox[0])
     const corner2 = L.latLng(bbox[3], bbox[2])
     return L.latLngBounds(corner1, corner2)
   }
 
-  function downloadSegments (_segments) {
+  function downloadSegments(_segments) {
     const data = {
       'type': 'FeatureCollection',
       'features': _segments,
@@ -57,16 +57,16 @@ export function DownloadSegmentsButton ({segments}) {
     document.body.removeChild(element)
   }
 
-  function downloadAllSegments () {
+  function downloadAllSegments() {
     downloadSegments(segments)
   }
 
-  function downloadVisibleSegments () {
+  function downloadVisibleSegments() {
     const visibleSegments = segments.filter(segment => map.getBounds().intersects(bboxToLeafletBounds(segment.bbox)))
     downloadSegments(visibleSegments)
   }
 
-  function segmentsAreInBounds () {
+  function segmentsAreInBounds() {
     return segments.some(segment =>
       map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
     )
@@ -141,48 +141,77 @@ export function MapController({
   }
 
   return segments.map(segment => {
-    const line = turf.lineString(segment.geometry.coordinates)
-    const length = turf.length(line, { units: 'meters' })
-    return <Polyline
-      pathOptions={setSegmentStyle(segment)}
-      key={segment.id}
-      ref={(el) => {
-        if (el && selectedSegmentId && (segment.id === selectedSegmentId)) {
-          el.arrowheads({
-            color: SELECTED_SEGMENT_COLOR,
-            frequency: 'endonly',
-            size: '5%',
-            yawn: 80,
-          })
-        } else if (el) {
-          el.deleteArrowheads()
-        }
-      }}
-      eventHandlers={{
-        'pm:edit': (event) => {
-          // Need to merge the old segment with new geometry
-          onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
-        },
-        'pm:remove': async (event) => {
-          const confirmDelete = window.confirm(getString('segment_delete_confirm'))
-          if (confirmDelete) {
-            await onSegmentDeleted(segment.id)
-          } else {
-            // Add the layer back
-            map.addLayer(event.layer)
+    if (segment.geometry.type === 'LineString') {
+      const line = turf.lineString(segment.geometry.coordinates)
+      const length = turf.length(line, { units: 'meters' })
+      return <Polyline
+        pathOptions={setSegmentStyle(segment)}
+        key={segment.id}
+        ref={(el) => {
+          if (el && selectedSegmentId && (segment.id === selectedSegmentId)) {
+            el.arrowheads({
+              color: SELECTED_SEGMENT_COLOR,
+              frequency: 'endonly',
+              size: '5%',
+              yawn: 80,
+            })
+          } else if (el) {
+            el.deleteArrowheads()
           }
-        },
-        click: (event) => {
-          if (!map.pm._globalRemovalMode) {
-            onSegmentSelect(segment.id)
+        }}
+        eventHandlers={{
+          'pm:edit': (event) => {
+            // Need to merge the old segment with new geometry
+            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+          },
+          'pm:remove': async (event) => {
+            const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+            if (confirmDelete) {
+              await onSegmentDeleted(segment.id)
+            } else {
+              // Add the layer back
+              map.addLayer(event.layer)
+            }
+          },
+          click: (event) => {
+            if (!map.pm._globalRemovalMode) {
+              onSegmentSelect(segment.id)
+            }
           }
-        }
-      }}
-      positions={segment.geometry.coordinates.map(([lat, lng]) => [lng, lat])}>
-      <Tooltip>
-        Länge: {Math.round(length + Number.EPSILON)} m
-      </Tooltip>
-    </Polyline>
+        }}
+        positions={segment.geometry.coordinates.map(([lat, lng]) => [lng, lat])}>
+        <Tooltip>
+          Länge: {Math.round(length + Number.EPSILON)} m
+        </Tooltip>
+      </Polyline>
+    } else if (segment.geometry.type === 'Polygon') {
+      return <Polygon
+        pathOptions={setSegmentStyle(segment)}
+        key={segment.id}
+        eventHandlers={{
+          'pm:edit': (event) => {
+            // Need to merge the old segment with new geometry
+            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+          },
+          'pm:remove': async (event) => {
+            const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+            if (confirmDelete) {
+              await onSegmentDeleted(segment.id)
+            } else {
+              // Add the layer back
+              map.addLayer(event.layer)
+            }
+          },
+          click: (event) => {
+            if (!map.pm._globalRemovalMode) {
+              onSegmentSelect(segment.id)
+            }
+          }
+        }}
+        positions={segment.geometry.coordinates[0].map(([lat, lng]) => [lng, lat])}>
+      </Polygon>
+
+    }
   })
 }
 
@@ -199,7 +228,7 @@ function configureGeoman(map) {
     drawCircleMarker: false,
     drawPolyline: true,
     drawRectangle: false,
-    drawPolygon: false,
+    drawPolygon: true,
     editMode: true,
     dragMode: false,
     cutPolygon: false,
