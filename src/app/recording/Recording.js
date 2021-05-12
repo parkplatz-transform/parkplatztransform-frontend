@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
 
-import PTMap, { MapController, DownloadSegmentsButton } from '../map/PTMap'
+import PTMap, { DownloadSegmentsButton, MapController } from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
-import { getSegment, getSegments, postSegment, updateSegment, deleteSegment } from '../../helpers/api'
+import { deleteSegment, getSegment, getSegments, postSegment, updateSegment } from '../../helpers/api'
 import RightPanel from '../components/RightPanel'
 import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
@@ -81,12 +81,12 @@ function Recording () {
     const bottomLeft = `${boundingBox.swLng},${boundingBox.swLat}`
     const topLeft = `${boundingBox.neLng},${boundingBox.swLat}`
 
-    const knownSegmentIdsInBounds = getLoadedSegmentIdsInBounds(boundingBox)
+    const modifiedAfter = getYoungestModifiedDateOfSegmentsInBounds(boundingBox)
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       setIsLoading(true)
-      const geoJson = await getSegments(boundingBoxString, knownSegmentIdsInBounds)
+      const geoJson = await getSegments(boundingBoxString, modifiedAfter)
       addSegments(geoJson.features)
       setIsLoading(false)
       setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
@@ -124,17 +124,22 @@ function Recording () {
     return loadedBoundingBoxesRef.current.some(bbox => bboxContainsBBox(bbox, boundingBox))
   }
 
-  function getLoadedSegmentIdsInBounds (boundingBox) {
-    return Object.values(segmentsById).filter(segment => {
-      if (segment.bbox) {
-        const swLng = segment.bbox[0]
-        const swLat = segment.bbox[1]
-        const neLng = segment.bbox[2]
-        const neLat = segment.bbox[3]
-        return bboxIntersectsBBox(boundingBox, {swLng, swLat, neLng, neLat})
-      }
-      return false
-    }).map(segment => segment.id)
+  function getYoungestModifiedDateOfSegmentsInBounds (boundingBox) {
+    return Object.values(segmentsById)
+      .filter(segment => {
+        if (segment.bbox) {
+          const swLng = segment.bbox[0]
+          const swLat = segment.bbox[1]
+          const neLng = segment.bbox[2]
+          const neLat = segment.bbox[3]
+          return bboxIntersectsBBox(boundingBox, {swLng, swLat, neLng, neLat})
+        }
+        return false
+      })
+      .map(segment => segment.properties?.modified_at)
+      .filter(Boolean)
+      .sort()
+      .reverse()[0]
   }
 
   function addSegment (newOrUpdatedSegment) {
@@ -150,7 +155,6 @@ function Recording () {
     setSegmentsById(newSegmentsById)
   }
 
-
   async function onSegmentChanged (segment) {
     try {
       const sanitizedSegment = sanitizeSegment(segment)
@@ -161,9 +165,9 @@ function Recording () {
 
       const updatedSegment = await updateSegment(sanitizedSegment)
       addSegment(updatedSegment)
-      console.log("Client set:")
+      console.log('Client set:')
       console.table(segment.properties.subsegments)
-      console.log("Server returned:")
+      console.log('Server returned:')
       console.table(updatedSegment.properties.subsegments)
       setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
       return true
@@ -200,17 +204,17 @@ function Recording () {
       <div className={classes.container}>
         <div className={classes.mapArea}>
           <PTMap
-            key='map'
+            key="map"
             onBoundsChanged={onBoundsChange}
           >
             <MapController
-                onBoundsChanged={onBoundsChange}
-                segments={Object.values(segmentsById)}
-                onSegmentSelect={onSegmentSelect}
-                onSegmentDeleted={onSegmentDeleted}
-                onSegmentEdited={onSegmentEdited}
-                onSegmentCreated={onSegmentCreated}
-                selectedSegmentId={selectedSegmentId}
+              onBoundsChanged={onBoundsChange}
+              segments={Object.values(segmentsById)}
+              onSegmentSelect={onSegmentSelect}
+              onSegmentDeleted={onSegmentDeleted}
+              onSegmentEdited={onSegmentEdited}
+              onSegmentCreated={onSegmentCreated}
+              selectedSegmentId={selectedSegmentId}
             />
             <DownloadSegmentsButton
               segments={Object.values(segmentsById)}
