@@ -7,14 +7,14 @@ export const routes = {
   usersData: `${baseURL}/users/me/`,
   usersLogout: `${baseURL}/users/logout/`,
   segments: `${baseURL}/segments/`,
-  updateSegment: `${baseURL}/update-segment/`
+  querySegment: `${baseURL}/query-segments/`
 }
 
 export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
 
-async function withErrorHandling (response) {
+async function withErrorHandling(response) {
   const json = await response.json()
   if (!response.ok) {
     json.detail.forEach(error => {
@@ -26,7 +26,7 @@ async function withErrorHandling (response) {
   return json
 }
 
-export async function postSegment (segment) {
+export async function postSegment(segment) {
   const response = await fetch(routes.segments, {
     method: 'POST',
     credentials: 'include',
@@ -35,9 +35,9 @@ export async function postSegment (segment) {
   return withErrorHandling(response)
 }
 
-export async function getUserData () {
+export async function getUserData() {
   try {
-    const response = await fetch(routes.usersData, {credentials: 'include'})
+    const response = await fetch(routes.usersData, { credentials: 'include' })
     if (response.ok) {
       return response.json()
     }
@@ -47,9 +47,9 @@ export async function getUserData () {
   }
 }
 
-export async function logoutUser () {
+export async function logoutUser() {
   try {
-    const response = await fetch(routes.usersLogout, {credentials: 'include', method: 'POST'})
+    const response = await fetch(routes.usersLogout, { credentials: 'include', method: 'POST' })
     if (response.ok) {
       return response.json()
     }
@@ -63,8 +63,8 @@ export async function logoutUser () {
 * details = true means all subsegments are fetched with segments,
 * a future optimisation would be to not fetch this and return a count from the server.
 */
-export async function getSegments (boundingBox = null, excludedIds, modified_after, details = true) {
-  const url = routes.segments
+export async function getSegments(boundingBox = null, excludedIds, modified_after, details = true) {
+  const url = routes.querySegment
   const params = {
     details: details ? 1 : 0
   }
@@ -72,10 +72,10 @@ export async function getSegments (boundingBox = null, excludedIds, modified_aft
     params.bbox = boundingBox
   }
   if (excludedIds) {
-    params.excludeIds = excludedIds
+    params.exclude_ids = excludedIds
   }
   if (modified_after) {
-    params.includeIfModifiedAfter = modified_after
+    params.include_if_modified_after = modified_after
   }
   const response = await fetch(`${url}`, {
     method: 'POST',
@@ -84,12 +84,12 @@ export async function getSegments (boundingBox = null, excludedIds, modified_aft
   return withErrorHandling(response)
 }
 
-export async function getSegment (segmentId) {
+export async function getSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}`)
   return withErrorHandling(response)
 }
 
-export async function deleteSegment (segmentId) {
+export async function deleteSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}`, {
     method: 'DELETE',
     credentials: 'include',
@@ -97,8 +97,8 @@ export async function deleteSegment (segmentId) {
   return withErrorHandling(response)
 }
 
-export async function updateSegment (segment) {
-  const response = await fetch(`${routes.updateSegment}${segment.id}`, {
+export async function updateSegment(segment) {
+  const response = await fetch(`${routes.segments}${segment.id}`, {
     method: 'PUT',
     credentials: 'include',
     body: JSON.stringify(segment)
