@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import * as Sentry from '@sentry/react'
 
 const baseURL = process.env.REACT_APP_API_URL || ''
 export const routes = {
@@ -6,14 +6,15 @@ export const routes = {
   usersVerify: `${baseURL}/users/verify/`,
   usersData: `${baseURL}/users/me/`,
   usersLogout: `${baseURL}/users/logout/`,
-  segments: `${baseURL}/segments/`
+  segments: `${baseURL}/segments/`,
+  updateSegment: `${baseURL}/update-segment/`
 }
 
 export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
 
-async function withErrorHandling(response) {
+async function withErrorHandling (response) {
   const json = await response.json()
   if (!response.ok) {
     json.detail.forEach(error => {
@@ -25,18 +26,18 @@ async function withErrorHandling(response) {
   return json
 }
 
-export async function postSegment(segment) {
+export async function postSegment (segment) {
   const response = await fetch(routes.segments, {
     method: 'POST',
-    credentials: "include",
+    credentials: 'include',
     body: JSON.stringify(segment),
   })
   return withErrorHandling(response)
 }
 
-export async function getUserData() {
+export async function getUserData () {
   try {
-    const response = await fetch(routes.usersData, { credentials: "include" })
+    const response = await fetch(routes.usersData, {credentials: 'include'})
     if (response.ok) {
       return response.json()
     }
@@ -46,9 +47,9 @@ export async function getUserData() {
   }
 }
 
-export async function logoutUser() {
+export async function logoutUser () {
   try {
-    const response = await fetch(routes.usersLogout, { credentials: "include", method: "POST" })
+    const response = await fetch(routes.usersLogout, {credentials: 'include', method: 'POST'})
     if (response.ok) {
       return response.json()
     }
@@ -57,11 +58,12 @@ export async function logoutUser() {
     return null
   }
 }
+
 /*
 * details = true means all subsegments are fetched with segments,
 * a future optimisation would be to not fetch this and return a count from the server.
 */
-export async function getSegments(boundingBox = null, modified_after = null, details = true) {
+export async function getSegments (boundingBox = null, excludedIds, modified_after, details = true) {
   const url = routes.segments
   const params = {
     details: details ? 1 : 0
@@ -69,31 +71,36 @@ export async function getSegments(boundingBox = null, modified_after = null, det
   if (boundingBox) {
     params.bbox = boundingBox
   }
-  if (modified_after) {
-    params.modified_after = modified_after
+  if (excludedIds) {
+    params.excludeIds = excludedIds
   }
-  const searchParams = new URLSearchParams(params)
-  const response = await fetch(`${url}?${searchParams.toString()}`)
-  return withErrorHandling(response)
-}
-
-export async function getSegment(segmentId) {
-  const response = await fetch(`${routes.segments}${segmentId}`)
-  return withErrorHandling(response)
-}
-
-export async function deleteSegment(segmentId) {
-  const response = await fetch(`${routes.segments}${segmentId}`, {
-    method: 'DELETE',
-    credentials: "include",
+  if (modified_after) {
+    params.includeIfModifiedAfter = modified_after
+  }
+  const response = await fetch(`${url}`, {
+    method: 'POST',
+    body: JSON.stringify(params)
   })
   return withErrorHandling(response)
 }
 
-export async function updateSegment(segment) {
-  const response = await fetch(`${routes.segments}${segment.id}`, {
+export async function getSegment (segmentId) {
+  const response = await fetch(`${routes.segments}${segmentId}`)
+  return withErrorHandling(response)
+}
+
+export async function deleteSegment (segmentId) {
+  const response = await fetch(`${routes.segments}${segmentId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  return withErrorHandling(response)
+}
+
+export async function updateSegment (segment) {
+  const response = await fetch(`${routes.updateSegment}${segment.id}`, {
     method: 'PUT',
-    credentials: "include",
+    credentials: 'include',
     body: JSON.stringify(segment)
   })
   return withErrorHandling(response)

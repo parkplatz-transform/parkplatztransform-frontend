@@ -81,12 +81,14 @@ function Recording () {
     const bottomLeft = `${boundingBox.swLng},${boundingBox.swLat}`
     const topLeft = `${boundingBox.neLng},${boundingBox.swLat}`
 
-    const modifiedAfter = getYoungestModifiedDateOfSegmentsInBounds(boundingBox)
+    const loadedSegments = getLoadedSegmentIdsInBounds(boundingBox)
+    const excludedIds = loadedSegments.map(segment => segment.id)
+    const latestModificationDate = getLatestModificationDate(loadedSegments)
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       setIsLoading(true)
-      const geoJson = await getSegments(boundingBoxString, modifiedAfter)
+      const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
       addSegments(geoJson.features)
       setIsLoading(false)
       setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
@@ -124,18 +126,21 @@ function Recording () {
     return loadedBoundingBoxesRef.current.some(bbox => bboxContainsBBox(bbox, boundingBox))
   }
 
-  function getYoungestModifiedDateOfSegmentsInBounds (boundingBox) {
-    return Object.values(segmentsById)
-      .filter(segment => {
-        if (segment.bbox) {
-          const swLng = segment.bbox[0]
-          const swLat = segment.bbox[1]
-          const neLng = segment.bbox[2]
-          const neLat = segment.bbox[3]
-          return bboxIntersectsBBox(boundingBox, {swLng, swLat, neLng, neLat})
-        }
-        return false
-      })
+  function getLoadedSegmentIdsInBounds (boundingBox) {
+    return Object.values(segmentsById).filter(segment => {
+      if (segment.bbox) {
+        const swLng = segment.bbox[0]
+        const swLat = segment.bbox[1]
+        const neLng = segment.bbox[2]
+        const neLat = segment.bbox[3]
+        return bboxIntersectsBBox(boundingBox, {swLng, swLat, neLng, neLat})
+      }
+      return false
+    })
+  }
+
+  function getLatestModificationDate (segments) {
+    return segments
       .map(segment => segment.properties?.modified_at)
       .filter(Boolean)
       .sort()
