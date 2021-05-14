@@ -66,7 +66,7 @@ export async function logoutUser() {
 export async function getSegments(boundingBox = null, excludedIds, modified_after, details = true) {
   const url = routes.querySegment
   const params = {
-    details: details ? 1 : 0
+    details: false
   }
   if (boundingBox) {
     params.bbox = boundingBox

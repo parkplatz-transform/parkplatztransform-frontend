@@ -134,7 +134,7 @@ export function MapController({
     }
     if (segment.id === selectedSegmentId) {
       styles.color = SELECTED_SEGMENT_COLOR
-    } else if (segment.properties?.subsegments?.length === 0) {
+    } else if (!segment.properties?.has_subsegments) {
       styles.color = UNSELECTED_EMPTY_SEGMENT_COLOR
     }
     return styles

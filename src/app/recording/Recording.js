@@ -112,14 +112,11 @@ function Recording () {
 
   async function onSegmentSelect (id) {
     setSelectedSegmentId(id)
-    const segment = segmentsById[id]
-    if (segment && (!segment?.properties?.subsegments || segment.properties.subsegments.length === 0)) {
-      setIsLoading(true)
-      const segmentWithDetails = await getSegment(id)
-      addSegment(segmentWithDetails)
-      setSelectedSegmentId(segmentWithDetails.id)
-      setIsLoading(false)
-    }
+    setIsLoading(true)
+    const segmentWithDetails = await getSegment(id)
+    addSegment(segmentWithDetails)
+    setSelectedSegmentId(segmentWithDetails.id)
+    setIsLoading(false)
   }
 
   function checkIfBoundingBoxWasRequestedBefore (boundingBox) {
