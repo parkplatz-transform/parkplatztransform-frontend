@@ -85,12 +85,12 @@ export async function getSegments(boundingBox = null, excludedIds, modified_afte
 }
 
 export async function getSegment(segmentId) {
-  const response = await fetch(`${routes.segments}${segmentId}`)
+  const response = await fetch(`${routes.segments}${segmentId}/`)
   return withErrorHandling(response)
 }
 
 export async function deleteSegment(segmentId) {
-  const response = await fetch(`${routes.segments}${segmentId}`, {
+  const response = await fetch(`${routes.segments}${segmentId}/`, {
     method: 'DELETE',
     credentials: 'include',
   })
@@ -98,7 +98,7 @@ export async function deleteSegment(segmentId) {
 }
 
 export async function updateSegment(segment) {
-  const response = await fetch(`${routes.segments}${segment.id}`, {
+  const response = await fetch(`${routes.segments}${segment.id}/`, {
     method: 'PUT',
     credentials: 'include',
     body: JSON.stringify(segment)
