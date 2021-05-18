@@ -210,8 +210,8 @@ export function MapController({
         }}
         positions={segment.geometry.coordinates[0].map(([lat, lng]) => [lng, lat])}>
       </Polygon>
-
     }
+    return null
   })
 }
 

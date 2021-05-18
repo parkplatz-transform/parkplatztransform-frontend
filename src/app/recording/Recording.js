@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
@@ -10,6 +10,7 @@ import RightPanel from '../components/RightPanel'
 import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import getString from '../../strings'
+import SegmentCache from '../../helpers/SegmentCache'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -50,8 +51,24 @@ function Recording () {
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const boundsForReferredLoadingRef = useRef(null)
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
+
+  useEffect(() => {
+    setSegmentsById(SegmentCache.getFromCache())
+    setIsLoading(false)
+
+    if (boundsForReferredLoadingRef.current !== null) {
+      setTimeout(() => {
+        onBoundsChange(boundsForReferredLoadingRef.current)
+      }, 1000)
+    }
+  }, [setSegmentsById])
+
+  useEffect(() =>{
+    SegmentCache.saveToCacheSoon(segmentsById)
+  }, [segmentsById])
 
   async function onSegmentCreated (segment) {
     try {
@@ -65,6 +82,11 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
+    if (isLoading) {
+      boundsForReferredLoadingRef.current = bounds
+      return
+    }
+
     const boundingBox = {
       swLng: bounds._southWest.lng,
       swLat: bounds._southWest.lat,
@@ -103,8 +125,8 @@ function Recording () {
     setSelectedSegmentId(null)
     addSegments([updatedSegment])
     try {
-      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
       await updateSegment(updatedSegment)
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
     }
