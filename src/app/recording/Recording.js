@@ -50,25 +50,26 @@ function Recording () {
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-  const boundsForReferredLoadingRef = useRef(null)
-
+  const boundsForLoadingSegmentsAfterInitializingRef = useRef(null)
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
   useEffect(() => {
     setSegmentsById(SegmentCache.getFromCache())
     setIsLoading(false)
-
-    if (boundsForReferredLoadingRef.current !== null) {
-      setTimeout(() => {
-        onBoundsChange(boundsForReferredLoadingRef.current)
-      }, 1000)
-    }
+    setIsInitializing(false)
   }, [setSegmentsById])
 
   useEffect(() =>{
     SegmentCache.saveToCacheSoon(segmentsById)
   }, [segmentsById])
+
+  useEffect(() => {
+    if (!isInitializing && boundsForLoadingSegmentsAfterInitializingRef.current) {
+      onBoundsChange(boundsForLoadingSegmentsAfterInitializingRef.current)
+    }
+  }, [isInitializing])
 
   async function onSegmentCreated (segment) {
     try {
@@ -82,8 +83,11 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
-    if (isLoading) {
-      boundsForReferredLoadingRef.current = bounds
+    // On map load this function will be called even before data is loaded from cache
+    // In this case the bounds will be saved and this function will be called again when the cached data
+    // has been loaded.
+    if (isInitializing) {
+      boundsForLoadingSegmentsAfterInitializingRef.current = bounds
       return
     }
 
