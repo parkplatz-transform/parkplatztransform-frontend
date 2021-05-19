@@ -237,7 +237,7 @@ function Recording () {
           >
             <MapController
               onBoundsChanged={onBoundsChange}
-              segments={Object.values(segmentsById)}
+              segments={segmentsById}
               onSegmentSelect={onSegmentSelect}
               onSegmentDeleted={onSegmentDeleted}
               onSegmentEdited={onSegmentEdited}
