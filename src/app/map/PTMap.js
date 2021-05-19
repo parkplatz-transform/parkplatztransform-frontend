@@ -100,6 +100,7 @@ export function MapController ({
 
   const prevSegmentsRef = useRef(null)
   const prevSelectedSegmentId = useRef(null)
+  const prevLineWeight = useRef(null)
   const prevReturnValue = useRef(null)
 
   // Position Controller
@@ -119,11 +120,17 @@ export function MapController ({
     }
   })
 
-  if (prevReturnValue.current && segments === prevSegmentsRef.current && prevSelectedSegmentId.current === selectedSegmentId) {
+  const lineWeight = getLineWeight()
+
+  if (prevReturnValue.current
+    && segments === prevSegmentsRef.current
+    && prevSelectedSegmentId.current === selectedSegmentId
+    && prevLineWeight.current === lineWeight
+  ) {
     return prevReturnValue.current
   }
 
-  function setLineWeight () {
+  function getLineWeight () {
     const zm = map._zoom
     if (zm <= 14) {
       return '1'
@@ -137,7 +144,7 @@ export function MapController ({
   function setSegmentStyle (segment) {
     const styles = {
       color: UNSELECTED_SEGMENT_COLOR,
-      weight: setLineWeight(),
+      weight: lineWeight,
       lineJoin: 'square',
     }
     if (segment.id === selectedSegmentId) {
@@ -223,6 +230,7 @@ export function MapController ({
   })
   prevSegmentsRef.current = segments
   prevSelectedSegmentId.current = selectedSegmentId
+  prevLineWeight.current = lineWeight
   prevReturnValue.current = domElements
   return domElements
 }
