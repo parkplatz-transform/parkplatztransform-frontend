@@ -15,7 +15,7 @@ class SegmentCache {
     try {
       const compressed = window.localStorage.getItem(LOCAL_STORAGE_KEY)
       this.dataString = decompressFromUTF16(compressed)
-      console.log('from cache', this.dataString)
+      console.log('got data from cache')
       return JSON.parse(this.dataString)
     }
     catch (error) {
@@ -34,22 +34,27 @@ class SegmentCache {
       this.lockTimeout = window.setTimeout(() => {
         this.isSaving = true
 
-        const dataString = this._getDataWithoutDetailsStringified(data)
+        try {
+          const dataString = this._getDataWithoutDetailsStringified(data)
 
-        // abort if data equals last data
-        if (dataString === this.dataString){
+          // abort if data equals last data
+          if (dataString === this.dataString) {
+            this.isSaving = false
+            return
+          }
+
+          const start = Date.now()
+          const compressed = compressToUTF16(dataString)
+          localStorage.setItem(LOCAL_STORAGE_KEY, compressed)
           this.isSaving = false
-          return
+
+          const compressionTime = (Date.now() - start)
+          console.log(`compressing and saving data took ${compressionTime / 1000} seconds.`)
         }
-
-        console.log('compressing data and saving to storage')
-        const start = Date.now()
-        const compressed = compressToUTF16(dataString)
-        localStorage.setItem('data', compressed)
-        this.isSaving = false
-
-        const compressionTime = (Date.now() - start)
-        console.log(`compressing and saving took ${compressionTime / 1000} seconds.`)
+        catch (error) {
+          console.error('error saving segments to localstorage:', error)
+          this.isSaving = false
+        }
 
       }, WAIT_TIME_BEFORE_SAVE)
     }
@@ -57,7 +62,16 @@ class SegmentCache {
 
   // TODO
   _getDataWithoutDetailsStringified (data) {
-    return JSON.stringify(data)
+    const result = {}
+    for (const key of Object.keys(data)) {
+      const {properties, ...others} = data[key]
+      properties.subsegments = []
+      result[key] = {
+        properties: properties,
+        ...others
+      }
+    }
+    return JSON.stringify(result)
   }
 
 }
