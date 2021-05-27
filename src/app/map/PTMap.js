@@ -9,6 +9,7 @@ import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import SplitButton from '../components/SplitButton'
 import getString from '../../strings'
+import { geoJsonFromSegments } from '../../helpers/geojson'
 import { makeStyles } from '@material-ui/core'
 
 const tileServerURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -39,12 +40,7 @@ export function DownloadSegmentsButton({ segments }) {
     return L.latLngBounds(corner1, corner2)
   }
 
-  function downloadSegments(_segments) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': _segments,
-    }
-
+  function downloadSegments (data) {
     var element = document.createElement('a')
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, '    ')))
     element.setAttribute('download', DOWNLOAD_FILENAME)
@@ -57,13 +53,14 @@ export function DownloadSegmentsButton({ segments }) {
     document.body.removeChild(element)
   }
 
-  function downloadAllSegments() {
-    downloadSegments(segments)
+  async function downloadAllSegments () {
+    const data = await (await fetch('https://api.xtransform.org/segments/?details=1')).json();
+    downloadSegments(data)
   }
 
   function downloadVisibleSegments() {
     const visibleSegments = segments.filter(segment => map.getBounds().intersects(bboxToLeafletBounds(segment.bbox)))
-    downloadSegments(visibleSegments)
+    downloadSegments(geoJsonFromSegments(visibleSegments))
   }
 
   function segmentsAreInBounds() {
