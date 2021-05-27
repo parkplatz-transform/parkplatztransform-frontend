@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
@@ -10,6 +10,7 @@ import RightPanel from '../components/RightPanel'
 import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import getString from '../../strings'
+import SegmentCache from '../../helpers/SegmentCache'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -49,9 +50,26 @@ function Recording () {
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-
+  const boundsForLoadingSegmentsAfterInitializingRef = useRef(null)
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
+
+  useEffect(() => {
+    setSegmentsById(SegmentCache.getFromCache())
+    setIsLoading(false)
+    setIsInitializing(false)
+  }, [setSegmentsById])
+
+  useEffect(() =>{
+    SegmentCache.saveToCacheSoon(segmentsById)
+  }, [segmentsById])
+
+  useEffect(() => {
+    if (!isInitializing && boundsForLoadingSegmentsAfterInitializingRef.current) {
+      onBoundsChange(boundsForLoadingSegmentsAfterInitializingRef.current)
+    }
+  }, [isInitializing])
 
   async function onSegmentCreated (segment) {
     try {
@@ -65,6 +83,14 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
+    // On map load this function will be called even before data is loaded from cache
+    // In this case the bounds will be saved and this function will be called again when the cached data
+    // has been loaded.
+    if (isInitializing) {
+      boundsForLoadingSegmentsAfterInitializingRef.current = bounds
+      return
+    }
+
     const boundingBox = {
       swLng: bounds._southWest.lng,
       swLat: bounds._southWest.lat,
@@ -103,8 +129,8 @@ function Recording () {
     setSelectedSegmentId(null)
     addSegments([updatedSegment])
     try {
-      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
       await updateSegment(updatedSegment)
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
     }
@@ -211,7 +237,7 @@ function Recording () {
           >
             <MapController
               onBoundsChanged={onBoundsChange}
-              segments={Object.values(segmentsById)}
+              segments={segmentsById}
               onSegmentSelect={onSegmentSelect}
               onSegmentDeleted={onSegmentDeleted}
               onSegmentEdited={onSegmentEdited}
