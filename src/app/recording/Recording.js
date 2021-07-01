@@ -91,11 +91,12 @@ function Recording () {
       return
     }
 
+    // be less precise with map bounds and load larger chunks, avoid refetch on every little map move
     const boundingBox = {
-      swLng: bounds._southWest.lng,
-      swLat: bounds._southWest.lat,
-      neLng: bounds._northEast.lng,
-      neLat: bounds._northEast.lat,
+      swLng: Math.round(bounds._southWest.lng * 100) / 100,
+      swLat: Math.round(bounds._southWest.lat * 100) / 100,
+      neLng: Math.round(bounds._northEast.lng * 100) / 100,
+      neLat: Math.round(bounds._northEast.lat * 100) / 100
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
@@ -114,10 +115,10 @@ function Recording () {
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       setIsLoading(true)
-      const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
-      addSegments(geoJson.features)
-      setIsLoading(false)
-      setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
+        const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
+        addSegments(geoJson.features)
+        setIsLoading(false)
+        setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       setIsLoading(false)
