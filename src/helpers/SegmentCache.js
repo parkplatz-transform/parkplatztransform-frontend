@@ -6,6 +6,13 @@ const WAIT_TIME_BEFORE_SAVE = 3000
 class SegmentCache {
 
   constructor () {
+    /**
+     * To fix some bugs and speed things up, the cache is only being updated at the start if the app
+     * All changes the user does in this session, will only be saved to cache the next time they open the page
+     * and retrieve that data from the server. Far from perfect but hopefully fair enough for now.
+     * @type {boolean}
+     */
+    this.hasSavedDataToCacheInThisSession = false
     this.dataString = null
     this.isSaving = false
     this.lockTimeout = null
@@ -25,7 +32,7 @@ class SegmentCache {
   }
 
   saveToCacheSoon (data) {
-    if (!data || Object.keys(data).length === 0) {
+    if (this.hasSavedDataToCacheInThisSession || !data || Object.keys(data).length === 0) {
       return
     }
 
@@ -46,6 +53,7 @@ class SegmentCache {
           const start = Date.now()
           const compressed = compressToUTF16(dataString)
           localStorage.setItem(LOCAL_STORAGE_KEY, compressed)
+          this.hasSavedDataToCacheInThisSession = true
           this.isSaving = false
 
           const compressionTime = (Date.now() - start)
