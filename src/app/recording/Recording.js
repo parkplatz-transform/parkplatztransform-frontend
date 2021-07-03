@@ -43,6 +43,8 @@ const useStyles = makeStyles({
   }
 })
 
+let GOT_FROM_CACHE = false
+
 function Recording () {
   const classes = useStyles()
 
@@ -56,10 +58,13 @@ function Recording () {
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
   useEffect(() => {
-    setSegmentsById(SegmentCache.getFromCache())
-    setIsLoading(false)
-    setIsInitializing(false)
-  }, [setSegmentsById])
+    if (!GOT_FROM_CACHE) {
+      setSegmentsById(SegmentCache.getFromCache())
+      setIsLoading(false)
+      setIsInitializing(false)
+      GOT_FROM_CACHE = true
+    }
+  }, [])
 
   useEffect(() => {
     SegmentCache.saveToCacheSoon(segmentsById)

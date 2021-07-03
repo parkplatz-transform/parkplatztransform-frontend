@@ -33,7 +33,7 @@ class SegmentCache {
   }
 
   saveToCacheSoon (data) {
-    if (this.savingAllowed || !data || Object.keys(data).length === 0) {
+    if (!this.savingAllowed || !data || Object.keys(data).length === 0) {
       return
     }
 
@@ -74,7 +74,6 @@ class SegmentCache {
     }
   }
 
-  // TODO
   _getDataWithoutDetailsStringified (data) {
     const result = {}
     for (const key of Object.keys(data)) {
