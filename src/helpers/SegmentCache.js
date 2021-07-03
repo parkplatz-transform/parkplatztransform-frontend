@@ -2,6 +2,7 @@ import { compressToUTF16, decompressFromUTF16 } from 'lz-string'
 
 const LOCAL_STORAGE_KEY = 'data'
 const WAIT_TIME_BEFORE_SAVE = 3000
+const SAVE_LOCK_TIME = 10 * 60 * 1000 // 10 minutes as it takes a while and is not that important
 
 class SegmentCache {
 
@@ -12,7 +13,7 @@ class SegmentCache {
      * and retrieve that data from the server. Far from perfect but hopefully fair enough for now.
      * @type {boolean}
      */
-    this.hasSavedDataToCacheInThisSession = false
+    this.savingAllowed = false
     this.dataString = null
     this.isSaving = false
     this.lockTimeout = null
@@ -32,7 +33,7 @@ class SegmentCache {
   }
 
   saveToCacheSoon (data) {
-    if (this.hasSavedDataToCacheInThisSession || !data || Object.keys(data).length === 0) {
+    if (this.savingAllowed || !data || Object.keys(data).length === 0) {
       return
     }
 
@@ -50,18 +51,23 @@ class SegmentCache {
             return
           }
 
+          this.savingAllowed = false
+
           const start = Date.now()
           const compressed = compressToUTF16(dataString)
           localStorage.setItem(LOCAL_STORAGE_KEY, compressed)
-          this.hasSavedDataToCacheInThisSession = true
-          this.isSaving = false
 
           const compressionTime = (Date.now() - start)
           console.log(`compressing and saving data took ${compressionTime / 1000} seconds.`)
         }
         catch (error) {
           console.error('error saving segments to localstorage:', error)
+        }
+        finally {
           this.isSaving = false
+          setTimeout(() => {
+            this.savingAllowed = true
+          }, SAVE_LOCK_TIME)
         }
 
       }, WAIT_TIME_BEFORE_SAVE)

@@ -61,7 +61,7 @@ function Recording () {
     setIsInitializing(false)
   }, [setSegmentsById])
 
-  useEffect(() =>{
+  useEffect(() => {
     SegmentCache.saveToCacheSoon(segmentsById)
   }, [segmentsById])
 
@@ -83,6 +83,7 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
+
     // On map load this function will be called even before data is loaded from cache
     // In this case the bounds will be saved and this function will be called again when the cached data
     // has been loaded.
@@ -91,12 +92,13 @@ function Recording () {
       return
     }
 
-    // be less precise with map bounds and load larger chunks, avoid refetch on every little map move
+    // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
+    // rounding precision depends on how big the requested area is
     const boundingBox = {
-      swLng: Math.round(bounds._southWest.lng * 100) / 100,
-      swLat: Math.round(bounds._southWest.lat * 100) / 100,
-      neLng: Math.round(bounds._northEast.lng * 100) / 100,
-      neLat: Math.round(bounds._northEast.lat * 100) / 100
+      swLng: Math.floor(bounds._southWest.lng * 100) / 100,
+      swLat: Math.floor(bounds._southWest.lat * 100) / 100,
+      neLng: Math.ceil(bounds._northEast.lng * 100) / 100,
+      neLat: Math.ceil(bounds._northEast.lat * 100) / 100
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
@@ -115,10 +117,10 @@ function Recording () {
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       setIsLoading(true)
-        const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
-        addSegments(geoJson.features)
-        setIsLoading(false)
-        setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
+      const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
+      addSegments(geoJson.features)
+      setIsLoading(false)
+      setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       setIsLoading(false)
@@ -176,12 +178,16 @@ function Recording () {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    const newSegmentsById = Object.assign({}, segmentsById)
-    for (const segment of newOrUpdatedSegments) {
-      newSegmentsById[segment.id] = segment
-    }
+    if (newOrUpdatedSegments.length > 0) {
+      console.log('addSegments')
+      console.table(newOrUpdatedSegments)
+      const newSegmentsById = Object.assign({}, segmentsById)
+      for (const segment of newOrUpdatedSegments) {
+        newSegmentsById[segment.id] = segment
+      }
 
-    setSegmentsById(newSegmentsById)
+      setSegmentsById(newSegmentsById)
+    }
   }
 
   async function onSegmentChanged (segment) {
