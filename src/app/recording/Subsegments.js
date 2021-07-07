@@ -42,17 +42,17 @@ export const NO_PARKING_REASONS_AND_LABEL = {
   'bus_stop': 'Haltestelle',
   'bus_lane': 'Busspur',
   'taxi': 'Taxi',
-  'tree': 'Baum',
   'bike_racks': 'Fahrradständer',
-  'pedestrian_crossing': 'Zebrastreifen',
   'driveway': 'Einfahrt',
   'loading_zone': 'Ladezone',
   'standing_zone': '"Standing Zone"',
   'emergency_exit': 'Notausgang',
   'lowered_curb_side': 'Abgesenkter Bordstein',
-  'lane': 'Fahrspur',
   'no_stopping': 'Halteverbot',
-  'pedestrian_zone': 'Fußgängerzone'
+  'pedestrian_zone': 'Fußgängerzone',
+  'tree': 'Baum',
+  'pedestrian_crossing': 'Zebrastreifen',
+  'lane': 'Fahrspur'
 }
 
 export function setParkingIsAllowed(subsegment) {
