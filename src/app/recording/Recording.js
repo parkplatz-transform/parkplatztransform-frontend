@@ -148,8 +148,13 @@ function Recording () {
     setSelectedSegmentId(id)
     setIsLoading(true)
     const segmentWithDetails = await getSegment(id)
-    addSegment(segmentWithDetails)
-    setSelectedSegmentId(segmentWithDetails.id)
+    if (!segmentWithDetails) {
+      deleteRemotelyRemovedSegment(id)
+
+    } else {
+      addSegment(segmentWithDetails)
+      setSelectedSegmentId(segmentWithDetails.id)
+    }
     setIsLoading(false)
   }
 
@@ -184,8 +189,6 @@ function Recording () {
 
   function addSegments (newOrUpdatedSegments) {
     if (newOrUpdatedSegments.length > 0) {
-      console.log('addSegments')
-      console.table(newOrUpdatedSegments)
       const newSegmentsById = Object.assign({}, segmentsById)
       for (const segment of newOrUpdatedSegments) {
         newSegmentsById[segment.id] = segment
@@ -193,6 +196,15 @@ function Recording () {
 
       setSegmentsById(newSegmentsById)
     }
+  }
+
+  async function deleteRemotelyRemovedSegment (id) {
+    const newSegmentsById = Object.assign({}, segmentsById)
+
+    delete newSegmentsById[id]
+    setSegmentsById(newSegmentsById)
+    SegmentCache.saveToCacheSoon(newSegmentsById, true)
+    setAlertDisplayed({severity: 'error', message: getString('segment_has_been_deleted', 1)})
   }
 
   async function onSegmentChanged (segment) {

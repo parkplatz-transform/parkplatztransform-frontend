@@ -32,8 +32,8 @@ class SegmentCache {
     }
   }
 
-  saveToCacheSoon (data) {
-    if (!this.savingAllowed || !data || Object.keys(data).length === 0) {
+  saveToCacheSoon (data, forceNow = false) {
+    if (!forceNow && (!this.savingAllowed || !data || Object.keys(data).length === 0)) {
       return
     }
 
@@ -46,12 +46,13 @@ class SegmentCache {
           const dataString = this._getDataWithoutDetailsStringified(data)
 
           // abort if data equals last data
-          if (dataString === this.dataString) {
+          if (!forceNow && dataString === this.dataString) {
             this.isSaving = false
             return
           }
 
           this.savingAllowed = false
+          console.log('Going to save data to cache')
 
           const start = Date.now()
           const compressed = compressToUTF16(dataString)
