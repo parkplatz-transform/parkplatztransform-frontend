@@ -381,7 +381,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           <Select
             labelId="select_data_source"
             id="select_data_source"
-            value={segment.properties?.data_source || null}
+            value={segment.properties?.data_source || window.localStorage.lastDataSource || null}
             onChange={updateSegment(setDataSource)}
             variant={'outlined'}
           >

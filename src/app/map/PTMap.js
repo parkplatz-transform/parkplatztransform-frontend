@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MapContainer, Polyline, Polygon, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { useHistory, useParams } from 'react-router-dom'
 import * as turf from '@turf/turf'
 import 'leaflet-arrowheads'
@@ -9,6 +9,7 @@ import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import SplitButton from '../components/SplitButton'
 import getString from '../../strings'
+import { geoJsonFromSegments } from '../../helpers/geojson'
 import { makeStyles } from '@material-ui/core'
 
 const tileServerURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -29,22 +30,17 @@ const useStyles = makeStyles({
   }
 })
 
-export function DownloadSegmentsButton({ segments }) {
+export function DownloadSegmentsButton ({segments}) {
   const classes = useStyles()
   const map = useMap()
 
-  function bboxToLeafletBounds(bbox) {
+  function bboxToLeafletBounds (bbox) {
     const corner1 = L.latLng(bbox[1], bbox[0])
     const corner2 = L.latLng(bbox[3], bbox[2])
     return L.latLngBounds(corner1, corner2)
   }
 
-  function downloadSegments(_segments) {
-    const data = {
-      'type': 'FeatureCollection',
-      'features': _segments,
-    }
-
+  function downloadSegments (data) {
     var element = document.createElement('a')
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, '    ')))
     element.setAttribute('download', DOWNLOAD_FILENAME)
@@ -57,16 +53,17 @@ export function DownloadSegmentsButton({ segments }) {
     document.body.removeChild(element)
   }
 
-  function downloadAllSegments() {
-    downloadSegments(segments)
+  async function downloadAllSegments () {
+    const data = await (await fetch('https://api.xtransform.org/segments/?details=1')).json();
+    downloadSegments(data)
   }
 
-  function downloadVisibleSegments() {
+  function downloadVisibleSegments () {
     const visibleSegments = segments.filter(segment => map.getBounds().intersects(bboxToLeafletBounds(segment.bbox)))
-    downloadSegments(visibleSegments)
+    downloadSegments(geoJsonFromSegments(visibleSegments))
   }
 
-  function segmentsAreInBounds() {
+  function segmentsAreInBounds () {
     return segments.some(segment =>
       map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
     )
@@ -75,37 +72,42 @@ export function DownloadSegmentsButton({ segments }) {
   return (
     <div className={classes.downloadButton}>
       <SplitButton optionsAndCallbacks={[
-        { label: getString('download_geo_json') },
+        {label: getString('download_geo_json')},
         {
           label: getString('download_visible_segments'),
           disabled: !segmentsAreInBounds(),
           callback: downloadVisibleSegments
         },
-        { label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments },
-      ]} />
+        {label: getString('download_all_segments'), disabled: segments.length === 0, callback: downloadAllSegments},
+      ]}/>
     </div>
   )
 }
 
-export function MapController({
-  segments,
-  onBoundsChanged,
-  onSegmentSelect,
-  onSegmentDeleted,
-  onSegmentCreated,
-  onSegmentEdited,
-  selectedSegmentId
-}) {
+export function MapController ({
+                                 segments,
+                                 onBoundsChanged,
+                                 onSegmentSelect,
+                                 onSegmentDeleted,
+                                 onSegmentCreated,
+                                 onSegmentEdited,
+                                 selectedSegmentId
+                               }) {
   const history = useHistory()
+
+  const prevSegmentsRef = useRef(null)
+  const prevSelectedSegmentId = useRef(null)
+  const prevLineWeight = useRef(null)
+  const prevReturnValue = useRef(null)
 
   // Position Controller
   const map = useMapEvents({
-    'pm:create': async ({ layer }) => {
+    'pm:create': async ({layer}) => {
       await onSegmentCreated(layer.toGeoJSON())
       layer.remove() // since once the server's response comes back it will be rendered over the top
     },
     moveend: (event) => {
-      const { lat, lng } = event.target.getCenter()
+      const {lat, lng} = event.target.getCenter()
       const zm = event.target.getZoom()
 
       if (lat && lng && zm) {
@@ -115,7 +117,17 @@ export function MapController({
     }
   })
 
-  function setLineWeight() {
+  const lineWeight = getLineWeight()
+
+  if (prevReturnValue.current
+    && segments === prevSegmentsRef.current
+    && prevSelectedSegmentId.current === selectedSegmentId
+    && prevLineWeight.current === lineWeight
+  ) {
+    return prevReturnValue.current
+  }
+
+  function getLineWeight () {
     const zm = map._zoom
     if (zm <= 14) {
       return '1'
@@ -126,10 +138,10 @@ export function MapController({
     return '4'
   }
 
-  function setSegmentStyle(segment) {
+  function setSegmentStyle (segment) {
     const styles = {
       color: UNSELECTED_SEGMENT_COLOR,
-      weight: setLineWeight(),
+      weight: lineWeight,
       lineJoin: 'square',
     }
     if (segment.id === selectedSegmentId) {
@@ -140,10 +152,10 @@ export function MapController({
     return styles
   }
 
-  return segments.map(segment => {
+  const domElements = Object.values(segments).map(segment => {
     if (segment.geometry.type === 'LineString') {
       const line = turf.lineString(segment.geometry.coordinates)
-      const length = turf.length(line, { units: 'meters' })
+      const length = turf.length(line, {units: 'meters'})
       return <Polyline
         pathOptions={setSegmentStyle(segment)}
         key={segment.id}
@@ -162,7 +174,7 @@ export function MapController({
         eventHandlers={{
           'pm:edit': (event) => {
             // Need to merge the old segment with new geometry
-            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            onSegmentEdited({...segment, geometry: event.layer.toGeoJSON().geometry})
           },
           'pm:remove': async (event) => {
             const confirmDelete = window.confirm(getString('segment_delete_confirm'))
@@ -191,7 +203,7 @@ export function MapController({
         eventHandlers={{
           'pm:edit': (event) => {
             // Need to merge the old segment with new geometry
-            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            onSegmentEdited({...segment, geometry: event.layer.toGeoJSON().geometry})
           },
           'pm:remove': async (event) => {
             const confirmDelete = window.confirm(getString('segment_delete_confirm'))
@@ -210,12 +222,17 @@ export function MapController({
         }}
         positions={segment.geometry.coordinates[0].map(([lat, lng]) => [lng, lat])}>
       </Polygon>
-
     }
+    return null
   })
+  prevSegmentsRef.current = segments
+  prevSelectedSegmentId.current = selectedSegmentId
+  prevLineWeight.current = lineWeight
+  prevReturnValue.current = domElements
+  return domElements
 }
 
-function configureGeoman(map) {
+function configureGeoman (map) {
   map.setLang('de')
   map.setGlobalOptions({
     // allowSelfIntersection: false, <-- I don't know why this causes issues.
@@ -236,15 +253,15 @@ function configureGeoman(map) {
   })
 }
 
-function PTMap({ onBoundsChanged, children }) {
-  const { lat, lng, zm } = useParams()
+function PTMap ({onBoundsChanged, children}) {
+  const {lat, lng, zm} = useParams()
 
   return (
     <>
       <MapContainer
         center={[lat, lng]}
         zoom={zm}
-        style={{ position: 'static' }}
+        style={{position: 'static'}}
         scrollWheelZoom={true}
         whenReady={(map) => {
           onBoundsChanged(map.target.getBounds())

@@ -32,12 +32,15 @@ const strings = {
   // Alert failure messages
   segment_create_failure: () => 'Abschnitt konnte nicht erstellt werden.',
   segment_update_failure: () => 'Abschnitt konnte nicht gespeichert werden.',
-  subsegment_invalid: () => 'Mindest ein Unterabschnitt ist fehlerhaft.',
+  subsegment_invalid: () => 'Mindestens ein Unterabschnitt ist fehlerhaft.',
   segment_delete_failure: (num) => {
     if (num === 1) {
       return 'Abschnitt konnte nicht gelöscht werden.'
     }
     return `${num} Abschnitte konnte nicht gelöscht werden.`
+  },
+  segment_has_been_deleted: () => {
+    return `Dieser Abschnitt wurde gelöscht.`
   },
   segment_loaded_failure: () =>
     'Beim Laden der Abschnitte trat ein Fehler auf.',
