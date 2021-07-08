@@ -13,7 +13,7 @@ class SegmentCache {
      * and retrieve that data from the server. Far from perfect but hopefully fair enough for now.
      * @type {boolean}
      */
-    this.savingAllowed = false
+    this.savingAllowed = true
     this.dataString = null
     this.isSaving = false
     this.lockTimeout = null
