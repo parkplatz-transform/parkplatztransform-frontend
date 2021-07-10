@@ -16,6 +16,14 @@ Sentry.init({
 });
 
 
+function disableScrollingInNumberFields () {
+  document.addEventListener("wheel", function(event){
+    if(document.activeElement.type === "number"){
+      document.activeElement.blur();
+    }
+  });
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
@@ -27,3 +35,4 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+disableScrollingInNumberFields();

@@ -10,6 +10,7 @@ export const DATA_SOURCES = {
 
 export function setDataSource(segment, dataSource) {
     segment.properties.data_source = dataSource
+    window.localStorage.lastDataSource = dataSource
 }
 
 export function setFurtherComments(segment, comments) {
