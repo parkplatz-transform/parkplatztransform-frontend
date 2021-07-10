@@ -29,6 +29,7 @@ async function withErrorHandling(response) {
 export async function postSegment(segment) {
   const response = await fetch(routes.segments, {
     method: 'POST',
+    headers: headers(),
     credentials: 'include',
     body: JSON.stringify(segment),
   })
@@ -37,7 +38,7 @@ export async function postSegment(segment) {
 
 export async function getUserData() {
   try {
-    const response = await fetch(routes.usersData, { credentials: 'include' })
+    const response = await fetch(routes.usersData, { credentials: 'include', headers: headers() })
     if (response.ok) {
       return response.json()
     }
@@ -49,7 +50,7 @@ export async function getUserData() {
 
 export async function logoutUser() {
   try {
-    const response = await fetch(routes.usersLogout, { credentials: 'include', method: 'POST' })
+    const response = await fetch(routes.usersLogout, { credentials: 'include', method: 'POST', headers: headers() })
     if (response.ok) {
       return response.json()
     }
@@ -79,19 +80,23 @@ export async function getSegments(boundingBox = null, excludedIds, modified_afte
   }
   const response = await fetch(`${url}`, {
     method: 'POST',
+    headers: headers(),
     body: JSON.stringify(params)
   })
   return withErrorHandling(response)
 }
 
 export async function getSegment(segmentId) {
-  const response = await fetch(`${routes.segments}${segmentId}/`)
+  const response = await fetch(`${routes.segments}${segmentId}/`, {
+    headers: headers(),
+  })
   return withErrorHandling(response)
 }
 
 export async function deleteSegment(segmentId) {
   const response = await fetch(`${routes.segments}${segmentId}/`, {
     method: 'DELETE',
+    headers: headers(),
     credentials: 'include',
   })
   return withErrorHandling(response)
@@ -100,6 +105,7 @@ export async function deleteSegment(segmentId) {
 export async function updateSegment(segment) {
   const response = await fetch(`${routes.segments}${segment.id}/`, {
     method: 'PUT',
+    headers: headers(),
     credentials: 'include',
     body: JSON.stringify(segment)
   })
