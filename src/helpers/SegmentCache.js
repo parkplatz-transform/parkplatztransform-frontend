@@ -78,7 +78,7 @@ class SegmentCache {
   _getDataWithoutDetailsStringified (data) {
     const result = {}
     for (const key of Object.keys(data)) {
-      const {properties, ...others} = data[key]
+      const {properties, ...others} = JSON.parse(JSON.stringify(data[key]))  // copy
       properties.subsegments = []
       result[key] = {
         properties: properties,
