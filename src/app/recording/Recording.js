@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 import PTMap, { DownloadSegmentsButton, MapController } from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
@@ -10,7 +11,6 @@ import RightPanel from '../components/RightPanel'
 import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import getString from '../../strings'
-import SegmentCache from '../../helpers/SegmentCache'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -30,10 +30,14 @@ const useStyles = makeStyles({
     height: 30
   },
   mapArea: {
-    width: 'calc(100% - 360px)'
+    width: '100%'
   },
   formArea: {
     width: 360,
+  },
+  showFormArea: {
+    width: 30,
+    marginTop: 30
   },
   loadingContainer: {
     display: 'flex',
@@ -43,8 +47,6 @@ const useStyles = makeStyles({
   }
 })
 
-let GOT_FROM_CACHE = false
-
 function Recording () {
   const classes = useStyles()
 
@@ -52,29 +54,10 @@ function Recording () {
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
-  const [isInitializing, setIsInitializing] = useState(true)
+  const [rightPanelShowing, setRightPanelShowing] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-  const boundsForLoadingSegmentsAfterInitializingRef = useRef(null)
+
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
-
-  useEffect(() => {
-    if (!GOT_FROM_CACHE) {
-      setSegmentsById(SegmentCache.getFromCache())
-      setIsLoading(false)
-      setIsInitializing(false)
-      GOT_FROM_CACHE = true
-    }
-  }, [])
-
-  useEffect(() => {
-    SegmentCache.saveToCacheSoon(segmentsById)
-  }, [segmentsById])
-
-  useEffect(() => {
-    if (!isInitializing && boundsForLoadingSegmentsAfterInitializingRef.current) {
-      onBoundsChange(boundsForLoadingSegmentsAfterInitializingRef.current)
-    }
-  }, [isInitializing])
 
   async function onSegmentCreated (segment) {
     try {
@@ -88,22 +71,11 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
-
-    // On map load this function will be called even before data is loaded from cache
-    // In this case the bounds will be saved and this function will be called again when the cached data
-    // has been loaded.
-    if (isInitializing) {
-      boundsForLoadingSegmentsAfterInitializingRef.current = bounds
-      return
-    }
-
-    // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
-    // rounding precision depends on how big the requested area is
     const boundingBox = {
-      swLng: Math.floor(bounds._southWest.lng * 100) / 100,
-      swLat: Math.floor(bounds._southWest.lat * 100) / 100,
-      neLng: Math.ceil(bounds._northEast.lng * 100) / 100,
-      neLat: Math.ceil(bounds._northEast.lat * 100) / 100
+      swLng: bounds._southWest.lng,
+      swLat: bounds._southWest.lat,
+      neLng: bounds._northEast.lng,
+      neLat: bounds._northEast.lat,
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
@@ -137,8 +109,8 @@ function Recording () {
     setSelectedSegmentId(null)
     addSegments([updatedSegment])
     try {
-      await updateSegment(updatedSegment)
       setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
+      await updateSegment(updatedSegment)
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
     }
@@ -148,13 +120,8 @@ function Recording () {
     setSelectedSegmentId(id)
     setIsLoading(true)
     const segmentWithDetails = await getSegment(id)
-    if (!segmentWithDetails) {
-      deleteRemotelyRemovedSegment(id)
-
-    } else {
-      addSegment(segmentWithDetails)
-      setSelectedSegmentId(segmentWithDetails.id)
-    }
+    addSegment(segmentWithDetails)
+    setSelectedSegmentId(segmentWithDetails.id)
     setIsLoading(false)
   }
 
@@ -188,23 +155,12 @@ function Recording () {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    if (newOrUpdatedSegments.length > 0) {
-      const newSegmentsById = Object.assign({}, segmentsById)
-      for (const segment of newOrUpdatedSegments) {
-        newSegmentsById[segment.id] = segment
-      }
-
-      setSegmentsById(newSegmentsById)
-    }
-  }
-
-  async function deleteRemotelyRemovedSegment (id) {
     const newSegmentsById = Object.assign({}, segmentsById)
+    for (const segment of newOrUpdatedSegments) {
+      newSegmentsById[segment.id] = segment
+    }
 
-    delete newSegmentsById[id]
     setSegmentsById(newSegmentsById)
-    SegmentCache.saveToCacheSoon(newSegmentsById, true)
-    setAlertDisplayed({severity: 'error', message: getString('segment_has_been_deleted', 1)})
   }
 
   async function onSegmentChanged (segment) {
@@ -261,7 +217,7 @@ function Recording () {
           >
             <MapController
               onBoundsChanged={onBoundsChange}
-              segments={segmentsById}
+              segments={Object.values(segmentsById)}
               onSegmentSelect={onSegmentSelect}
               onSegmentDeleted={onSegmentDeleted}
               onSegmentEdited={onSegmentEdited}
@@ -273,15 +229,21 @@ function Recording () {
             />
           </PTMap>
         </div>
-        <div className={classes.formArea}>
-          <RightPanel
-            isLoading={isLoading}
-            segment={segmentsById[selectedSegmentId]}
-            onSegmentChanged={onSegmentChanged}
-            setAlertDisplayed={setAlertDisplayed}
-            onSegmentClose={() => setSelectedSegmentId(null)}
-          />
-        </div>
+        {rightPanelShowing &&
+          <div className={classes.formArea}>
+            <RightPanel
+              isLoading={isLoading}
+              segment={segmentsById[selectedSegmentId]}
+              onSegmentChanged={onSegmentChanged}
+              setAlertDisplayed={setAlertDisplayed}
+              onClose={() => setRightPanelShowing(false) }
+            />
+          </div>
+        }{!rightPanelShowing &&
+          <div className={classes.showFormArea} onClick={() => setRightPanelShowing(true) }>
+            <ArrowBackIcon />
+          </div>
+        }
       </div>
     </>
   )

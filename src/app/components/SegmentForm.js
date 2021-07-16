@@ -192,7 +192,11 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
   useEffect(() => {
     const favoritesString = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITES)
     if (favoritesString) {
-      setFavorites(JSON.parse(favoritesString))
+
+      var favObj = JSON.parse(favoritesString);
+      if( !favObj ) { favObj = []; }
+      addPredefinedFavorites( favObj )
+      setFavorites(favObj)
     }
   }, [])
 
@@ -207,6 +211,165 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
       setErrors({})
     }
   }, [isChanged, errors, onChanged, segment])
+
+  function addPredefinedFavorites (favObj) {
+      if( !favObj.map(fav => fav.name).includes("Lila") ) {
+        favObj.push( {
+          name: "Lila",
+          color: "purple",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: true,
+            duration_constraint_reason: null,
+            fee: false,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: [],
+            order_number: null,
+            parking_allowed: true,
+            quality: 1,
+            street_location: "unknown",
+            time_constraint: false,
+            time_constraint_reason: null,
+            user_restriction: null,
+            user_restriction_reason: null,
+          }
+        });
+      }
+      if( !favObj.map(fav => fav.name).includes("Grün") ) {
+        favObj.push( {
+          name: "Grün",
+          color: "green",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: false,
+            duration_constraint_reason: null,
+            fee: false,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: [],
+            order_number: null,
+            parking_allowed: true,
+            quality: 1,
+            street_location: "unknown",
+            time_constraint: false,
+            time_constraint_reason: null,
+            user_restriction: false,
+            user_restriction_reason: "all_users",
+          }
+        });
+      }
+      if( !favObj.map(fav => fav.name).includes("Rot") ) {
+        favObj.push( {
+          name: "Rot",
+          color: "red",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: null,
+            duration_constraint_reason: null,
+            fee: null,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: ["no_stopping"],
+            order_number: null,
+            parking_allowed: false,
+            quality: 1,
+            street_location: null,
+            time_constraint: null,
+            time_constraint_reason: null,
+            user_restriction: null,
+            user_restriction_reason: null,
+          }
+        });
+      }
+      if( !favObj.map(fav => fav.name).includes("Grau") ) {
+        favObj.push( {
+          name: "Grau",
+          color: "grey",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: null,
+            duration_constraint_reason: null,
+            fee: null,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: ["no_stopping"],
+            order_number: null,
+            parking_allowed: true,
+            quality: 1,
+            street_location: null,
+            time_constraint: null,
+            time_constraint_reason: null,
+            user_restriction: true,
+            user_restriction_reason: null,
+          }
+        });
+      }
+      if( !favObj.map(fav => fav.name).includes("Gelb") ) {
+        favObj.push( {
+          name: "Gelb",
+          color: "yellow",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: false,
+            duration_constraint_reason: null,
+            fee: null,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: ["no_stopping"],
+            order_number: null,
+            parking_allowed: true,
+            quality: 1,
+            street_location: null,
+            time_constraint: true,
+            time_constraint_reason: "Unbekannt",
+            user_restriction: null,
+            user_restriction_reason: "unknown",
+          }
+        });
+      }
+      if( !favObj.map(fav => fav.name).includes("Hellblau") ) {
+        favObj.push( {
+          name: "Hellblau",
+          color: "lightblue",
+          subsegment: {
+            alignment: null,
+            alternative_usage_reason: null,
+            car_count: null,
+            duration_constraint: false,
+            duration_constraint_reason: null,
+            fee: true,
+            id: null,
+            length_in_meters: null,
+            marked: null,
+            no_parking_reasons: ["no_stopping"],
+            order_number: null,
+            parking_allowed: true,
+            quality: 1,
+            street_location: null,
+            time_constraint: false,
+            time_constraint_reason: "Unbekannt",
+            user_restriction: false,
+            user_restriction_reason: "all_users",
+          }
+        });
+      }
+  }
 
   function addFavorite (name, subsegmentToFavorite) {
     const subsegment = {...subsegmentToFavorite, id: null, order_number: null}
@@ -381,7 +544,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           <Select
             labelId="select_data_source"
             id="select_data_source"
-            value={segment.properties?.data_source || window.localStorage.lastDataSource || null}
+            value={segment.properties?.data_source || null}
             onChange={updateSegment(setDataSource)}
             variant={'outlined'}
           >
@@ -846,6 +1009,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           ...favorites.map(favorite => {
             return {
               label: favorite.name,
+              color: favorite.color,
               callback: () => addSubsegment(Object.assign({}, favorite.subsegment)),
               deleteCallback: (name) => removeFavorite(name)
             }
