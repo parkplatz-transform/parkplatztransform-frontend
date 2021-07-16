@@ -11,6 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import MenuList from '@material-ui/core/MenuList'
 import ClearIcon from '@material-ui/icons/Clear'
 import IconButton from '@material-ui/core/IconButton'
+import { makeStyles } from "@material-ui/core/styles";
 
 export default function SplitButton ({optionsAndCallbacks}) {
   const [open, setOpen] = React.useState(false)
@@ -51,6 +52,30 @@ export default function SplitButton ({optionsAndCallbacks}) {
 
   const hasMoreButtons = optionsAndCallbacks.length > 1
 
+
+  const useStyles = makeStyles((theme) => ({
+    color_red: {
+      backgroundColor: "#f66"
+    },
+    color_green: {
+      backgroundColor: "lightgreen"
+    },
+    color_purple: {
+      backgroundColor: "#f700f7"
+    },
+    color_yellow: {
+      backgroundColor: "yellow"
+    },
+    color_grey: {
+      backgroundColor: "lightgrey"
+    },
+    color_lightblue: {
+      backgroundColor: "lightblue"
+    },
+  }));
+
+  const classes = useStyles();
+
   return (
     <Grid container direction="column" alignItems="center">
       <Grid item xs={12}>
@@ -88,6 +113,7 @@ export default function SplitButton ({optionsAndCallbacks}) {
                     {optionsAndCallbacks.slice(1, optionsAndCallbacks.length + 1).map((option, index) => (
                       <MenuItem
                         key={`option_${index}_${option.label}`}
+                        classes={{root: classes[`color_` + option.color]}}
                         onClick={() => handleClick(option.callback)}
                         disabled={option.disabled}
                       >

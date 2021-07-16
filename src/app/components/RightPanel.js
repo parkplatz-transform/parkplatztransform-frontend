@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import { Link } from 'react-router-dom'
 import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
+import CloseIcon from '@material-ui/icons/Close'
 
 const useStyles = makeStyles({
   header: {
@@ -50,7 +51,7 @@ function RightPanel({
   segment,
   onSegmentChanged,
   setAlertDisplayed,
-  onSegmentClose
+  onClose
 }) {
   const classes = useStyles()
 
@@ -61,6 +62,9 @@ function RightPanel({
   if (!segment) {
     return (
       <div className={classes.container}>
+        <IconButton aria-label='close' onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
         <div className={classes.verticalSpace} />
         <div className={classes.header}>
           <p>{getString('welcome_title')}</p>
@@ -116,7 +120,7 @@ function RightPanel({
       segment={segment}
       onChanged={onSegmentChanged}
       onValidationFailed={onValidationFailed}
-      onClose={onSegmentClose}
+      onClose={onClose}
     />
   )
 }
