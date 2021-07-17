@@ -22,9 +22,10 @@ const useStyles = makeStyles({
     marginRight: 5
   },
   container: {
-    height: '100%',
+    height: 'calc(100vh - 64px)',
     width: '100%',
-    display: 'flex'
+    display: 'flex',
+    overflow: 'hidden'
   },
   verticalSpace: {
     height: 30
@@ -33,6 +34,7 @@ const useStyles = makeStyles({
     width: '100%'
   },
   formArea: {
+    overflowY: 'scroll',
     width: 360,
   },
   showFormArea: {
@@ -71,11 +73,13 @@ function Recording () {
   }
 
   async function onBoundsChange (bounds) {
+    // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
+    // rounding precision depends on how big the requested area is
     const boundingBox = {
-      swLng: bounds._southWest.lng,
-      swLat: bounds._southWest.lat,
-      neLng: bounds._northEast.lng,
-      neLat: bounds._northEast.lat,
+      swLng: Math.floor(bounds._southWest.lng * 100) / 100,
+      swLat: Math.floor(bounds._southWest.lat * 100) / 100,
+      neLng: Math.ceil(bounds._northEast.lng * 100) / 100,
+      neLat: Math.ceil(bounds._northEast.lat * 100) / 100
     }
 
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {

@@ -47,7 +47,6 @@ const useStyles = makeStyles({
 })
 
 function RightPanel({
-  isLoading,
   segment,
   onSegmentChanged,
   setAlertDisplayed,
