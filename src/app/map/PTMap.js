@@ -242,6 +242,7 @@ function PTMap({ onBoundsChanged, children }) {
   return (
     <>
       <MapContainer
+        preferCanvas={true}
         center={[lat, lng]}
         zoom={zm}
         style={{ position: 'static' }}
