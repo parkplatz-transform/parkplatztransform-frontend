@@ -190,14 +190,13 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
   }
 
   useEffect(() => {
-    const favoritesString = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITES)
-    if (favoritesString) {
+    var favoritesString = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITES);
+    if (!favoritesString) { favoritesString = "[]"; }
 
-      var favObj = JSON.parse(favoritesString);
-      if( !favObj ) { favObj = []; }
-      addPredefinedFavorites( favObj )
-      setFavorites(favObj)
-    }
+    var favObj = JSON.parse(favoritesString);
+    if( !favObj ) { favObj = []; }
+    addPredefinedFavorites( favObj )
+    setFavorites(favObj)
   }, [])
 
   useEffect(() => {
@@ -213,7 +212,9 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
   }, [isChanged, errors, onChanged, segment])
 
   function addPredefinedFavorites (favObj) {
-      if( !favObj.map(fav => fav.name).includes("Lila") ) {
+      var favNames = favObj.map(fav => fav.name);
+
+      if( !favNames.includes("Lila") ) {
         favObj.push( {
           name: "Lila",
           color: "purple",
@@ -239,7 +240,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           }
         });
       }
-      if( !favObj.map(fav => fav.name).includes("Grün") ) {
+      if( !favNames.includes("Grün") ) {
         favObj.push( {
           name: "Grün",
           color: "green",
@@ -265,7 +266,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           }
         });
       }
-      if( !favObj.map(fav => fav.name).includes("Rot") ) {
+      if( !favNames.includes("Rot") ) {
         favObj.push( {
           name: "Rot",
           color: "red",
@@ -291,7 +292,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           }
         });
       }
-      if( !favObj.map(fav => fav.name).includes("Grau") ) {
+      if( !favNames.includes("Grau") ) {
         favObj.push( {
           name: "Grau",
           color: "grey",
@@ -317,7 +318,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           }
         });
       }
-      if( !favObj.map(fav => fav.name).includes("Gelb") ) {
+      if( !favNames.includes("Gelb") ) {
         favObj.push( {
           name: "Gelb",
           color: "yellow",
@@ -343,7 +344,7 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
           }
         });
       }
-      if( !favObj.map(fav => fav.name).includes("Hellblau") ) {
+      if( !favNames.includes("Hellblau") ) {
         favObj.push( {
           name: "Hellblau",
           color: "lightblue",
