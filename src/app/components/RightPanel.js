@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
@@ -63,6 +63,14 @@ function RightPanel ({
   const classes = useStyles()
 
   const [rightPanelShowing, setRightPanelShowing] = useState(true)
+  const currentSegmentId = useRef(segment?.id)
+
+  useEffect(() => {
+    if (segment && segment.id !== currentSegmentId.current) {
+      setRightPanelShowing(true)
+      currentSegmentId.current = segment.id
+    }
+  }, [segment])
 
   function onValidationFailed (message) {
     setAlertDisplayed({severity: 'error', message})
