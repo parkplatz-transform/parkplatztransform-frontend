@@ -46,8 +46,7 @@ const useStyles = makeStyles({
     paddingLeft: '0.25rem',
   },
   formArea: {
-    overflowY: 'scroll',
-    width: 360,
+    width: 460,
   },
   showFormArea: {
     width: 48,
