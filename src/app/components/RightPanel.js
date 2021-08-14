@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
 import CloseIcon from '@material-ui/icons/Close'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const useStyles = makeStyles({
   header: {
@@ -44,27 +45,50 @@ const useStyles = makeStyles({
   paddingLeft: {
     paddingLeft: '0.25rem',
   },
+  formArea: {
+    overflowY: 'scroll',
+    width: 360,
+  },
+  showFormArea: {
+    width: 48,
+    marginTop: 30
+  },
 })
 
-function RightPanel({
-  segment,
-  onSegmentChanged,
-  setAlertDisplayed,
-  onClose
-}) {
+function RightPanel ({
+                       segment,
+                       onSegmentChanged,
+                       setAlertDisplayed,
+                     }) {
   const classes = useStyles()
 
-  function onValidationFailed(message) {
-    setAlertDisplayed({ severity: 'error', message })
+  const [rightPanelShowing, setRightPanelShowing] = useState(true)
+
+  function onValidationFailed (message) {
+    setAlertDisplayed({severity: 'error', message})
+  }
+
+  function onClose () {
+    setRightPanelShowing(false)
+  }
+
+  if (!rightPanelShowing) {
+    return (
+      <div className={classes.showFormArea}>
+        <IconButton onClick={() => setRightPanelShowing(true)}>
+          <ArrowBackIcon/>
+        </IconButton>
+      </div>
+    )
   }
 
   if (!segment) {
     return (
-      <div className={classes.container}>
-        <IconButton aria-label='close' onClick={onClose}>
-          <CloseIcon />
+      <div className={`${classes.container} ${classes.formArea}`}>
+        <IconButton aria-label="close" onClick={onClose}>
+          <CloseIcon/>
         </IconButton>
-        <div className={classes.verticalSpace} />
+        <div className={classes.verticalSpace}/>
         <div className={classes.header}>
           <p>{getString('welcome_title')}</p>
         </div>
@@ -104,8 +128,8 @@ function RightPanel({
         </ol>
         <div className={classes.bottom}>
           <Link className={classes.link} to={`/howto`}>
-            <IconButton aria-label='delete'>
-              <ArrowForwardIcon />
+            <IconButton aria-label="delete">
+              <ArrowForwardIcon/>
             </IconButton>
           </Link>
           <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
@@ -115,12 +139,14 @@ function RightPanel({
   }
 
   return (
-    <SegmentForm
-      segment={segment}
-      onChanged={onSegmentChanged}
-      onValidationFailed={onValidationFailed}
-      onClose={onClose}
-    />
+    <div className={classes.formArea}>
+      <SegmentForm
+        segment={segment}
+        onChanged={onSegmentChanged}
+        onValidationFailed={onValidationFailed}
+        onClose={onClose}
+      />
+    </div>
   )
 }
 
