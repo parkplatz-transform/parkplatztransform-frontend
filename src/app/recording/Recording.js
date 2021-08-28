@@ -48,7 +48,6 @@ function Recording () {
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
@@ -80,11 +79,9 @@ function Recording () {
 
   async function onSegmentSelect (id) {
     setSelectedSegmentId(id)
-    setIsLoading(true)
     const segmentWithDetails = await getSegment(id)
     addSegment(segmentWithDetails)
     setSelectedSegmentId(segmentWithDetails.id)
-    setIsLoading(false)
   }
 
   async function onBoundsChange (bounds) {
@@ -112,14 +109,10 @@ function Recording () {
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
-      setIsLoading(true)
       const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
       addSegments(geoJson.features)
-      setIsLoading(false)
-      setAlertDisplayed({severity: 'success', message: getString('segment_loaded_success')})
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
-      setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
   }
@@ -229,7 +222,6 @@ function Recording () {
           </PTMap>
         </div>
         <RightPanel
-          isLoading={isLoading}
           segment={segmentsById[selectedSegmentId]}
           onSegmentChanged={onSegmentChanged}
           setAlertDisplayed={setAlertDisplayed}
