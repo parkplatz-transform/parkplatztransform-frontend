@@ -158,7 +158,6 @@ function RightPanel ({
 }
 
 RightPanel.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
   selectedSegment: PropTypes.object,
   onSegmentChanged: PropTypes.func.isRequired,
   setAlertDisplayed: PropTypes.func.isRequired,
