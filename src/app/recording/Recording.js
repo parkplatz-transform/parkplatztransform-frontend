@@ -10,6 +10,7 @@ import RightPanel from '../components/RightPanel'
 import { sanitizeSegment } from './Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import getString from '../../strings'
+import { PermissionsError } from '../../helpers/errors'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -62,6 +63,30 @@ function Recording () {
     }
   }
 
+  async function onSegmentEdited (updatedSegment) {
+    setSelectedSegmentId(null)
+    addSegments([updatedSegment])
+    try {
+      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
+      await updateSegment(updatedSegment)
+    } catch (e) {
+      if (e instanceof PermissionsError) {
+        setAlertDisplayed({severity: 'error', message: getString('permissions_failure')})
+      } else {
+        setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
+      }
+    }
+  }
+
+  async function onSegmentSelect (id) {
+    setSelectedSegmentId(id)
+    setIsLoading(true)
+    const segmentWithDetails = await getSegment(id)
+    addSegment(segmentWithDetails)
+    setSelectedSegmentId(segmentWithDetails.id)
+    setIsLoading(false)
+  }
+
   async function onBoundsChange (bounds) {
     // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
     // rounding precision depends on how big the requested area is
@@ -97,26 +122,6 @@ function Recording () {
       setIsLoading(false)
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
     }
-  }
-
-  async function onSegmentEdited (updatedSegment) {
-    setSelectedSegmentId(null)
-    addSegments([updatedSegment])
-    try {
-      setAlertDisplayed({severity: 'success', message: getString('segment_update_success')})
-      await updateSegment(updatedSegment)
-    } catch (e) {
-      setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
-    }
-  }
-
-  async function onSegmentSelect (id) {
-    setSelectedSegmentId(id)
-    setIsLoading(true)
-    const segmentWithDetails = await getSegment(id)
-    addSegment(segmentWithDetails)
-    setSelectedSegmentId(segmentWithDetails.id)
-    setIsLoading(false)
   }
 
   function checkIfBoundingBoxWasRequestedBefore (boundingBox) {

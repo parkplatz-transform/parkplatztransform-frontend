@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, Polyline, Polygon, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
@@ -7,9 +7,11 @@ import * as turf from '@turf/turf'
 import 'leaflet-arrowheads'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
+import { makeStyles } from '@material-ui/core'
+
 import SplitButton from '../components/SplitButton'
 import getString from '../../strings'
-import { makeStyles } from '@material-ui/core'
+import { UserContext } from '../context/UserContext'
 
 const tileServerURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const attributtion = 'copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -97,6 +99,7 @@ export function MapController({
   selectedSegmentId
 }) {
   const history = useHistory()
+  const user = useContext(UserContext)
 
   // Position Controller
   const map = useMapEvents({
@@ -161,16 +164,25 @@ export function MapController({
         }}
         eventHandlers={{
           'pm:edit': (event) => {
-            // Need to merge the old segment with new geometry
-            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            if (user.permission_level === 0 && segment.properties.owner_id !== user.id) {
+              onSegmentEdited({ ...segment, geometry: segment.geometry })
+            } else {
+              // Need to merge the old segment with new geometry
+              onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            }
           },
           'pm:remove': async (event) => {
-            const confirmDelete = window.confirm(getString('segment_delete_confirm'))
-            if (confirmDelete) {
-              await onSegmentDeleted(segment.id)
-            } else {
-              // Add the layer back
+            if (user.permission_level === 0 && segment.properties.owner_id !== user.id) {
+              window.alert(getString('permissions_failure'))
               map.addLayer(event.layer)
+            } else {
+              const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+              if (confirmDelete) {
+                await onSegmentDeleted(segment.id)
+              } else {
+                // Add the layer back
+                map.addLayer(event.layer)
+              }
             }
           },
           click: (event) => {
@@ -190,16 +202,27 @@ export function MapController({
         key={segment.id}
         eventHandlers={{
           'pm:edit': (event) => {
-            // Need to merge the old segment with new geometry
-            onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            if (user.permission_level === 0 && segment.properties.owner_id !== user.id) {
+              console.log('edit')
+              onSegmentEdited({ ...segment, geometry: segment.geometry })
+            } else {
+              // Need to merge the old segment with new geometry
+              onSegmentEdited({ ...segment, geometry: event.layer.toGeoJSON().geometry })
+            }
           },
           'pm:remove': async (event) => {
-            const confirmDelete = window.confirm(getString('segment_delete_confirm'))
-            if (confirmDelete) {
-              await onSegmentDeleted(segment.id)
-            } else {
-              // Add the layer back
+            if (user.permission_level === 0 && segment.properties.owner_id !== user.id) {
+              window.alert(getString('permissions_failure'))
               map.addLayer(event.layer)
+            } else {
+
+            const confirmDelete = window.confirm(getString('segment_delete_confirm'))
+              if (confirmDelete) {
+                await onSegmentDeleted(segment.id)
+              } else {
+                // Add the layer back
+                map.addLayer(event.layer)
+              }
             }
           },
           click: (event) => {
