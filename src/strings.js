@@ -44,6 +44,7 @@ const strings = {
   },
   segment_loaded_failure: () =>
     'Beim Laden der Abschnitte trat ein Fehler auf.',
+  permissions_failure: () => 'Sorry, das hat nicht geklappt. Du hast leider keine Berechtigung, Abschnitte, die von anderen Nutzer*innen hinzugefügt wurden zu bearbeiten. Falls du die entsprechenden Rechte erhalten möchtest, wende dich an parkplatztransform@riseup.net.',
 
   // Download & Save buttons
   download_geo_json: () => 'Daten herunterladen',

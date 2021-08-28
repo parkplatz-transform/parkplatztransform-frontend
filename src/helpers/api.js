@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react'
+import { PermissionsError } from './errors'
 
 const baseURL = process.env.REACT_APP_API_URL || ''
 export const routes = {
@@ -14,12 +15,20 @@ export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
 
+
 async function withErrorHandling(response) {
   const json = await response.json()
-  if (!response.ok) {
-    json.detail.forEach(error => {
-      console.error(error)
-    })
+  if (response.status === 403) {
+    throw new PermissionsError("Insufficient permissions")
+  }
+  else if (!response.ok) {
+    if (typeof json.detail === "string") {
+      console.error(json.detail)
+    } else {
+      json.detail.forEach(error => {
+        console.error(error)
+      })
+    }
     Sentry.captureEvent(json.detail)
     throw new Error(json.detail)
   }
