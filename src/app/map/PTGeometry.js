@@ -28,6 +28,18 @@ function PTGeometry({ key, coordinates, eventHandlers, lineWeight, isSelected, h
     const length = turf.length(line, { units: 'meters' })
     return <Polyline
       key={key}
+      ref={(el) => {
+        if (el && isSelected) {
+          el.arrowheads({
+            color: SELECTED_SEGMENT_COLOR,
+            frequency: 'endonly',
+            size: '5%',
+            yawn: 80,
+          })
+        } else if (el) {
+          el.deleteArrowheads()
+        }
+      }}
       eventHandlers={eventHandlers}
       pathOptions={setSegmentStyle()}
       positions={coordinates.map(([lat, lng]) => [lng, lat])}>
