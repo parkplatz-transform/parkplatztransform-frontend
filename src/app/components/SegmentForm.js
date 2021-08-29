@@ -169,7 +169,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function SegmentForm ({segment, onChanged, onValidationFailed, onClose}) {
+function SegmentForm ({ segment, onChanged, onClose }) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -205,7 +205,6 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
         onChanged(prevSegmentRef.current)
       }
       prevSegmentRef.current = segment
-      //setChanged(false)
       setSelectedSubsegmentIndex(0)
       setErrors({})
     }
@@ -1024,3 +1023,9 @@ export default function SegmentForm ({segment, onChanged, onValidationFailed, on
     </div>
   )
 }
+
+export default React.memo(SegmentForm, (last, next) => {
+  return last.segment.id === next.segment.id
+  && last.segment.has_subsegments === next.segment.has_subsegments
+  && last.segment.properties.subsegments?.length === next.segment.properties.subsegments?.length
+})
