@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import IconButton from '@material-ui/core/IconButton'
@@ -8,6 +7,7 @@ import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
 import CloseIcon from '@material-ui/icons/Close'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import { SegmentContext } from '../context/SegmentContext'
 
 const useStyles = makeStyles({
   header: {
@@ -54,12 +54,15 @@ const useStyles = makeStyles({
   },
 })
 
-function RightPanel ({
-                       segment,
-                       onSegmentChanged,
-                       setAlertDisplayed,
-                     }) {
+function RightPanel () {
   const classes = useStyles()
+  const { 
+    segment,
+    onSegmentChanged,
+    setAlertDisplayed,
+  } = useContext(SegmentContext)
+
+  console.log('rendering right panel')
 
   const [rightPanelShowing, setRightPanelShowing] = useState(true)
   const currentSegmentId = useRef(segment?.id)
@@ -155,12 +158,6 @@ function RightPanel ({
       />
     </div>
   )
-}
-
-RightPanel.propTypes = {
-  selectedSegment: PropTypes.object,
-  onSegmentChanged: PropTypes.func.isRequired,
-  setAlertDisplayed: PropTypes.func.isRequired,
 }
 
 export default RightPanel
