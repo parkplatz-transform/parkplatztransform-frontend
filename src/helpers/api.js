@@ -69,6 +69,14 @@ export async function logoutUser() {
   }
 }
 
+export async function getAllSegments() {
+  const url = routes.segments
+  const response = await fetch(`${url}`, {
+    headers: headers()
+  })
+  return withErrorHandling(response)
+}
+
 /*
 * details = true means all subsegments are fetched with segments,
 * a future optimisation would be to not fetch this and return a count from the server.
