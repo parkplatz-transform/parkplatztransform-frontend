@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core'
 import SplitButton from '../components/SplitButton'
 import getString from '../../strings'
 import { SegmentContext } from '../context/SegmentContext'
+import { getAllSegments } from '../../helpers/api'
 
 const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
@@ -48,8 +49,9 @@ export function DownloadSegmentsButton() {
     document.body.removeChild(element)
   }
 
-  function downloadAllSegments() {
-    downloadSegments(segments)
+  async function downloadAllSegments() {
+    const allSegments = await getAllSegments()  
+    downloadSegments(allSegments)
   }
 
   function downloadVisibleSegments() {
