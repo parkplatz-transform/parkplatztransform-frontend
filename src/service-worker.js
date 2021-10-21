@@ -59,7 +59,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => url.origin.includes('tile.openstreetmap.org') && url.pathname.endsWith('.png'),
+  ({ url }) => url.href.includes('api.maptiler.com'),
   new CacheFirst({
     cacheName: 'tiles',
     plugins: [

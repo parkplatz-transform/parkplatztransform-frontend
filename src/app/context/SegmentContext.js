@@ -56,13 +56,14 @@ export function SegmentProvider({ children }) {
   async function onBoundsChanged (bounds) {
     // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
     // rounding precision depends on how big the requested area is
+    
     const boundingBox = {
-      swLng: Math.floor(bounds._southWest.lng * 100) / 100,
-      swLat: Math.floor(bounds._southWest.lat * 100) / 100,
-      neLng: Math.ceil(bounds._northEast.lng * 100) / 100,
-      neLat: Math.ceil(bounds._northEast.lat * 100) / 100
+      swLng: Math.floor(bounds._sw.lng * 100) / 100,
+      swLat: Math.floor(bounds._sw.lat * 100) / 100,
+      neLng: Math.ceil(bounds._ne.lng * 100) / 100,
+      neLat: Math.ceil(bounds._ne.lat * 100) / 100
     }
-
+    
     if (checkIfBoundingBoxWasRequestedBefore(boundingBox)) {
       return
     }
