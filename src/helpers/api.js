@@ -15,9 +15,11 @@ export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
 
-
 async function withErrorHandling(response) {
   const json = await response.json()
+  if (response.status === 401) {
+    throw new PermissionsError("Unauthorized")
+  }
   if (response.status === 403) {
     throw new PermissionsError("Insufficient permissions")
   }

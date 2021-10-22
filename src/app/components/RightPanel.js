@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     paddingLeft: '0.25rem',
   },
   formArea: {
-    width: 460,
+    width: 360,
   },
   showFormArea: {
     width: 48,
@@ -62,14 +62,10 @@ function RightPanel () {
     setAlertDisplayed,
   } = useContext(SegmentContext)
 
-  console.log('rendering right panel')
-
-  const [rightPanelShowing, setRightPanelShowing] = useState(true)
   const currentSegmentId = useRef(segment?.id)
 
   useEffect(() => {
     if (segment && segment.id !== currentSegmentId.current) {
-      setRightPanelShowing(true)
       currentSegmentId.current = segment.id
     }
   }, [segment])
@@ -78,26 +74,9 @@ function RightPanel () {
     setAlertDisplayed({severity: 'error', message})
   }
 
-  function onClose () {
-    setRightPanelShowing(false)
-  }
-
-  if (!rightPanelShowing) {
-    return (
-      <div className={classes.showFormArea}>
-        <IconButton onClick={() => setRightPanelShowing(true)}>
-          <ArrowBackIcon/>
-        </IconButton>
-      </div>
-    )
-  }
-
   if (!segment) {
     return (
       <div className={`${classes.container} ${classes.formArea}`}>
-        <IconButton aria-label="close" onClick={onClose}>
-          <CloseIcon/>
-        </IconButton>
         <div className={classes.verticalSpace}/>
         <div className={classes.header}>
           <p>{getString('welcome_title')}</p>
@@ -154,7 +133,6 @@ function RightPanel () {
         segment={segment}
         onChanged={onSegmentChanged}
         onValidationFailed={onValidationFailed}
-        onClose={onClose}
       />
     </div>
   )

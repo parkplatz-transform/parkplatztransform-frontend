@@ -169,7 +169,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function SegmentForm ({ segment, onChanged, onClose }) {
+function SegmentForm ({ segment, onChanged }) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -983,9 +983,6 @@ function SegmentForm ({ segment, onChanged, onClose }) {
 
   return (
     <div className={classes.formView} onMouseLeave={isChanged > 0 ? save : null}>
-      <div className={classes.closeButton}>
-        <IconButton onClick={onClose}><CloseIcon/></IconButton>
-      </div>
       <div className={classes.headerContainer}>
         <Button
           onClick={save}
