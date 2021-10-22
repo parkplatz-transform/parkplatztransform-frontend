@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import PTMap from '../map/PTMap'
@@ -6,6 +6,8 @@ import RightPanel from '../components/RightPanel'
 import { SegmentProvider } from '../context/SegmentContext'
 import { MapController } from '../map/MapController'
 import { DownloadSegmentsButton } from '../components/DownloadButton'
+import { Drawer } from '@material-ui/core'
+import MainMenu from '../components/MainMenu'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -28,28 +30,33 @@ const useStyles = makeStyles({
   mapArea: {
     width: '100%'
   },
-  loadingContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%'
+  drawer: {
+    top: '70px!important'
   }
 })
 
 function Recording () {
   const classes = useStyles()
+  const [drawerOpen, setDrawerOpen] = useState(true)
 
   return (
     <>
     <SegmentProvider>
       <div className={classes.container}>
-        <div className={classes.mapArea}>
+        <div className={classes.mapArea} style={{ width: drawerOpen ? 'calc(100% - 360px)' : '100%' }}>
             <PTMap key="map">
-              <MapController />
               <DownloadSegmentsButton />
             </PTMap>
         </div>
-        <RightPanel/>
+        
+        <Drawer 
+          variant="permanent" 
+          anchor='right'
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        >
+          <RightPanel/>  
+        </Drawer>
       </div>
       </SegmentProvider>
     </>

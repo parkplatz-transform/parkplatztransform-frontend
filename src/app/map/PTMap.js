@@ -1,24 +1,21 @@
 import React, { useEffect, useContext, useRef } from 'react'
-import 'leaflet/dist/leaflet.css'
-import { MapContainer, TileLayer } from 'react-leaflet'
 import { useParams, useHistory } from 'react-router-dom'
-import 'leaflet-arrowheads'
-import '@geoman-io/leaflet-geoman-free'
-import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import maplibregl from 'maplibre-gl';
 import MapboxDraw from "@mapbox/mapbox-gl-draw"
 import { UserContext } from '../context/UserContext'
 import { SegmentContext } from '../context/SegmentContext'
+import getString from '../../strings'
 
 const tileServerURL = 'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH'
-const attributtion = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 
 function PTMap({ children }) {
+  const user = useContext(UserContext)
   const history = useHistory()
   const { lat, lng, zm } = useParams()
   const mapRef = useRef(null)
   const map = useRef(null)
   const draw = useRef(null)
+
   const { 
     segments, 
     onBoundsChanged,
@@ -28,6 +25,7 @@ function PTMap({ children }) {
     onSegmentEdited,
     selectedSegmentId
   } = useContext(SegmentContext)
+  
 
   useEffect(() => {
     if (!map.current) {
@@ -37,6 +35,15 @@ function PTMap({ children }) {
       setFeatures()
     }
   }, [segments])
+
+  useEffect(() => {
+    if (user) {
+      map.current.on('draw.selectionchange', onSelect);
+      map.current.on('draw.create', onCreate);
+      map.current.on('draw.delete', onDelete);
+      map.current.on('draw.update', onUpdate);
+    }
+  }, [user])
 
   function setupMap() {
     map.current = new maplibregl.Map({
@@ -52,6 +59,46 @@ function PTMap({ children }) {
     map.current.on('load', onLoaded)
     map.current.on('zoomend', onMoveOrZoom)
     map.current.on('moveend', onMoveOrZoom)
+  }
+
+  function hasBasePermissions(owner_id) {
+    return user.permission_level === 0 && owner_id !== user.id
+  }
+
+  function onDelete(event) {
+    event.features.forEach((feature) => {
+      if (hasBasePermissions(feature.properties.owner_id)) {
+        window.alert(getString('permissions_failure'))
+      } else {
+        onSegmentDeleted(feature.id)
+      }
+    });
+  }
+
+  function onSelect(event) {
+    if (event.features.length) {
+      event.features.forEach((feature) => {
+        onSegmentSelect(feature.id)
+      });
+    } else {
+      onSegmentSelect(null)
+    }
+  }
+
+  function onCreate(event) {
+    event.features.forEach((feature) => {
+      onSegmentCreated(feature)
+    });
+  }
+
+  function onUpdate(event) {
+    event.features.forEach((feature) => {
+      if (hasBasePermissions(feature.properties.owner_id)) {
+        window.alert(getString('permissions_failure'))
+      } else {
+        onSegmentEdited(feature)
+      }
+    });
   }
 
   function onLoaded() {
@@ -72,14 +119,13 @@ function PTMap({ children }) {
 
   function setFeatures() {
     if (segments.length) {
-      draw.current.deleteAll()
       draw.current.add({ features: segments, type: "FeatureCollection" })
     }
   }
 
   return (
     <>
-    <div style={{ height: '100%' }} ref={mapRef}></div>
+    <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
     </>
   )
 }

@@ -62,7 +62,7 @@ function MainMenu() {
   }
 
   return (
-    <AppBar position='static'>
+    <AppBar position='relative' style={{ zIndex: 1400 }}>
       <Toolbar>
         <TemporaryDrawer />
 
