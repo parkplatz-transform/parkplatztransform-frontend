@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useRef } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import maplibregl from 'maplibre-gl';
 import MapboxDraw from "@mapbox/mapbox-gl-draw"
 import { UserContext } from '../context/UserContext'
 import { SegmentContext } from '../context/SegmentContext'
@@ -45,7 +44,7 @@ function PTMap({ children }) {
   }, [user])
 
   function setupMap() {
-    map.current = new maplibregl.Map({
+    map.current = new window.maplibregl.Map({
       container: mapRef.current,
       style: tileServerURL,
       center: [lng, lat],
