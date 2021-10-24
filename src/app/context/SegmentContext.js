@@ -8,6 +8,7 @@ import getString from '../../strings'
 import { PermissionsError } from '../../helpers/errors'
 import { Snackbar } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
+import { useHistory, useParams } from 'react-router'
 
 export const SegmentContext = createContext({
   segments: [],
@@ -18,9 +19,18 @@ export function SegmentProvider({ children }) {
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
-  const [selectedSegmentId, setSelectedSegmentId] = useState(null)
+  const history = useHistory()
+  const { lat, lng, zm, id: selectedSegmentId } = useParams()
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
+
+  function setSelectedSegmentId(segmentId) {
+    if (segmentId === null) {
+      history.push(`/${lat}/${lng}/${zm}`)
+    } else {
+      history.push(`/${lat}/${lng}/${zm}/${segmentId}`)
+    }
+  }
   
   async function onSegmentCreated (segment) {
     try {
@@ -47,7 +57,12 @@ export function SegmentProvider({ children }) {
   }
 
   async function onSegmentSelect (id) {
-    setSelectedSegmentId(id)
+    if (id === null) {
+      setSelectedSegmentId(null)
+      return
+    }
+    if (id === selectedSegmentId) { return }
+    // setSelectedSegmentId(id)
     const segmentWithDetails = await getSegment(id)
     addSegment(segmentWithDetails)
     setSelectedSegmentId(segmentWithDetails.id)

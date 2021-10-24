@@ -15,7 +15,8 @@ function PTMap({ children }) {
   const mapRef = useRef(null)
   const map = useRef(null)
   const draw = useRef(null)
-
+  const segId = useRef(null)
+  
   const { 
     segments, 
     onBoundsChanged,
@@ -23,10 +24,8 @@ function PTMap({ children }) {
     onSegmentDeleted,
     onSegmentCreated,
     onSegmentEdited,
-    selectedSegmentId
   } = useContext(SegmentContext)
   
-
   useEffect(() => {
     if (!map.current) {
       setupMap()
@@ -37,8 +36,8 @@ function PTMap({ children }) {
   }, [segments])
 
   useEffect(() => {
+    map.current.on('draw.selectionchange', onSelect);
     if (user) {
-      map.current.on('draw.selectionchange', onSelect);
       map.current.on('draw.create', onCreate);
       map.current.on('draw.delete', onDelete);
       map.current.on('draw.update', onUpdate);
@@ -62,7 +61,8 @@ function PTMap({ children }) {
   }
 
   function hasBasePermissions(owner_id) {
-    return user.permission_level === 0 && owner_id !== user.id
+    return user.permission_level === 0 
+      && owner_id !== user.id
   }
 
   function onDelete(event) {
@@ -77,11 +77,11 @@ function PTMap({ children }) {
 
   function onSelect(event) {
     if (event.features.length) {
-      event.features.forEach((feature) => {
-        onSegmentSelect(feature.id)
-      });
+      segId.current = event.features[0].id
+      onSegmentSelect(event.features[0].id)
     } else {
-      onSegmentSelect(null)
+      history.push(`/${lat}/${lng}/${zm}`)
+      segId.current = null
     }
   }
 
@@ -111,7 +111,10 @@ function PTMap({ children }) {
   function onMoveOrZoom() {
     const zm = map.current.getZoom()
     const { lat, lng } = map.current.getCenter()
-      if (lat && lng && zm) {
+    if (lat && lng && zm && segId.current) {
+        history.push(`/${lat}/${lng}/${zm}/${segId.current}`)
+        onBoundsChanged(map.current.getBounds())
+    } else if (lat && lng && zm) {
         history.push(`/${lat}/${lng}/${zm}`)
         onBoundsChanged(map.current.getBounds())
       }
@@ -123,11 +126,7 @@ function PTMap({ children }) {
     }
   }
 
-  return (
-    <>
-    <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
-    </>
-  )
+  return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
 }
 
 export default PTMap

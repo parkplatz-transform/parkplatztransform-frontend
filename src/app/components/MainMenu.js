@@ -6,17 +6,17 @@ import Button from '@material-ui/core/Button'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 
 import LoginForm from './LoginForm'
 import TemporaryDrawer from './Drawer'
-import { Link } from '@material-ui/core'
+import { Avatar, Typography } from '@material-ui/core'
+import blue from '@material-ui/core/colors/blue'
 
 import { UserContext } from '../context/UserContext'
 import { logoutUser } from '../../helpers/api'
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  logoutButton: {
-    marginLeft: theme.spacing(2),
+  userButton: {
+    marginLeft: 'auto',
   },
   title: {
     flexGrow: 1,
@@ -62,7 +62,7 @@ function MainMenu() {
   }
 
   return (
-    <AppBar position='relative' style={{ zIndex: 1400 }}>
+    <AppBar position='relative' style={{ zIndex: 1201 }}>
       <Toolbar>
         <TemporaryDrawer />
 
@@ -75,24 +75,23 @@ function MainMenu() {
         </Typography>
 
         {!user && (
-          <Button color='inherit' onClick={() => setLoginModalOpen(true)}>
+          <Button className={classes.userButton} color='inherit' onClick={() => setLoginModalOpen(true)}>
             Login
           </Button>
         )}
-
-        {user && user.email}
+        
         {user && (
           <>
             <IconButton
-              edge='start'
-              className={classes.logoutButton}
+              edge='end'
+              className={classes.userButton}
               color='inherit'
               aria-label='menu'
               aria-controls='simple-menu'
               aria-haspopup='true'
               onClick={handleClick}
             >
-              <ExitToAppIcon />
+              <Avatar style={{ backgroundColor: blue[500] }}>{user?.email[0]}</Avatar>
             </IconButton>
             <Menu
               id='simple-menu'

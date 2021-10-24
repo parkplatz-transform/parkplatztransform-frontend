@@ -1,31 +1,25 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
+  Box,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Input,
   InputAdornment,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
   TextField
 } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
@@ -33,7 +27,6 @@ import StarIcon from '@material-ui/icons/Star'
 import Button from '@material-ui/core/Button'
 import SplitButton from './SplitButton'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
-import Paper from '@material-ui/core/Paper'
 import red from '@material-ui/core/colors/red'
 import {
   ALIGNMENT,
@@ -70,33 +63,20 @@ const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites'
 
 const useStyles = makeStyles((theme) => ({
   formView: {
-    maxHeight: 'calc(100vh - 64px)',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    marginTop: 64
   },
   list: {
     height: '25vh',
     maxHeight: 'calc(100% - 400px)',
     overflowY: 'auto'
   },
-
-  marginTop: {
-    marginTop: 10
-  },
-
-  marginLeft: {
-    marginLeft: 15
-  },
-
-  marginLeftRight: {
-    marginLeft: 10,
-    marginRight: 10
-  },
   centered: {
     left: '50%',
     transform: 'translateX(-50%)'
   },
   header: {
-    margin: '20px',
+    margin: theme.spacing(1),
     textAlign: 'center',
     fontWeight: 'normal'
   },
@@ -106,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'normal'
   },
   headerContainer: {
-    margin: '20px',
+    margin: theme.spacing(2),
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -154,22 +134,19 @@ const useStyles = makeStyles((theme) => ({
     width: 'calc(100% / 3)'
   },
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  json: {
-    maxWidth: '100%'
+    // margin: theme.spacing(1),
+    // minWidth: 120,
   },
   bottomButton: {
-    width: 'calc(100% - 30px)',
-    margin: '10px 15px 70px'
+    // width: 'calc(100% - 30px)',
+    // margin: '10px 15px 70px'
   },
   closeButton: {
-    float: 'right'
+    // float: 'right'
   }
 }))
 
-function SegmentForm ({ segment, onChanged }) {
+function SegmentForm ({ segment, onChanged, deselectSegment }) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -539,33 +516,46 @@ function SegmentForm ({ segment, onChanged }) {
     return (
       <React.Fragment>
         {/* data source */}
-        <FormControl key={`${getSegmentKey()}_data_source`} className={clsx(classes.formControl, classes.twoThirdWidth)}>
-          <FormLabel component="legend">Datenquelle</FormLabel>
-          <Select
-            labelId="select_data_source"
-            id="select_data_source"
-            value={segment.properties?.data_source || null}
-            onChange={updateSegment(setDataSource)}
-            variant={'outlined'}
+        <Box px={2} py={1}>
+          <FormControl 
+            key={`${getSegmentKey()}_data_source`} 
+            fullWidth
           >
-            <MenuItem value={null}>&nbsp;</MenuItem>
-            <MenuItem value={DATA_SOURCES.OWN_COUNTING}>Eigene Zählung</MenuItem>
-            <MenuItem value={DATA_SOURCES.PARKPLATZ_TRANSFORM}>Parkplatz Transform</MenuItem>
-            <MenuItem value={DATA_SOURCES.HOFFMANN_LEICHTER}>Hoffmann leichter</MenuItem>
-            <MenuItem value={DATA_SOURCES.LK_ARGUS}>LK Argus</MenuItem>
-            <MenuItem value={DATA_SOURCES.OTHER}>Sonstiges</MenuItem>
-          </Select>
-        </FormControl>
+            <TextField
+              labelId="select_data_source"
+              id="select_data_source"
+              value={segment.properties?.data_source || null}
+              onChange={updateSegment(setDataSource)}
+              variant={'outlined'}
+              label="Datenquelle"
+              select
+            >
+              <MenuItem value={null}>&nbsp;</MenuItem>
+              <MenuItem value={DATA_SOURCES.OWN_COUNTING}>Eigene Zählung</MenuItem>
+              <MenuItem value={DATA_SOURCES.PARKPLATZ_TRANSFORM}>Parkplatz Transform</MenuItem>
+              <MenuItem value={DATA_SOURCES.HOFFMANN_LEICHTER}>Hoffmann leichter</MenuItem>
+              <MenuItem value={DATA_SOURCES.LK_ARGUS}>LK Argus</MenuItem>
+              <MenuItem value={DATA_SOURCES.OTHER}>Sonstiges</MenuItem>
+            </TextField>
+          </FormControl>
+        </Box>
 
       {/*  futher comments*/}
-        <FormControl key={`${getSegmentKey()}_comment`} className={clsx(classes.withoutLabel, classes.marginLeftRight, classes.twoThirdWidth)}>
-          <TextField
-            label="Kommentar"
-            type="text"
-            value={segment.properties?.further_comments}
-            onChange={updateSegment(setFurtherComments)}
-          />
-        </FormControl>
+        <Box px={2} py={1}>
+          <FormControl 
+            key={`${getSegmentKey()}_comment`} 
+            fullWidth
+          >
+            <TextField
+              label="Kommentar"
+              variant={'outlined'}
+              multiline
+              type="text"
+              value={segment.properties?.further_comments}
+              onChange={updateSegment(setFurtherComments)}
+            />
+          </FormControl>
+        </Box>
       </React.Fragment>
     )
   }
@@ -626,131 +616,124 @@ function SegmentForm ({ segment, onChanged }) {
     if (subsegment.parking_allowed) {
       return (
         <React.Fragment>
-          <TableRow key={`${getKey()}_length`}>
-            <TableCell align="left">
-              <div className={classes.optionTitle}>Länge (ca.) <i>und/oder</i> Stellplätze</div>
-              {/* Length in meters */}
-              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
-                <TextField
-                  label="m"
-                  required={!!error}
-                  error={!!error}
-                  type="number"
-                  helperText={getString('helper_text_length')}
-                  value={subsegment.length_in_meters}
-                  onChange={updateSubsegment(setLengthInMeters)}
-                  aria-describedby="length in meters"
-                  inputProps={{
-                    'aria-label': 'length',
-                  }}
-                />
-              </FormControl>
-
-              {/* Count */}
-              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
-                <TextField
-                  label="Stellplätze"
-                  required={!!error}
-                  error={!!error}
-                  type="number"
-                  value={subsegment.car_count}
-                  helperText={getString('helper_text_length')}
-                  onChange={updateSubsegment(setCarCount)}
-                  aria-describedby="car count"
-                  inputProps={{
-                    'aria-label': 'car count',
-                  }}
-                />
-              </FormControl>
-            </TableCell>
-          </TableRow>
-
+          {/* Length in meters */}
+          <Box px={2} py={1}>
+            <FormControl fullWidth>
+              <TextField
+                label={<label>Länge (ca.) <i>und/oder</i> Stellplätze</label>}
+                variant={'outlined'}
+                required={!!error}
+                error={!!error}
+                type="number"
+                helperText={getString('helper_text_length')}
+                value={subsegment.length_in_meters}
+                onChange={updateSubsegment(setLengthInMeters)}
+                aria-describedby="length in meters"
+                inputProps={{
+                  'aria-label': 'length',
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box px={2} py={1}>
+            {/* Count */}
+            <FormControl fullWidth>
+              <TextField
+              variant={'outlined'}
+                label="Stellplätze"
+                required={!!error}
+                error={!!error}
+                type="number"
+                value={subsegment.car_count}
+                helperText={getString('helper_text_length')}
+                onChange={updateSubsegment(setCarCount)}
+                aria-describedby="car count"
+                inputProps={{
+                  'aria-label': 'car count',
+                }}
+              />
+            </FormControl>
+          </Box>
 
           {/* Time Constraint*/}
-          <TableRow key={`${getKey()}_time_constraint`}>
-            <TableCell align="left">
-
-              <div className={classes.optionTitle}>Temporäres&nbsp;Parkverbot</div>
-
-              <FormControlLabel
-                control={
-                  <YesNoUnknownCheckbox
-                    checked={selectedSubsegment().time_constraint}
-                    color={'primary'}
-                    onChange={updateSubsegment(setHasTimeConstraint)}
-                  />
-                }
-                label="Parken zeitweise verboten"/>
-
+          <Box px={2} py={1}>
+            <div className={classes.optionTitle}>Temporäres&nbsp;Parkverbot</div>
+            <FormControlLabel
+              control={
+                <YesNoUnknownCheckbox
+                  checked={selectedSubsegment().time_constraint}
+                  color={'primary'}
+                  onChange={updateSubsegment(setHasTimeConstraint)}
+                />
+              }
+              label="Parken zeitweise verboten"
+            />
+          </Box>
               {selectedSubsegment().time_constraint
-                ? <FormControl className={clsx(classes.margin, classes.withoutLabel, classes.wideTextField)}>
-                  <FormLabel component="legend">Wann besteht Parkverbot?</FormLabel>
-                  <TextField id={`${getKey()}_time_constraint_reason`}
-                             multiline variant={'outlined'} style={{width: '100%'}}
-                             InputLabelProps={{shrink: true}}
-                             rows={3}
-                             rowsMax={5}
-                             value={selectedSubsegment().time_constraint_reason}
-                             onChange={updateSubsegment(setTimeConstraintReason)}
-                  />
-                </FormControl>
+                ? <Box px={2} py={1}>
+                  <FormControl fullWidth>
+                    <TextField 
+                      label="Wann besteht Parkverbot?"
+                      id={`${getKey()}_time_constraint_reason`}
+                      multiline 
+                      variant={'outlined'}
+                      InputLabelProps={{shrink: true}}
+                      value={selectedSubsegment().time_constraint_reason}
+                      onChange={updateSubsegment(setTimeConstraintReason)}
+                    />
+                  </FormControl>
+                </Box>
                 : null
               }
 
               {selectedSubsegment().time_constraint
-                ? <FormControl className={classes.formControl}>
-                  <FormLabel component="legend">Nutzung bei Parkverbot</FormLabel>
-                  <Select
-                    labelId="select_alternative_usage_reason"
-                    id="select_alternative_usage_reason"
-                    value={selectedSubsegment().alternative_usage_reason || ALTERNATIVE_USAGE_REASON.UNKNOWN}
-                    onChange={updateSubsegment(setAlternativeUsageReason)}
-                    // variant={'outlined'}
-                  >
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.UNKNOWN}>Unbekannt</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_STOP}>Haltestelle</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_LANE}>Busspur</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.MARKET}>Markt</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.LANE}>Fahrspur</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.TAXI}>Taxi</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.LOADING_ZONE}>Ladezone i.S.v. Lieferzone</MenuItem>
-                    <MenuItem value={ALTERNATIVE_USAGE_REASON.OTHER}>Sonstiges</MenuItem>
-                  </Select>
-                </FormControl>
+                ? <Box px={2} py={1}> 
+                  <FormControl fullWidth>
+                    <TextField
+                      select
+                      label="Nutzung bei Parkverbot"
+                      labelId="select_alternative_usage_reason"
+                      id="select_alternative_usage_reason"
+                      value={selectedSubsegment().alternative_usage_reason || ALTERNATIVE_USAGE_REASON.UNKNOWN}
+                      onChange={updateSubsegment(setAlternativeUsageReason)}
+                      variant={'outlined'}
+                    >
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.UNKNOWN}>Unbekannt</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_STOP}>Haltestelle</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.BUS_LANE}>Busspur</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.MARKET}>Markt</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.LANE}>Fahrspur</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.TAXI}>Taxi</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.LOADING_ZONE}>Ladezone i.S.v. Lieferzone</MenuItem>
+                      <MenuItem value={ALTERNATIVE_USAGE_REASON.OTHER}>Sonstiges</MenuItem>
+                    </TextField>
+                  </FormControl>
+                  </Box>
                 : null
               }
-
-            </TableCell>
-          </TableRow>
 
           {/*Alignment*/}
-          <TableRow key={`${getKey()}_alignment`}>
-            <TableCell align="left">
-              <div className={classes.optionTitle}>Parkwinkel</div>
-
-              <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
-                {/*Parkposition:*/}
-                <Select
-                  id="select_parking_position"
-                  value={selectedSubsegment().alignment || ALIGNMENT.UNKNOWN}
-                  onChange={updateSubsegment(setAlignment)}
-                  variant={'outlined'}
-                >
-                  <MenuItem value={ALIGNMENT.UNKNOWN}>unbekannt</MenuItem>
-                  <MenuItem value={ALIGNMENT.PARALLEL}>parallel</MenuItem>
-                  <MenuItem value={ALIGNMENT.DIAGONAL}>diagonal</MenuItem>
-                  <MenuItem value={ALIGNMENT.PERPENDICULAR}>quer</MenuItem>
-                </Select>
-              </FormControl>
-            </TableCell>
-          </TableRow>
-
+          <Box px={2} py={1}>
+            <FormControl fullWidth>
+              {/*Parkposition:*/}
+              <TextField
+                label="Parkwinkel"
+                select
+                id="select_parking_position"
+                value={selectedSubsegment().alignment || ALIGNMENT.UNKNOWN}
+                onChange={updateSubsegment(setAlignment)}
+                variant={'outlined'}
+              >
+                <MenuItem value={ALIGNMENT.UNKNOWN}>unbekannt</MenuItem>
+                <MenuItem value={ALIGNMENT.PARALLEL}>parallel</MenuItem>
+                <MenuItem value={ALIGNMENT.DIAGONAL}>diagonal</MenuItem>
+                <MenuItem value={ALIGNMENT.PERPENDICULAR}>quer</MenuItem>
+              </TextField>
+            </FormControl>
+          </Box>
           {/* Other properties*/}
-          <TableRow key={`${getKey()}_fee`}>
-            <TableCell align="left">
-
+          <Box px={2} py={1}>
               <div className={classes.optionTitle}>Weitere Eigenschaften</div>
-
               {/* Parking space marking */}
               <FormControlLabel
                 control={
@@ -798,12 +781,13 @@ function SegmentForm ({ segment, onChanged }) {
                 </FormControl>
                 : null
               }
-
+            </Box>
               {/* Street location */}
-              <div>
-                <FormControl className={clsx(classes.formControl, classes.fullWidth)}>
-                  Parkposition:
-                  <Select
+              <Box px={2} py={1}>
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    label="Parkposition"
                     id="select_parking_position"
                     value={selectedSubsegment().street_location || STREET_LOCATION.UNKNOWN}
                     onChange={updateSubsegment(setStreetLocation)}
@@ -816,12 +800,12 @@ function SegmentForm ({ segment, onChanged }) {
                     <MenuItem value={STREET_LOCATION.PARKING_BAY}>in einer Parkbucht</MenuItem>
                     <MenuItem value={STREET_LOCATION.MIDDLE}>auf einer Parkinsel</MenuItem>
                     <MenuItem value={STREET_LOCATION.CAR_PARK}>in einer Sammelanlage</MenuItem>
-                  </Select>
+                  </TextField>
                 </FormControl>
-              </div>
+              </Box>
 
               {/* usage restriction */}
-              <div>
+              <Box px={2} py={1}>
                 <FormControlLabel
                   control={
                     <YesNoUnknownCheckbox
@@ -831,10 +815,15 @@ function SegmentForm ({ segment, onChanged }) {
                     />
                   }
                   label="Eingeschränkte Nutzergruppe"/>
-                <FormControl className={clsx(classes.formControl, classes.fullWidth)}
-                             disabled={!selectedSubsegment().user_restriction}>
-                  Nutzergruppe:
-                  <Select
+                </Box>
+                <Box px={2} py={1}>
+                <FormControl 
+                  fullWidth
+                  disabled={!selectedSubsegment().user_restriction}
+                  >
+                  <TextField
+                    select
+                    label="Nutzergruppe"
                     labelId="demo-simple-select-label"
                     id="select_usage_restriction"
                     value={selectedSubsegment().user_restriction_reason || USER_RESTRICTIONS.UNKNOWN}
@@ -850,18 +839,14 @@ function SegmentForm ({ segment, onChanged }) {
                     <MenuItem value={USER_RESTRICTIONS.GENDER}>nach Geschlecht</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.ELECTRIC_CARS}>E-Autos</MenuItem>
                     <MenuItem value={USER_RESTRICTIONS.OTHER}>Sonstige</MenuItem>
-                  </Select>
+                  </TextField>
                 </FormControl>
-              </div>
-            </TableCell>
-          </TableRow>
+              </Box>
 
         </React.Fragment>
       )
     }
-
     return null
-
   }
 
   function renderDetailsForParkingNotAllowed () {
@@ -869,32 +854,26 @@ function SegmentForm ({ segment, onChanged }) {
     if (subsegment.parking_allowed === false) {
       return (
         <React.Fragment>
-
           {/*Length*/}
-          <TableRow key={`${getKey()}_length`}>
-            <TableCell align="left">
-              <div className={classes.optionTitle}>Länge (ca.)</div>
-
-              <FormControl className={clsx(classes.withoutLabel, classes.fullWidth)}>
-                <Input
-                  id="standard-adornment-weight"
-                  value={subsegment.length_in_meters}
-                  onChange={updateSubsegment(setLengthInMeters)}
-                  endAdornment={<InputAdornment position="end">m</InputAdornment>}
-                  aria-describedby="length in meters"
-                  inputProps={{
-                    'aria-label': 'weight',
-                  }}
-                />
-              </FormControl>
-            </TableCell>
-          </TableRow>
-
+          <Box px={2} py={1}>
+            <FormControl fullWidth>
+              <TextField
+                label="Länge (ca.) (m)"
+                variant="outlined"
+                id="standard-adornment-weight"
+                value={subsegment.length_in_meters}
+                onChange={updateSubsegment(setLengthInMeters)}
+                endAdornment={<InputAdornment position="end">m</InputAdornment>}
+                aria-describedby="length in meters"
+                inputProps={{
+                  'aria-label': 'weight',
+                }}
+              />
+            </FormControl>
+          </Box>
           {/*No parking reason*/}
-          <TableRow key={`${getKey()}_noparking_reason`}>
-            <TableCell align="left">
+          <Box px={2} py={1}>
               <div className={classes.optionTitle}>Gründe</div>
-
               <FormGroup>
                 {Object.keys(NO_PARKING_REASONS_AND_LABEL).map(key => {
                   const reason = subsegment?.no_parking_reasons?.find(k => k === key)
@@ -913,9 +892,7 @@ function SegmentForm ({ segment, onChanged }) {
                   )
                 })}
               </FormGroup>
-
-            </TableCell>
-          </TableRow>
+          </Box>
         </React.Fragment>
       )
     }
@@ -934,7 +911,7 @@ function SegmentForm ({ segment, onChanged }) {
       )
     }
     return (
-      <div>
+      <>
         <div className={classes.headerContainer}>
           <h4>Details</h4>
           <IconButton onClick={() => setSubsegmentToAddToFavorites(Object.assign({}, subsegment))} edge="end"
@@ -942,48 +919,57 @@ function SegmentForm ({ segment, onChanged }) {
             <StarIcon/>
           </IconButton>
         </div>
-        <div className={classes.marginLeftRight}>
+        <div>
+          <Box py={1} px={2}>
+            <div className={classes.optionTitle}>Öffentliches Parken</div>
+            <ButtonGroup 
+              color="primary"
+              aria-label="outlined primary button group"
+              className={classes.fullWidth}
+            >
+              <Button 
+                variant={getButtonVariant(subsegment.parking_allowed === true)}
+                onClick={updateSubsegment(setParkingIsAllowed)}
+                className={classes.halfWidth}
+              >
+                Erlaubt
+              </Button>
+              <Button variant={getButtonVariant(selectedSubsegment().parking_allowed === false)}
+                      onClick={updateSubsegment(setParkingIsNotAllowed)} className={classes.halfWidth}>
+                Nie&nbsp;erlaubt
+              </Button>
+            </ButtonGroup>
+            </Box>
 
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableBody>
-                <TableRow key={`${getKey()}_parking_allowed`}>
-                  <TableCell align="left">
-                    <div className={classes.optionTitle}>Öffentliches Parken</div>
-
-
-                    <ButtonGroup color="primary" aria-label="outlined primary button group"
-                                 className={classes.fullWidth}>
-                      <Button variant={getButtonVariant(subsegment.parking_allowed === true)}
-                              onClick={updateSubsegment(setParkingIsAllowed)} className={classes.halfWidth}>
-                        Erlaubt
-                      </Button>
-                      <Button variant={getButtonVariant(selectedSubsegment().parking_allowed === false)}
-                              onClick={updateSubsegment(setParkingIsNotAllowed)} className={classes.halfWidth}>
-                        Nie&nbsp;erlaubt
-                      </Button>
-                    </ButtonGroup>
-                  </TableCell>
-                </TableRow>
-
-                {renderDetailsForParkingAllowed()}
-                {renderDetailsForParkingNotAllowed()}
-                <Button variant="contained" color="primary" onClick={save} className={classes.bottomButton}>
-                  {getString('save')}
-                </Button>
-              </TableBody>
-            </Table>
-          </TableContainer>
+        {renderDetailsForParkingAllowed()}
+        {renderDetailsForParkingNotAllowed()}
+        <Box py={1} px={2}>
+          <FormControl fullWidth>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={save} 
+              className={classes.bottomButton}
+            >
+              {getString('save')}
+            </Button>
+          </FormControl>
+        </Box>
         </div>
-
-        {/*<pre className={clsx(classes.json, classes.margin)}>{JSON.stringify(segment, null, ' ')}</pre>*/}
-      </div>
+      </>
     )
   }
 
   return (
     <div className={classes.formView} onMouseLeave={isChanged > 0 ? save : null}>
       <div className={classes.headerContainer}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={deselectSegment}
+        >
+            cancel
+        </Button>
         <Button
           onClick={save}
           disabled={isChanged === 0}
@@ -996,7 +982,8 @@ function SegmentForm ({ segment, onChanged }) {
       <div className={classes.marginTop}>
         {renderSegmentProperties()}
       </div>
-      <h4 className={clsx(classes.headerLeftAligned)}>Unterabschnitte:</h4>
+      <Box pt={2}><Divider/></Box>
+      <h4 className={clsx(classes.headerLeftAligned)}>Unterabschnitte</h4>
       <div className={classes.list}>
         {renderSubsegmentList()}
       </div>
@@ -1013,6 +1000,7 @@ function SegmentForm ({ segment, onChanged }) {
           })
         ]
       }/>
+      <Box pt={2}><Divider/></Box>
       <form onChange={() => { setErrors({}) }}>
         {renderSubsegmentDetails()}
       </form>
