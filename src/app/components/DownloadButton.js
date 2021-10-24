@@ -1,7 +1,4 @@
 import React, { useContext } from 'react'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { useMap } from 'react-leaflet'
 import { makeStyles } from '@material-ui/core'
 
 import SplitButton from '../components/SplitButton'
@@ -21,14 +18,14 @@ const useStyles = makeStyles({
 })
 export function DownloadSegmentsButton() {
   const classes = useStyles()
-  const map = useMap()
+  // const map = useMap()
 
   const { segments } = useContext(SegmentContext)
 
   function bboxToLeafletBounds(bbox) {
-    const corner1 = L.latLng(bbox[1], bbox[0])
-    const corner2 = L.latLng(bbox[3], bbox[2])
-    return L.latLngBounds(corner1, corner2)
+    // const corner1 = L.latLng(bbox[1], bbox[0])
+    // const corner2 = L.latLng(bbox[3], bbox[2])
+    // return L.latLngBounds(corner1, corner2)
   }
 
   function downloadSegments(_segments) {
@@ -55,14 +52,14 @@ export function DownloadSegmentsButton() {
   }
 
   function downloadVisibleSegments() {
-    const visibleSegments = segments.filter(segment => map.getBounds().intersects(bboxToLeafletBounds(segment.bbox)))
-    downloadSegments(visibleSegments)
+    // const visibleSegments = segments.filter(segment => map.getBounds().intersects(bboxToLeafletBounds(segment.bbox)))
+    // downloadSegments(visibleSegments)
   }
 
   function segmentsAreInBounds() {
-    return segments.some(segment =>
-      map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
-    )
+    // return segments.some(segment =>
+    //   map.getBounds().intersects(bboxToLeafletBounds(segment.bbox))
+    // )
   }
 
   return (
