@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import IconButton from '@material-ui/core/IconButton'
 import { Link } from 'react-router-dom'
 import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
-import CloseIcon from '@material-ui/icons/Close'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import { SegmentContext } from '../context/SegmentContext'
+import { Box } from '@material-ui/core'
 
 const useStyles = makeStyles({
   header: {
@@ -46,7 +45,7 @@ const useStyles = makeStyles({
     paddingLeft: '0.25rem',
   },
   formArea: {
-    width: 360,
+    width: 360
   },
   showFormArea: {
     width: 48,
@@ -60,15 +59,9 @@ function RightPanel () {
     segment,
     onSegmentChanged,
     setAlertDisplayed,
+    onSegmentSelect
   } = useContext(SegmentContext)
 
-  const currentSegmentId = useRef(segment?.id)
-
-  useEffect(() => {
-    if (segment && segment.id !== currentSegmentId.current) {
-      currentSegmentId.current = segment.id
-    }
-  }, [segment])
 
   function onValidationFailed (message) {
     setAlertDisplayed({severity: 'error', message})
@@ -76,53 +69,55 @@ function RightPanel () {
 
   if (!segment) {
     return (
-      <div className={`${classes.container} ${classes.formArea}`}>
-        <div className={classes.verticalSpace}/>
-        <div className={classes.header}>
-          <p>{getString('welcome_title')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_subtitle')}</p>
-        </div>
-        <div className={classes.subheader}>
-          <p>{getString('welcome_hints')}</p>
-        </div>
+      <div className={classes.formArea}>
+        <Box p={2} mt={5}>
+          <div className={classes.verticalSpace}/>
+          <div className={classes.header}>
+            <p>{getString('welcome_title')}</p>
+          </div>
+          <div className={classes.subheader}>
+            <p>{getString('welcome_subtitle')}</p>
+          </div>
+          <div className={classes.subheader}>
+            <p>{getString('welcome_hints')}</p>
+          </div>
 
-        <ol className={classes.orderdList}>
-          <li>
-            <div className={classes.subheader}>
-              <p>{getString('welcome_hint_1')}</p>
-            </div>
-          </li>
-          <li>
-            <div className={classes.subheader}>
-              <p>{getString('welcome_hint_2')}</p>
-            </div>
-          </li>
-          <li>
-            <div className={classes.subheader}>
-              <p>{getString('welcome_hint_3')}</p>
-            </div>
-          </li>
-          <li>
-            <div className={classes.subheader}>
-              <p>{getString('welcome_hint_4')}</p>
-            </div>
-          </li>
-          <li>
-            <div className={classes.subheader}>
-              <p>{getString('welcome_hint_5')}</p>
-            </div>
-          </li>
-        </ol>
-        <div className={classes.bottom}>
-          <Link className={classes.link} to={`/howto`}>
-            <IconButton aria-label="delete">
-              <ArrowForwardIcon/>
-            </IconButton>
-          </Link>
-          <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
-        </div>
+          <ol className={classes.orderdList}>
+            <li>
+              <div className={classes.subheader}>
+                <p>{getString('welcome_hint_1')}</p>
+              </div>
+            </li>
+            <li>
+              <div className={classes.subheader}>
+                <p>{getString('welcome_hint_2')}</p>
+              </div>
+            </li>
+            <li>
+              <div className={classes.subheader}>
+                <p>{getString('welcome_hint_3')}</p>
+              </div>
+            </li>
+            <li>
+              <div className={classes.subheader}>
+                <p>{getString('welcome_hint_4')}</p>
+              </div>
+            </li>
+            <li>
+              <div className={classes.subheader}>
+                <p>{getString('welcome_hint_5')}</p>
+              </div>
+            </li>
+          </ol>
+          <div className={classes.bottom}>
+            <Link className={classes.link} to={`/howto`}>
+              <IconButton aria-label="delete">
+                <ArrowForwardIcon/>
+              </IconButton>
+            </Link>
+            <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
+          </div>
+        </Box>
       </div>
     )
   }
@@ -130,6 +125,7 @@ function RightPanel () {
   return (
     <div className={classes.formArea}>
       <SegmentForm
+        deselectSegment={() => onSegmentSelect(null)}
         segment={segment}
         onChanged={onSegmentChanged}
         onValidationFailed={onValidationFailed}

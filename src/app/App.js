@@ -33,7 +33,9 @@ function App() {
         <Route exact path='/howto' component={HowTo} />
         <Route exact path='/impressum' component={Impressum} />
         <Route exact path='/datenschutz' component={DataPolicy} />
-        <Route exact path='/:lat/:lng/:zm' component={Recording} />
+        <Route path='/:lat/:lng/:zm/:id?'>
+          <Recording/>
+        </Route>
       </Router>
     </UserProvider>
   )
