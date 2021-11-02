@@ -1,14 +1,13 @@
-import React, { useState, createContext, useRef } from 'react'
+import React, { useState, createContext, useRef, useEffect } from 'react'
 
 import { emptyBoundsArray } from '../recording/TypeSupport'
-import { deleteSegment, getSegment, getSegments, postSegment, updateSegment } from '../../helpers/api'
+import { deleteSegment, getSegment, getSegments, postSegment, updateSegment, ws } from '../../helpers/api'
 import { sanitizeSegment } from '../recording/Segment'
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc'
 import getString from '../../strings'
 import { PermissionsError } from '../../helpers/errors'
 import { Snackbar } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
-import { useHistory, useParams } from 'react-router'
 
 export const SegmentContext = createContext({
   segments: [],
@@ -19,18 +18,16 @@ export function SegmentProvider({ children }) {
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
-  const history = useHistory()
-  const { lat, lng, zm, id: selectedSegmentId } = useParams()
+  const [selectedSegmentId, setSelectedSegmentId] = useState(null)
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
 
-  function setSelectedSegmentId(segmentId) {
-    if (segmentId === null) {
-      history.push(`/${lat}/${lng}/${zm}`)
-    } else {
-      history.push(`/${lat}/${lng}/${zm}/${segmentId}`)
+  useEffect(() => {
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data)
+      addSegments(data.features)
     }
-  }
+  }, [])
   
   async function onSegmentCreated (segment) {
     try {
@@ -62,7 +59,7 @@ export function SegmentProvider({ children }) {
       return
     }
     if (id === selectedSegmentId) { return }
-    // setSelectedSegmentId(id)
+    setSelectedSegmentId(id)
     const segmentWithDetails = await getSegment(id)
     addSegment(segmentWithDetails)
     setSelectedSegmentId(segmentWithDetails.id)
@@ -94,10 +91,10 @@ export function SegmentProvider({ children }) {
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
-      const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
-      if (geoJson.features && geoJson.features.length) {
-        addSegments(geoJson.features)
-      }
+      getSegments(boundingBoxString, excludedIds, latestModificationDate)
+      // if (geoJson.features && geoJson.features.length) {
+      //   addSegments(geoJson.features)
+      // }
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
