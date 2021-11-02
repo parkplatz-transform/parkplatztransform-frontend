@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import PTMap from '../map/PTMap'
 import RightPanel from '../components/RightPanel'
-import { SegmentProvider } from '../context/SegmentContext'
+import { SegmentContext } from '../context/SegmentContext'
 import { DownloadSegmentsButton } from '../components/DownloadButton'
 import { Drawer } from '@material-ui/core'
-import { useParams } from 'react-router'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -36,12 +35,10 @@ const useStyles = makeStyles({
 
 function Recording () {
   const classes = useStyles()
-  const params = useParams()
-  const drawerOpen = params?.id
+  const { selectedSegmentId } = useContext(SegmentContext)
 
   return (
     <>
-    <SegmentProvider>
       <div className={classes.container}>
         <div 
           className={classes.mapArea}
@@ -53,16 +50,15 @@ function Recording () {
         
         <Drawer 
           variant="persistent" 
-          anchor='right'
-          open={drawerOpen}
+          anchor="right"
+          open={!!selectedSegmentId}
           onClose={() => {}}
         >
           <RightPanel/>  
         </Drawer>
       </div>
-      </SegmentProvider>
     </>
   )
 }
 
-export default React.memo(Recording)
+export default Recording

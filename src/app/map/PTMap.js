@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useRef } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
-import MapboxDraw from "@mapbox/mapbox-gl-draw"
+import MapboxDraw from '@mapbox/mapbox-gl-draw'
+
 import { UserContext } from '../context/UserContext'
 import { SegmentContext } from '../context/SegmentContext'
 import getString from '../../strings'
@@ -75,12 +76,12 @@ function PTMap({ children }) {
   }
 
   function onSelect(event) {
-    if (event.features.length) {
+    if (event?.features?.length) {
       segId.current = event.features[0].id
       onSegmentSelect(event.features[0].id)
     } else {
-      history.push(`/${lat}/${lng}/${zm}`)
       segId.current = null
+      onSegmentSelect(null)
     }
   }
 
@@ -110,10 +111,7 @@ function PTMap({ children }) {
   function onMoveOrZoom() {
     const zm = map.current.getZoom()
     const { lat, lng } = map.current.getCenter()
-    if (lat && lng && zm && segId.current) {
-        history.push(`/${lat}/${lng}/${zm}/${segId.current}`)
-        onBoundsChanged(map.current.getBounds())
-    } else if (lat && lng && zm) {
+    if (lat && lng && zm) {
         history.push(`/${lat}/${lng}/${zm}`)
         onBoundsChanged(map.current.getBounds())
       }

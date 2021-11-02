@@ -9,6 +9,7 @@ import HowTo from './components/HowTo'
 import Impressum from './components/Impressum'
 import DataPolicy from './components/DataPolicy'
 import { UserProvider } from './context/UserContext'
+import { SegmentProvider } from './context/SegmentContext'
 
 export const DEFAULT_MAP_POSITION = {
   lat: 52.501389, // Center of Berlin
@@ -33,8 +34,10 @@ function App() {
         <Route exact path='/howto' component={HowTo} />
         <Route exact path='/impressum' component={Impressum} />
         <Route exact path='/datenschutz' component={DataPolicy} />
-        <Route path='/:lat/:lng/:zm/:id?'>
-          <Recording/>
+        <Route path='/:lat/:lng/:zm'>
+          <SegmentProvider>
+            <Recording/>
+          </SegmentProvider>
         </Route>
       </Router>
     </UserProvider>
