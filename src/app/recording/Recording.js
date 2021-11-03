@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import PTMap from '../map/PTMap'
@@ -36,6 +36,19 @@ const useStyles = makeStyles({
 function Recording () {
   const classes = useStyles()
   const { selectedSegmentId } = useContext(SegmentContext)
+  const [open, setOpen] = useState(true)
+
+  const previousSegmentId = useRef(null)
+
+  useEffect(() => {
+    if (selectedSegmentId) {
+      previousSegmentId.current = selectedSegmentId
+    } if (previousSegmentId.current && !selectedSegmentId && open) {
+      setOpen(false)
+    } if (selectedSegmentId) {
+      setOpen(true)
+    }
+  }, [selectedSegmentId])
 
   return (
     <>
@@ -51,8 +64,8 @@ function Recording () {
         <Drawer 
           variant="persistent" 
           anchor="right"
-          open={!!selectedSegmentId}
-          onClose={() => {}}
+          open={open}
+          onClose={() => setOpen(false)}
         >
           <RightPanel/>  
         </Drawer>

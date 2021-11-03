@@ -59,7 +59,6 @@ export function SegmentProvider({ children }) {
       return
     }
     if (id === selectedSegmentId) { return }
-    setSelectedSegmentId(id)
     const segmentWithDetails = await getSegment(id)
     addSegment(segmentWithDetails)
     setSelectedSegmentId(segmentWithDetails.id)
@@ -92,9 +91,6 @@ export function SegmentProvider({ children }) {
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
       getSegments(boundingBoxString, excludedIds, latestModificationDate)
-      // if (geoJson.features && geoJson.features.length) {
-      //   addSegments(geoJson.features)
-      // }
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
@@ -131,12 +127,7 @@ export function SegmentProvider({ children }) {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    const newSegmentsById = Object.assign({}, segmentsById)
-    for (const segment of newOrUpdatedSegments) {
-      newSegmentsById[segment.id] = segment
-    }
-
-    setSegmentsById(newSegmentsById)
+    setSegmentsById(newOrUpdatedSegments.reduce((a, v) => ({ ...a, [v.id]: v}), {}))
   }
 
   async function onSegmentChanged (segment) {

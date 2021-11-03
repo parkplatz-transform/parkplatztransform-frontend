@@ -968,7 +968,7 @@ function SegmentForm ({ segment, onChanged, deselectSegment }) {
           color="primary" 
           onClick={deselectSegment}
         >
-            cancel
+            Close
         </Button>
         <Button
           onClick={save}

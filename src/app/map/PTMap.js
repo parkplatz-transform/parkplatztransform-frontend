@@ -52,9 +52,9 @@ function PTMap({ children }) {
       zoom: zm
     });
     draw.current = new MapboxDraw()
-    map.current.addControl(draw.current, 'top-right');
+    map.current.addControl(draw.current, 'top-left');
 
-    map.current.addControl(draw, 'top-right');
+    map.current.addControl(draw, 'top-left');
     map.current.on('load', onLoaded)
     map.current.on('zoomend', onMoveOrZoom)
     map.current.on('moveend', onMoveOrZoom)
