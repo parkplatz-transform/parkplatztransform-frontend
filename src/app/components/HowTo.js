@@ -57,6 +57,13 @@ function HowTo() {
                   </a>
                 </h3>
               </li>
+              <li>
+                <h3>
+                  <a href='#favorits'>
+                    5.Favoriten speichern
+                  </a>
+                </h3>
+              </li>
             </ul>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -89,7 +96,7 @@ function HowTo() {
                     </div>
                     <div className='mt'>
                       Klicke auf das{' '}
-                      <span className='bold'>oberste der drei Icons</span> um
+                      <span className='bold'>oberste der vier Icons</span> um
                       einen neuen Abschnitt in die Karte einzuzeichnen.
                     </div>
                   </Grid>
@@ -184,7 +191,7 @@ function HowTo() {
                       erstmal ganz normal deinen Start und Endpunkt in die Karte
                       ein. Du kannst{' '}
                       <span className='bold'>
-                        später über das zweite Icon oben Links deinen Abschnitt
+                        später über das dritte Icon oben Links deinen Abschnitt
                         bearbeiten
                       </span>{' '}
                       und Biegungen darstellen, indem du die Linie an den
@@ -203,7 +210,7 @@ function HowTo() {
                 <Grid container className='mt'>
                   <Grid item sm={7} className='mrAuto'>
                     <div>
-                      Wenn du einen Abschnitt fertig eingezeichnet hast und
+                      <span className='bold'>4.1</span> Wenn du einen Abschnitt fertig eingezeichnet hast und
                       durch das Klicken auf den letzten Punkt das Einzeichnen
                       beendest, erscheint an der rechten Seite automatisch das
                       Feld<i> Unterabschnitt</i>.
@@ -214,10 +221,19 @@ function HowTo() {
                       Zählung gesammelten Daten für den Abschnitt, den du gerade
                       eingezeichnet hast, übertragen.
                     </div>
+                    <ul>
+                      <li className='mt'>
+                        Wir geben in die App sowohl eigene Parkplatzzählungen, als auch bereits vorhandene Daten, die z.B. bei Machbarkeitsstudien ermittelt wurden ein. Für die Daten aus den Machbarkeitsstudien gilt, dass wir sie so genau wie möglich in die App übertragen. Es kann trotzdem vorkommen, dass für einige Felder die abgefragte Information unbekannt ist. Dann sollte das so vermerkt werden.
+                      </li>
+                      <li className='mt'>
+                        Damit nachvollziehbar ist, auf welcher Grundlage die Informationen basieren, muss zu Anfang immer <span className='bold'>in dem Feld “Datenquelle”, die jeweilige Quelle (ggf. Mit Kommentar) angegeben </span>werden.
+                      </li>
+
+                    </ul>
                   </Grid>
                   <Grid item sm={3} className='mrAuto textRight'>
                     <div className='marginTopSmall'>
-                      <small>Unterabschnitt</small>
+
                       <img
                         className='image'
                         src={howtoSubsegment}
@@ -225,33 +241,38 @@ function HowTo() {
                         width='100%'
                         height='auto'
                       />
+                      <small>4.1 Unterabschnitt</small>
                     </div>
                   </Grid>
                 </Grid>
 
-                <Grid container className='mt'>
+                <Grid container className='mt-2'>
                   <Grid item sm={7} className='mrAuto'>
                     <div>
-                      Insofern das Parken erlaubt ist, musst du mindestens
+                      <span className='bold'>4.2</span> Insofern das Parken erlaubt ist, musst du mindestens
                       angeben, wie viele Parkplätze es in diesem Unterabschnitt
                       gibt oder auf welcher Länge es Parkplätze dieses Typs gibt
                     </div>
                   </Grid>
                   <Grid item sm={3} className='mrAuto'>
-                    <img
-                      className='image marginTopSmall'
-                      src={howtoLenght}
-                      alt='How to length'
-                      width='100%'
-                      height='auto'
-                    />
+                    <div className='marginTopSmall textRight'>
+
+                      <img
+                        className='image marginTopSmall'
+                        src={howtoLenght}
+                        alt='How to length'
+                        width='100%'
+                        height='auto'
+                      />
+                      <small>4.2</small>
+                    </div>
                   </Grid>
                 </Grid>
 
-                <Grid container className='mt'>
+                <Grid container className='mt-2'>
                   <Grid item sm={7} className='mrAuto'>
                     <div>
-                      Warum die Unterscheidung von Gesamtabschnitt und
+                      <span className='bold'>4.3</span> Warum die Unterscheidung von Gesamtabschnitt und
                       Unterabschnitt? Es kann sein, dass in einem Abschnitt (von
                       Kreuzung zu Kreuzung) Parkplätze unterschiedlichen Typs
                       vorkommen (also z.B. erst 10 parallel zur Straße, dann 4
@@ -274,17 +295,40 @@ function HowTo() {
                       Parken‘ ‚nicht erlaubt‘ auswählst.
                     </div>
                   </Grid>
-                  <Grid item sm={3} className='mrAuto'>
-                    <img
-                      className='image marginTopSmall'
-                      src={howtoSubsegments}
-                      alt='How to subsegments'
-                      width='100%'
-                      height='auto'
-                    />
+                  <Grid item sm={3} className='mrAuto textRight'>
+                    <div className='marginTopSmall'>
+
+                      <img
+                        className='image marginTopSmall'
+                        src={howtoSubsegments}
+                        alt='How to subsegments'
+                        width='100%'
+                        height='auto'
+                      />
+                      <small>4.3</small>
+                    </div>
                   </Grid>
                 </Grid>
               </Grid>
+              <Grid item xs={12}>
+                <h3 id='favorits'>5. Favoriten speichern</h3>
+                <Grid container>
+                  <Grid item sm={7} className='mrAuto'>
+                    <div>
+                      Du kannst, falls Du den Eindruck hast, dass Parkplätze eines bestimmten Typs häufiger vorkommen, diesen <span className='bold'>Parkplatztypen als Favoriten speichern</span>. Dafür musst du nachdem Du die Informationen des jeweiligen Abschnitts eingetragen hast, auf den Stern neben “Details”. Nun musst du diesem Favoriten einen Namen geben (z.B. parallel, auf der Straße, Rest unbekannt (o.ä.)). Diesen Favoriten kannst Du dann in dem Dropdown-Menü von “Unterabschnitt hinzufügen” auswählen und musst nur noch die Informationen ändern, die neu oder anders sind. <span className='bold'>(Das spart Dir sehr viel Zeit)</span>
+
+                    </div>
+                    <ul>
+                      <li className='mt'>
+                        Einige Machbarkeitsstudien sind von <strong>LK Argus</strong>. Wir haben der Einheitlichkeit wegen für die gängigsten Kategorien Beispiele erstellt. Am besten Du erstellst Dir für diese Farben Favoriten, die du dann für die LK Argus Studien verwenden kannst. Siehe dazu die nächsten zwei Seiten.
+                      </li>
+
+
+                    </ul>
+                  </Grid>
+                </Grid>
+              </Grid>
+
             </Grid>
           </div>
         </div>
