@@ -87,3 +87,7 @@
 .endMarker {
   background-color: #f5ff9674 !important;
 }
+
+.logged-out .mapbox-gl-draw_ctrl-draw-btn {
+  display: none;
+}

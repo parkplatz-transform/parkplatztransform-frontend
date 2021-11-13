@@ -7,6 +7,7 @@ import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
 import { SegmentContext } from '../context/SegmentContext'
 import { Box } from '@material-ui/core'
+import { UserContext } from '../context/UserContext'
 
 const useStyles = makeStyles({
   header: {
@@ -61,6 +62,8 @@ function RightPanel () {
     setAlertDisplayed,
     onSegmentSelect
   } = useContext(SegmentContext)
+
+  const user = useContext(UserContext)
 
 
   function onValidationFailed (message) {
@@ -129,6 +132,7 @@ function RightPanel () {
         segment={segment}
         onChanged={onSegmentChanged}
         onValidationFailed={onValidationFailed}
+        disabled={user === null}
       />
     </div>
   )

@@ -30,7 +30,7 @@ function PTMap({ children }) {
     if (!map.current) {
       setupMap()
     }
-    if (map.current && draw.current && segments.length) {
+    if (map.current && draw.current) {
       setFeatures()
     }
   }, [segments])
@@ -39,8 +39,8 @@ function PTMap({ children }) {
     map.current.on('draw.selectionchange', onSelect);
     if (user) {
       map.current.on('draw.create', onCreate);
-      map.current.on('draw.delete', onDelete);
       map.current.on('draw.update', onUpdate);
+      map.current.on('draw.delete', onDelete);
     }
   }, [user])
 
@@ -51,10 +51,17 @@ function PTMap({ children }) {
       center: [lng, lat],
       zoom: zm
     });
-    draw.current = new MapboxDraw()
+    draw.current = new MapboxDraw({
+      drawing: false,
+      displayControlsDefault: false,
+      controls: {
+        line_string: true,
+        polygon: true,
+        trash: true
+      },
+    })
     map.current.addControl(draw.current, 'top-left');
 
-    map.current.addControl(draw, 'top-left');
     map.current.on('load', onLoaded)
     map.current.on('zoomend', onMoveOrZoom)
     map.current.on('moveend', onMoveOrZoom)
@@ -76,7 +83,7 @@ function PTMap({ children }) {
   }
 
   function onSelect(event) {
-    if (event?.features?.length) {
+    if (event?.features?.length > 0 && event?.features[0]?.id) {
       segId.current = event.features[0].id
       onSegmentSelect(event.features[0].id)
     } else {
@@ -85,10 +92,10 @@ function PTMap({ children }) {
     }
   }
 
-  function onCreate(event) {
-    event.features.forEach((feature) => {
-      onSegmentCreated(feature)
-    });
+  async function onCreate(event) {
+    const newSeg = await onSegmentCreated(event.features[0])
+    draw.current.delete(event.features[0].id)
+    draw.current.changeMode('simple_select', { featureIds: [newSeg.id] })
   }
 
   function onUpdate(event) {
@@ -104,7 +111,7 @@ function PTMap({ children }) {
   function onLoaded() {
     onBoundsChanged(map.current.getBounds())
     if (segments.length) {
-      setFeatures()   
+      setFeatures()
     }
   }
 
@@ -118,9 +125,11 @@ function PTMap({ children }) {
   }
 
   function setFeatures() {
-    if (segments.length) {
-      draw.current.add({ features: segments, type: "FeatureCollection" })
-    }
+      draw.current.set({ 
+        features: segments, 
+        type: 'FeatureCollection',
+        id: 'ppt-feature-collection',
+      })
   }
 
   return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>

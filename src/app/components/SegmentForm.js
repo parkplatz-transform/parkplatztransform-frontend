@@ -12,7 +12,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  InputAdornment,
   List,
   ListItem,
   ListItemSecondaryAction,
@@ -130,23 +129,13 @@ const useStyles = makeStyles((theme) => ({
   halfWidth: {
     width: 'calc(100% / 2)'
   },
-  thirdWidth: {
-    width: 'calc(100% / 3)'
-  },
-  formControl: {
-    // margin: theme.spacing(1),
-    // minWidth: 120,
-  },
-  bottomButton: {
-    // width: 'calc(100% - 30px)',
-    // margin: '10px 15px 70px'
-  },
-  closeButton: {
-    // float: 'right'
+  disabled: {
+    pointerEvents: 'none',
+    opacity: 0.5
   }
 }))
 
-function SegmentForm ({ segment, onChanged, deselectSegment }) {
+function SegmentForm ({ segment, onChanged, deselectSegment, onValidationFailed, disabled }) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -863,7 +852,6 @@ function SegmentForm ({ segment, onChanged, deselectSegment }) {
                 id="standard-adornment-weight"
                 value={subsegment.length_in_meters}
                 onChange={updateSubsegment(setLengthInMeters)}
-                endAdornment={<InputAdornment position="end">m</InputAdornment>}
                 aria-describedby="length in meters"
                 inputProps={{
                   'aria-label': 'weight',
@@ -979,32 +967,37 @@ function SegmentForm ({ segment, onChanged, deselectSegment }) {
           {getString('save')}
         </Button>
       </div>
-      <div className={classes.marginTop}>
-        {renderSegmentProperties()}
+      {disabled &&<div className={classes.headerContainer}>
+          <h4>Bitte einloggen zum ändern</h4>
+      </div>}
+      <div className={disabled ? classes.disabled : null}>
+        <div className={clsx(classes.marginTop, (disabled ? classes.disabled : null))}>
+          {renderSegmentProperties()}
+        </div>
+        <Box pt={2}><Divider/></Box>
+        <h4 className={clsx(classes.headerLeftAligned)}>Unterabschnitte</h4>
+        <div className={classes.list}>
+          {renderSubsegmentList()}
+        </div>
+        <SplitButton optionsAndCallbacks={
+          [
+            {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment())},
+            ...favorites.map(favorite => {
+              return {
+                label: favorite.name,
+                color: favorite.color,
+                callback: () => addSubsegment(Object.assign({}, favorite.subsegment)),
+                deleteCallback: (name) => removeFavorite(name)
+              }
+            })
+          ]
+        }/>
+        <Box pt={2}><Divider/></Box>
+        <form onChange={() => { setErrors({}) }}>
+          {renderSubsegmentDetails()}
+        </form>
+        {renderAddToFavoriteDialog()}
       </div>
-      <Box pt={2}><Divider/></Box>
-      <h4 className={clsx(classes.headerLeftAligned)}>Unterabschnitte</h4>
-      <div className={classes.list}>
-        {renderSubsegmentList()}
-      </div>
-      <SplitButton optionsAndCallbacks={
-        [
-          {label: 'Unterabschnitt hinzufügen', callback: () => addSubsegment(createEmptySubsegment())},
-          ...favorites.map(favorite => {
-            return {
-              label: favorite.name,
-              color: favorite.color,
-              callback: () => addSubsegment(Object.assign({}, favorite.subsegment)),
-              deleteCallback: (name) => removeFavorite(name)
-            }
-          })
-        ]
-      }/>
-      <Box pt={2}><Divider/></Box>
-      <form onChange={() => { setErrors({}) }}>
-        {renderSubsegmentDetails()}
-      </form>
-      {renderAddToFavoriteDialog()}
     </div>
   )
 }
