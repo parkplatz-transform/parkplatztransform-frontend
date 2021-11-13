@@ -3,12 +3,6 @@ import { PermissionsError } from './errors'
 
 const baseURL = process.env.REACT_APP_API_URL || ''
 
-const getWSURL = () => {
-  const url = new URL(baseURL || 'https://api.xtransform.org')
-  const scheme = url.hostname === 'localhost' ? 'ws' : 'wss'
-  return `${scheme}://${url.host}/ws`
-}
-
 export const routes = {
   users: `${baseURL}/users/`,
   usersVerify: `${baseURL}/users/verify/`,
@@ -21,8 +15,6 @@ export const routes = {
 export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
-
-export const ws = new WebSocket(getWSURL());
 
 async function withErrorHandling(response) {
   const json = await response.json()
@@ -107,13 +99,12 @@ export async function getSegments(boundingBox = null, excludedIds, modified_afte
   if (modified_after) {
     params.include_if_modified_after = modified_after
   }
-  ws.send(JSON.stringify(params))
-  // const response = await fetch(`${url}`, {
-  //   method: 'POST',
-  //   headers: headers(),
-  //   body: JSON.stringify(params)
-  // })
-  // return withErrorHandling(null)
+  const response = await fetch(`${url}`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(params)
+  })
+  return withErrorHandling(response)
 }
 
 export async function getSegment(segmentId) {

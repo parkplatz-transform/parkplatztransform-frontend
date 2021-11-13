@@ -1,4 +1,5 @@
-import React, { useState, createContext, useRef, useEffect } from 'react'
+import React, { useState, createContext, useRef, useContext } from 'react'
+import isEqual from 'react-fast-compare'
 
 import { emptyBoundsArray } from '../recording/TypeSupport'
 import { deleteSegment, getSegment, getSegments, postSegment, updateSegment, ws } from '../../helpers/api'
@@ -9,31 +10,21 @@ import { PermissionsError } from '../../helpers/errors'
 import { Snackbar } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 
-export const SegmentContext = createContext({
-  segments: [],
-  onBoundsChanged: () => {}
-})
+export const SegmentContext = createContext()
 
-export function SegmentProvider({ children }) {
+export function SegmentProvider(props) {
+  const allSegmentsById = useRef({})
   const [segmentsById, setSegmentsById] = useState({})
   const [alertDisplayed, setAlertDisplayed] = useState(null)
-
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
-
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
-
-  useEffect(() => {
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data)
-      addSegments(data.features)
-    }
-  }, [])
   
   async function onSegmentCreated (segment) {
     try {
-      const createdSegment = await postSegment({...segment, properties: {subsegments: []}})
+      const createdSegment = await postSegment({ ...segment, properties: { subsegments: []} })
       addSegment(createdSegment)
       setSelectedSegmentId(createdSegment.id)
+      return createdSegment
     } catch (e) {
     }
   }
@@ -60,8 +51,10 @@ export function SegmentProvider({ children }) {
     }
     if (id === selectedSegmentId) { return }
     const segmentWithDetails = await getSegment(id)
-    addSegment(segmentWithDetails)
-    setSelectedSegmentId(segmentWithDetails.id)
+    if (segmentWithDetails) {
+      addSegment(segmentWithDetails)
+      setSelectedSegmentId(segmentWithDetails.id)
+    }
   }
   
   async function onBoundsChanged (bounds) {
@@ -90,7 +83,10 @@ export function SegmentProvider({ children }) {
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`
     loadedBoundingBoxesRef.current.push(boundingBox)
     try {
-      getSegments(boundingBoxString, excludedIds, latestModificationDate)
+      const geoJson = await getSegments(boundingBoxString, excludedIds, latestModificationDate)
+      if (geoJson.features && geoJson.features.length) {
+        addSegments(geoJson.features)
+      }
     } catch (e) {
       setAlertDisplayed({severity: 'error', message: getString('segment_loaded_failure')})
       loadedBoundingBoxesRef.current = loadedBoundingBoxesRef.current.filter(bbox => bbox !== boundingBox)
@@ -127,7 +123,15 @@ export function SegmentProvider({ children }) {
   }
 
   function addSegments (newOrUpdatedSegments) {
-    setSegmentsById(newOrUpdatedSegments.reduce((a, v) => ({ ...a, [v.id]: v}), {}))
+    if (!newOrUpdatedSegments) { return }
+    const keyedSegments = newOrUpdatedSegments.reduce((acc, segment) => {
+      if (segment?.id) {
+        return { ...acc, [segment.id]: segment}
+      }
+      return acc
+    }, { ...allSegmentsById.current })
+    allSegmentsById.current = keyedSegments
+    setSegmentsById(keyedSegments)
   }
 
   async function onSegmentChanged (segment) {
@@ -189,9 +193,7 @@ export function SegmentProvider({ children }) {
         onSegmentEdited,
         onSegmentChanged,
         selectedSegmentId
-      }}>
-      {children}
-    </SegmentContext.Provider>
+      }} {...props} />
     </>
   )
 }

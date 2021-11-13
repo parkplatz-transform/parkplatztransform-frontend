@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 
 import PTMap from '../map/PTMap'
 import RightPanel from '../components/RightPanel'
 import { SegmentContext } from '../context/SegmentContext'
 import { DownloadSegmentsButton } from '../components/DownloadButton'
 import { Drawer } from '@material-ui/core'
+import { UserContext } from '../context/UserContext'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -34,9 +36,10 @@ const useStyles = makeStyles({
 })
 
 function Recording () {
+  const user = useContext(UserContext)
   const classes = useStyles()
   const { selectedSegmentId } = useContext(SegmentContext)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(window.innerWidth > 900)
 
   const previousSegmentId = useRef(null)
 
@@ -53,8 +56,8 @@ function Recording () {
   return (
     <>
       <div className={classes.container}>
-        <div 
-          className={classes.mapArea}
+        <div
+          className={clsx(classes.mapArea, user ? null : 'logged-out')}
         >
             <PTMap key="map">
               <DownloadSegmentsButton />
