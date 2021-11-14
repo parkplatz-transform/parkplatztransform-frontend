@@ -10,7 +10,7 @@ import howtoMark from '../images/howto-mark.png'
 import howtoSubsegment from '../images/howto-subsegment.png'
 import howtoSubsegments from '../images/howto-subsegments.png'
 import howtoLenght from '../images/howto-length.png'
-
+import howtoPdf from '../docs/Howto-AppXTransform.pdf'
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
@@ -320,11 +320,22 @@ function HowTo() {
                     </div>
                     <ul>
                       <li className='mt'>
-                        Einige Machbarkeitsstudien sind von <strong>LK Argus</strong>. Wir haben der Einheitlichkeit wegen für die gängigsten Kategorien Beispiele erstellt. Am besten Du erstellst Dir für diese Farben Favoriten, die du dann für die LK Argus Studien verwenden kannst. Siehe dazu die nächsten zwei Seiten.
+                        Einige Machbarkeitsstudien sind von <strong>LK Argus</strong>. Wir haben der Einheitlichkeit wegen für die gängigsten Kategorien Beispiele erstellt. Am besten Du erstellst Dir für diese Farben Favoriten, die du dann für die LK Argus Studien verwenden kannst.
                       </li>
-
-
                     </ul>
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={12}>
+
+                <Grid container>
+                  <Grid item sm={7} className='mrAuto'>
+                    <div>
+                      <span className='bold'>Ausführlichere Informationenkannst du <a href={howtoPdf}>
+                        hier einsehen und herunterladen (PDF).</a></span>
+                    </div>
+
                   </Grid>
                 </Grid>
               </Grid>
