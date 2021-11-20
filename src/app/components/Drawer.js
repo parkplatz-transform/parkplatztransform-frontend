@@ -4,12 +4,17 @@ import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import CloudDownload from '@material-ui/icons/CloudDownload'
+import Code from '@material-ui/icons/Code'
 import List from '@material-ui/core/List'
-
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
+
+import { getAllSegments } from '../../helpers/api'
+
+const DOWNLOAD_FILENAME = 'parkplatz-transform.json'
 
 const useStyles = makeStyles({
   list: {
@@ -24,6 +29,8 @@ const useStyles = makeStyles({
   },
   icon: {
     fill: 'rgba(0, 0, 0, 0.4)',
+    maxWidth: '20px',
+    marginRight: '10px'
   },
   paddingLeft: {
     paddingLeft: '0.25rem',
@@ -33,6 +40,15 @@ const useStyles = makeStyles({
 export default function TemporaryDrawer() {
   const classes = useStyles()
   const [state, setState] = React.useState(false)
+
+  async function downloadAllSegments() {
+    const allSegments = await getAllSegments()
+    const element = document.createElement('a')
+    element.href = window.URL.createObjectURL(new Blob([JSON.stringify(allSegments)]))
+    element.download = DOWNLOAD_FILENAME
+    element.style.display = 'none'
+    element.click()
+  }
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -61,6 +77,16 @@ export default function TemporaryDrawer() {
             </ListItem>
           </Link>
         ))}
+          <ListItem button onClick={downloadAllSegments}>
+            <CloudDownload className={classes.icon} />
+            <ListItemText className={classes.paddingLeft} primary={"GeoJSON herunterladen"} />
+          </ListItem>
+          <a key={'docs'} className={classes.link} href={'https://api.xtransform.org/docs'}>
+          <ListItem button onClick={downloadAllSegments}>
+            <Code className={classes.icon} />
+            <ListItemText className={classes.paddingLeft} primary={"API Documentation"} />
+          </ListItem>
+          </a>
       </List>
     </div>
   )
