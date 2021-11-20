@@ -5,7 +5,6 @@ import clsx from 'clsx'
 import PTMap from '../map/PTMap'
 import RightPanel from '../components/RightPanel'
 import { SegmentContext } from '../context/SegmentContext'
-import { DownloadSegmentsButton } from '../components/DownloadButton'
 import { Drawer } from '@material-ui/core'
 import { UserContext } from '../context/UserContext'
 
@@ -59,9 +58,7 @@ function Recording () {
         <div
           className={clsx(classes.mapArea, user ? null : 'logged-out')}
         >
-            <PTMap key="map">
-              <DownloadSegmentsButton />
-            </PTMap>
+          <PTMap key="map"/>
         </div>
         
         <Drawer 

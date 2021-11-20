@@ -109,7 +109,8 @@ function PTMap({ children }) {
   }
 
   function onLoaded() {
-    onBoundsChanged(map.current.getBounds())
+    // onBoundsChanged(map.current.getBounds())
+    onMoveOrZoom()
     if (segments.length) {
       setFeatures()
     }
@@ -120,7 +121,65 @@ function PTMap({ children }) {
     const { lat, lng } = map.current.getCenter()
     if (lat && lng && zm) {
         history.push(`/${lat}/${lng}/${zm}`)
-        onBoundsChanged(map.current.getBounds())
+        if (!map.current.getSource('kiez-geojson')) {
+          map.current.addSource('kiez-geojson', {
+            type: 'geojson',
+            data: '/berlin_ortsteile.geojson'
+          });
+        }
+        if (zm >= 13) {
+          if (map.current.getLayer('kiez-borders')) {
+            map.current.removeLayer('kiez-borders')
+            map.current.removeLayer('kiez-fill')
+          }
+          onBoundsChanged(map.current.getBounds())
+        } else {
+          draw.current.deleteAll()
+          if (!map.current.getLayer('kiez-borders')) {
+            map.current.addLayer({
+              'id': 'kiez-fill',
+              'type': 'fill',
+              'source': 'kiez-geojson',
+              'paint': {
+                'fill-color': '#3bb2d0',
+                'fill-outline-color': '#3bb2d0',
+                'fill-opacity': [
+                  'case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  1,
+                  0.1
+                  ]
+              }
+            });
+            map.current.addLayer({
+              'id': 'kiez-borders',
+              'type': 'line',
+              'source': 'kiez-geojson',
+              'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+              },
+              'paint': {
+                'line-color': '#3bb2d0',
+                'line-width': 1
+              }
+              });
+              // map.current.addLayer({
+              //   "id": "clusters-label",
+              //   "type": "symbol",
+              //   "source": "kiez",
+              //   "layout": {
+              //     "text-field": "2000 parkplatz",
+              //     "text-font": [
+              //       "DIN Offc Pro Medium",
+              //       "Arial Unicode MS Bold"
+              //     ],
+              //     "text-size": 12
+              //   }
+              // });
+          }
+      }
+
       }
   }
 
