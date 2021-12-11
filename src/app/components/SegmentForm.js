@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import Alert from '@material-ui/lab/Alert'
 import {
   Box,
   Checkbox,
@@ -135,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function SegmentForm ({ segment, onChanged, deselectSegment, onValidationFailed, disabled }) {
+function SegmentForm ({ segment, onChanged, deselectSegment, onValidationFailed, disabled, disabledMessage }) {
   const classes = useStyles()
   const [selectedSubsegmentIndex, setSelectedSubsegmentIndex] = React.useState(0)
   const [errors, setErrors] = React.useState({})
@@ -968,7 +969,8 @@ function SegmentForm ({ segment, onChanged, deselectSegment, onValidationFailed,
         </Button>
       </div>
       {disabled &&<div className={classes.headerContainer}>
-          <h4>Bitte einloggen zum ändern</h4>
+          {/* <h4>{disabledMessage}</h4> */}
+          <Alert severity="warning">{disabledMessage}</Alert>
       </div>}
       <div className={disabled ? classes.disabled : null}>
         <div className={clsx(classes.marginTop, (disabled ? classes.disabled : null))}>

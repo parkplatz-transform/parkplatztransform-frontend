@@ -1,5 +1,4 @@
-import React, { useState, createContext, useRef, useContext } from 'react'
-import isEqual from 'react-fast-compare'
+import React, { useState, createContext, useRef } from 'react'
 
 import { emptyBoundsArray } from '../recording/TypeSupport'
 import { deleteSegment, getSegment, getSegments, postSegment, updateSegment, ws } from '../../helpers/api'

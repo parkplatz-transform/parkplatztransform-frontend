@@ -5,241 +5,88 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import { UserContext } from '../context/UserContext'
 import { SegmentContext } from '../context/SegmentContext'
 import getString from '../../strings'
+import theme from './MapTheme'
+import { routes } from '../../helpers/api'
 
 const tileServerURL = 'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH'
 
-const theme = [
-  {
-    'id': 'gl-draw-polygon-fill-inactive',
+var StaticMode = {};
+
+StaticMode.onSetup = function() {
+  this.setActionableState(); // default actionable state is false for all actions
+  return {};
+};
+
+StaticMode.toDisplayFeatures = function(state, geojson, display) {
+  display(geojson);
+};
+
+function addStaticLayers(map) {
+  map.addSource('clusters', {
+    type: 'geojson',
+    data: routes.clusters
+  });
+  map.addLayer({
+    'id': 'clusters-fills',
     'type': 'fill',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static']
-    ],
+    'source': 'clusters',
     'paint': {
       'fill-color': '#3bb2d0',
       'fill-outline-color': '#3bb2d0',
-      'fill-opacity': 0.1
+      'fill-opacity': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        1,
+        0.1
+        ]
     }
-  },
-  {
-    'id': 'gl-draw-polygon-fill-active',
-    'type': 'fill',
-    'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
-    'paint': {
-      'fill-color': '#fbb03b',
-      'fill-outline-color': '#fbb03b',
-      'fill-opacity': 0.1
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-midpoint',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', '$type', 'Point'],
-      ['==', 'meta', 'midpoint']],
-    'paint': {
-      'circle-radius': 3,
-      'circle-color': '#fbb03b'
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-stroke-inactive',
+  });
+  map.addLayer({
+    'id': 'clusters-borders',
     'type': 'line',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static']
-    ],
+    'source': 'clusters',
     'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
+      'line-join': 'round',
+      'line-cap': 'round'
     },
     'paint': {
       'line-color': '#3bb2d0',
-      'line-width': 2
+      'line-width': 1
     }
-  },
-  {
-    'id': 'gl-draw-polygon-stroke-active',
-    'type': 'line',
-    'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': '#fbb03b',
-      'line-dasharray': [0.2, 2],
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-line-inactive',
-    'type': 'line',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'LineString'],
-      ['!=', 'mode', 'static']
-    ],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': [
-        'case',
-        ['boolean',['get', 'user_has_subsegments'], false],
-        '#3bb2d0',
-        'purple'
+  });
+  map.addLayer({
+    "id": "clusters-labels",
+    "type": "symbol",
+    "source": "clusters",
+    "layout": {
+      'text-field': [
+        'format',
+        ['upcase', ['get', 'name']],
+        { 'font-scale': 0.8 },
+        '\n',
+        {},
+        ['downcase', ['get', 'label']],
+        { 'font-scale': 0.6 }
       ],
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-line-active',
-    'type': 'line',
-    'filter': ['all',
-      ['==', '$type', 'LineString'],
-      ['==', 'active', 'true']
-    ],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
     },
-    'paint': {
-      'line-color': '#fbb03b',
-      'line-dasharray': [0.2, 2],
-      'line-width': 2
+    paint: {
+      "text-color": "#195b6b"
     }
-  },
-  {
-    'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'meta', 'vertex'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static']
-    ],
-    'paint': {
-      'circle-radius': 5,
-      'circle-color': '#fff'
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-and-line-vertex-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'meta', 'vertex'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static']
-    ],
-    'paint': {
-      'circle-radius': 3,
-      'circle-color': '#fbb03b'
-    }
-  },
-  {
-    'id': 'gl-draw-point-point-stroke-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Point'],
-      ['==', 'meta', 'feature'],
-      ['!=', 'mode', 'static']
-    ],
-    'paint': {
-      'circle-radius': 5,
-      'circle-opacity': 1,
-      'circle-color': '#fff'
-    }
-  },
-  {
-    'id': 'gl-draw-point-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Point'],
-      ['==', 'meta', 'feature'],
-      ['!=', 'mode', 'static']
-    ],
-    'paint': {
-      'circle-radius': 3,
-      'circle-color': '#3bb2d0'
-    }
-  },
-  {
-    'id': 'gl-draw-point-stroke-active',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', '$type', 'Point'],
-      ['==', 'active', 'true'],
-      ['!=', 'meta', 'midpoint']
-    ],
-    'paint': {
-      'circle-radius': 7,
-      'circle-color': '#fff'
-    }
-  },
-  {
-    'id': 'gl-draw-point-active',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', '$type', 'Point'],
-      ['!=', 'meta', 'midpoint'],
-      ['==', 'active', 'true']],
-    'paint': {
-      'circle-radius': 5,
-      'circle-color': '#fbb03b'
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-fill-static',
-    'type': 'fill',
-    'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
-    'paint': {
-      'fill-color': '#404040',
-      'fill-outline-color': '#404040',
-      'fill-opacity': 0.1
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-stroke-static',
-    'type': 'line',
-    'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': '#404040',
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-line-static',
-    'type': 'line',
-    'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'LineString']],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': '#404040',
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-point-static',
-    'type': 'circle',
-    'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Point']],
-    'paint': {
-      'circle-radius': 5,
-      'circle-color': '#404040'
-    }
-  }
-]
+  });
+}
+
+function hideStaticLayers(map) {
+  map.setLayoutProperty('clusters-borders', 'visibility', 'none');
+  map.setLayoutProperty('clusters-fills', 'visibility', 'none');
+  map.setLayoutProperty('clusters-labels', 'visibility', 'none');
+}
+
+function showStaticLayers(map) {
+  map.setLayoutProperty('clusters-borders', 'visibility', 'visible');
+  map.setLayoutProperty('clusters-fills', 'visibility', 'visible');
+  map.setLayoutProperty('clusters-labels', 'visibility', 'visible');
+}
+
 
 function PTMap({ children }) {
   const user = useContext(UserContext)
@@ -276,7 +123,10 @@ function PTMap({ children }) {
       map.current.on('draw.delete', onDelete);
     }
   }, [user])
-
+  
+  var modes = MapboxDraw.modes;
+  modes.static = StaticMode;
+  
   function setupMap() {
     map.current = new window.maplibregl.Map({
       container: mapRef.current,
@@ -293,13 +143,18 @@ function PTMap({ children }) {
         polygon: true,
         trash: true
       },
-      styles: theme
+      styles: theme,
+      modes: modes
     })
+
     map.current.addControl(draw.current, 'top-left');
 
     map.current.on('load', onLoaded)
     map.current.on('zoomend', onMoveOrZoom)
     map.current.on('moveend', onMoveOrZoom)
+    map.current.on('style.load', () => {
+      addStaticLayers(map.current)
+    })
   }
 
   function hasBasePermissions(owner_id) {
@@ -354,75 +209,23 @@ function PTMap({ children }) {
     const zm = map.current.getZoom()
     const { lat, lng } = map.current.getCenter()
     if (lat && lng && zm) {
-        history.push(`/${lat}/${lng}/${zm}`)
-        if (!map.current.getSource('kiez-geojson')) {
-          map.current.addSource('kiez-geojson', {
-            type: 'geojson',
-            data: '/berlin_ortsteile.geojson'
-          });
-        }
-        if (zm >= 13) {
-          if (map.current.getLayer('kiez-borders')) {
-            map.current.removeLayer('kiez-borders')
-            map.current.removeLayer('kiez-fill')
-          }
-          onBoundsChanged(map.current.getBounds())
-        } else {
-          draw.current.deleteAll()
-          if (!map.current.getLayer('kiez-borders')) {
-            map.current.addLayer({
-              'id': 'kiez-fill',
-              'type': 'fill',
-              'source': 'kiez-geojson',
-              'paint': {
-                'fill-color': '#3bb2d0',
-                'fill-outline-color': '#3bb2d0',
-                'fill-opacity': [
-                  'case',
-                  ['boolean', ['feature-state', 'hover'], false],
-                  1,
-                  0.1
-                  ]
-              }
-            });
-            map.current.addLayer({
-              'id': 'kiez-borders',
-              'type': 'line',
-              'source': 'kiez-geojson',
-              'layout': {
-                'line-join': 'round',
-                'line-cap': 'round'
-              },
-              'paint': {
-                'line-color': '#3bb2d0',
-                'line-width': 1
-              }
-            });
-              // map.current.addLayer({
-              //   "id": "clusters-label",
-              //   "type": "symbol",
-              //   "source": "kiez",
-              //   "layout": {
-              //     "text-field": "2000 parkplatz",
-              //     "text-font": [
-              //       "DIN Offc Pro Medium",
-              //       "Arial Unicode MS Bold"
-              //     ],
-              //     "text-size": 12
-              //   }
-              // });
-          }
+      history.push(`/${lat}/${lng}/${zm}`)
+      if (zm >= 12) {
+        hideStaticLayers(map.current)
+        onBoundsChanged(map.current.getBounds())
+      } else {
+        draw.current.deleteAll()
+        showStaticLayers(map.current)
       }
-
-      }
+    }
   }
 
-  function setFeatures() {
-      draw.current.set({ 
-        features: segments, 
-        type: 'FeatureCollection',
-        id: 'ppt-feature-collection',
-      })
+  function setFeatures() {  
+    draw.current.set({ 
+      features: segments, 
+      type: 'FeatureCollection',
+      id: 'ppt-feature-collection',
+    })
   }
 
   return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
