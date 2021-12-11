@@ -9,7 +9,8 @@ export const routes = {
   usersData: `${baseURL}/users/me/`,
   usersLogout: `${baseURL}/users/logout/`,
   segments: `${baseURL}/segments/`,
-  querySegment: `${baseURL}/query-segments/`
+  querySegment: `${baseURL}/query-segments/`,
+  clusters: `${baseURL}/clusters/`,
 }
 
 export const headers = () => new Headers({

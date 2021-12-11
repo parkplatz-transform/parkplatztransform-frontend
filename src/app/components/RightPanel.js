@@ -125,6 +125,15 @@ function RightPanel () {
     )
   }
 
+  function userCanEditSegment() {
+    if (user?.permission_level > 0) {
+      return true
+    } else if (user?.id === segment.properties?.owner_id) {
+      return true
+    }
+    return false
+  }
+
   return (
     <div className={classes.formArea}>
       <SegmentForm
@@ -132,7 +141,12 @@ function RightPanel () {
         segment={segment}
         onChanged={onSegmentChanged}
         onValidationFailed={onValidationFailed}
-        disabled={user === null}
+        disabled={!userCanEditSegment()}
+        disabledMessage={
+          user 
+          ? "Du hast leider keine Berechtigung, Abschnitte, die von anderen Nutzer*innen hinzugefügt wurden zu bearbeiten." 
+          : "Bitte einloggen zum ändern"
+        }
       />
     </div>
   )
