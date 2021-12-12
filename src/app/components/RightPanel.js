@@ -63,7 +63,7 @@ function RightPanel () {
     onSegmentSelect
   } = useContext(SegmentContext)
 
-  const user = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
 
   function onValidationFailed (message) {

@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 })
 
 function Recording () {
-  const user = useContext(UserContext)
+  const { user } = useContext(UserContext)
   const classes = useStyles()
   const { selectedSegmentId } = useContext(SegmentContext)
   const [open, setOpen] = useState(window.innerWidth > 900)
