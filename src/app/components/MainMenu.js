@@ -47,7 +47,7 @@ function MainMenu() {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [loginModalOpen, setLoginModalOpen] = React.useState(false)
-  const user = useContext(UserContext)
+  const { user, logout } = useContext(UserContext)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -55,10 +55,6 @@ function MainMenu() {
 
   const handleClose = () => {
     setAnchorEl(null)
-  }
-
-  const handleLogout = async () => {
-    await logoutUser()
   }
 
   return (
@@ -100,7 +96,7 @@ function MainMenu() {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
           </>
         )}

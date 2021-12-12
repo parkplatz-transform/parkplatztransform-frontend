@@ -89,7 +89,7 @@ function showStaticLayers(map) {
 
 
 function PTMap({ children }) {
-  const user = useContext(UserContext)
+  const { user } = useContext(UserContext)
   const history = useHistory()
   const { lat, lng, zm } = useParams()
   const mapRef = useRef(null)

@@ -156,7 +156,7 @@ export function SegmentProvider(props) {
   }
 
   async function onSegmentDeleted (id) {
-    const newSegmentsById = Object.assign({}, segmentsById)
+    const newSegmentsById = Object.assign({}, allSegmentsById.current)
 
     try {
       setAlertDisplayed({severity: 'success', message: getString('segment_delete_success', 1)})

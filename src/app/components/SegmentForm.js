@@ -970,7 +970,7 @@ function SegmentForm ({ segment, onChanged, deselectSegment, onValidationFailed,
       </div>
       {disabled &&<div className={classes.headerContainer}>
           {/* <h4>{disabledMessage}</h4> */}
-          <Alert severity="warning">{disabledMessage}</Alert>
+          <Alert style={{ width: '100%' }} severity="warning">{disabledMessage}</Alert>
       </div>}
       <div className={disabled ? classes.disabled : null}>
         <div className={clsx(classes.marginTop, (disabled ? classes.disabled : null))}>

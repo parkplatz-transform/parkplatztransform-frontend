@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext } from 'react'
 
-import { getUserData } from '../../helpers/api'
+import { getUserData, logoutUser } from '../../helpers/api'
 
 export const UserContext = createContext(null)
 
@@ -16,8 +16,13 @@ export function UserProvider({ children }) {
       })
   }, [])
 
+  async function logout() {
+    await logoutUser()
+    setUser(null)
+  }
+
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={{ user, logout }}>
       {children}
     </UserContext.Provider>
   )
