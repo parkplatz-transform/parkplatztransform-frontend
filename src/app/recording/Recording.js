@@ -7,6 +7,7 @@ import RightPanel from '../components/RightPanel'
 import { SegmentContext } from '../context/SegmentContext'
 import { Drawer } from '@material-ui/core'
 import { UserContext } from '../context/UserContext'
+import isEmbedded from '../../helpers/isEmbedded'
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles({
     marginRight: 5
   },
   container: {
-    height: 'calc(100vh - 64px)',
+    height: `calc(100vh - ${isEmbedded ? '0px' : '64px'})`,
     width: '100%',
     display: 'flex',
     overflow: 'hidden'
@@ -60,15 +61,16 @@ function Recording () {
         >
           <PTMap key="map"/>
         </div>
-        
-        <Drawer 
-          variant="persistent" 
-          anchor="right"
-          open={open}
-          onClose={() => setOpen(false)}
-        >
-          <RightPanel/>  
-        </Drawer>
+        {!isEmbedded &&
+          <Drawer 
+            variant="persistent" 
+            anchor="right"
+            open={open}
+            onClose={() => setOpen(false)}
+          >
+            <RightPanel/>  
+          </Drawer>  
+        }
       </div>
     </>
   )
