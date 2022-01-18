@@ -209,7 +209,7 @@ function PTMap({ children }) {
     const zm = map.current.getZoom()
     const { lat, lng } = map.current.getCenter()
     if (lat && lng && zm) {
-      history.push(`/${lat}/${lng}/${zm}`)
+      history.push(`/${lat}/${lng}/${zm}${window.location.search}`)
       if (zm >= 12) {
         hideStaticLayers(map.current)
         onBoundsChanged(map.current.getBounds())

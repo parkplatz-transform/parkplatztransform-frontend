@@ -10,9 +10,11 @@ import Impressum from './components/Impressum'
 import DataPolicy from './components/DataPolicy'
 import { UserProvider } from './context/UserContext'
 import { SegmentProvider } from './context/SegmentContext'
+import isEmbedded from '../helpers/isEmbedded'
 
+// Center of Berlin
 export const DEFAULT_MAP_POSITION = {
-  lat: 52.501389, // Center of Berlin
+  lat: 52.501389,
   lng: 13.4025,
   zm: 10,
 }
@@ -21,11 +23,10 @@ function App() {
   return (
     <UserProvider>
       <Router>
-        <Route path='/' component={MainMenu}></Route>
+        {!isEmbedded && <Route path='/' component={MainMenu}></Route>}
         <Route path='/home'>
           <Redirect to='/' />
         </Route>
-
         <Route exact path='/'>
           <Redirect
             to={`/${DEFAULT_MAP_POSITION.lat}/${DEFAULT_MAP_POSITION.lng}/${DEFAULT_MAP_POSITION.zm}`}
