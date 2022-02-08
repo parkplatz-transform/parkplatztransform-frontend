@@ -149,6 +149,15 @@ function PTMap({ children }) {
 
     map.current.addControl(draw.current, 'top-left');
 
+    map.current.addControl(
+      new window.maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        },
+          trackUserLocation: true
+        }), 'bottom-left'
+      );
+
     map.current.on('load', onLoaded)
     map.current.on('zoomend', onMoveOrZoom)
     map.current.on('moveend', onMoveOrZoom)
