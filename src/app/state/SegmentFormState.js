@@ -62,24 +62,21 @@ class SegmentFormState {
   }
 
   async save() {
-    let errs = {};
     await Promise.all(
       this.segment.properties.subsegments.map(async (sub, idx) => {
         try {
           await subsegmentSchema.validate(sub);
         } catch (error) {
-          errs = {
-            ...errs,
+          this.setErrors({
+            ...this.errors,
             [idx]: {
               message: error.message.replace(error.path, ''),
               path: error.path,
             },
-          };
+          });
         }
       })
     );
-
-    this.setErrors(errs);
 
     if (this.isFormValid) {
       await this.onSegmentChanged(this.segment);
