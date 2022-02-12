@@ -1,11 +1,12 @@
 import React, { useEffect, useContext, useRef } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { observer } from "mobx-react-lite"
+import { observer } from 'mobx-react-lite'
 import { action } from 'mobx'
 
 import { UserContext } from '../context/UserContext'
-import segmentState from '../state/segments'
+import state from '../state/AppState'
+import segmentFormState from '../state/SegmentFormState'
 import getString from '../../strings'
 import theme from './MapTheme'
 import { routes } from '../../helpers/api'
@@ -92,7 +93,7 @@ function showStaticLayers(map) {
 var modes = MapboxDraw.modes;
 modes.static = StaticMode;
 
-const PTMap = observer(({ state }) => {
+const PTMap = observer(({ state, onSegmentSelect }) => {
   const { user } = useContext(UserContext)
   const history = useHistory()
   const { lat, lng, zm } = useParams()
@@ -176,10 +177,10 @@ const PTMap = observer(({ state }) => {
   function onSelect(event) {
     if (event?.features?.length > 0 && event?.features[0]?.id) {
       segId.current = event.features[0].id
-      state.onSegmentSelect(event.features[0].id)
+      onSegmentSelect(event.features[0].id)
     } else {
       segId.current = null
-      state.onSegmentSelect(null)
+      onSegmentSelect(null)
     }
   }
 
@@ -230,12 +231,16 @@ const PTMap = observer(({ state }) => {
     })
     var endTime = performance.now()
     console.log(`Call to setFeatures took ${endTime - startTime} milliseconds`)
-    
   }
 
   return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
 })
 
-const connector = () => <PTMap state={segmentState} />
+const connector = () => (
+  <PTMap 
+    state={state}
+    onSegmentSelect={action((id) => segmentFormState.onSegmentSelect(id))}
+  />
+)
 
 export default connector

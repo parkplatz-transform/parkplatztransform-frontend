@@ -1,15 +1,14 @@
-import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import IconButton from '@material-ui/core/IconButton'
-import { Box } from '@material-ui/core'
-import { Link } from 'react-router-dom'
-import { observer } from "mobx-react-lite"
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import IconButton from '@material-ui/core/IconButton';
+import { Box } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
-import SegmentForm from '../components/SegmentForm'
-import getString from '../../strings'
-import { UserContext } from '../context/UserContext'
-import segmentState from '../state/segments'
+import SegmentForm from '../components/SegmentForm/SegmentForm';
+import getString from '../../strings';
+import segmentFormState from '../state/SegmentFormState';
 
 const useStyles = makeStyles({
   header: {
@@ -48,20 +47,20 @@ const useStyles = makeStyles({
     paddingLeft: '0.25rem',
   },
   formArea: {
-    width: 360
+    width: 360,
   },
   showFormArea: {
     width: 48,
-    marginTop: 30
+    marginTop: 30,
   },
-})
+});
 
 const WelcomeMessage = React.memo(() => {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div className={classes.formArea}>
       <Box p={2} mt={5}>
-        <div className={classes.verticalSpace}/>
+        <div className={classes.verticalSpace} />
         <div className={classes.header}>
           <p>{getString('welcome_title')}</p>
         </div>
@@ -71,7 +70,7 @@ const WelcomeMessage = React.memo(() => {
         <div className={classes.subheader}>
           <p>{getString('welcome_hints')}</p>
         </div>
-  
+
         <ol className={classes.orderdList}>
           <li>
             <div className={classes.subheader}>
@@ -102,55 +101,29 @@ const WelcomeMessage = React.memo(() => {
         <div className={classes.bottom}>
           <Link className={classes.link} to={`/howto`}>
             <IconButton aria-label="delete">
-              <ArrowForwardIcon/>
+              <ArrowForwardIcon />
             </IconButton>
           </Link>
           <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
         </div>
       </Box>
     </div>
-  )
-})
+  );
+});
 
-const RightPanel = observer(({ state }) => {
-  const classes = useStyles()
-  const { user } = useContext(UserContext)
+const RightPanel = observer(({ formState }) => {
+  const classes = useStyles();
 
-
-  function onValidationFailed (message) {
-    // setAlertDisplayed({severity: 'error', message})
-  }
-
-  if (!state.segment) {
-    return <WelcomeMessage />
-  }
-
-  function userCanEditSegment() {
-    if (user?.permission_level > 0) {
-      return true
-    } else if (user?.id === state.segment.properties?.owner_id) {
-      return true
-    }
-    return false
+  if (!formState.segment) {
+    return <WelcomeMessage />;
   }
 
   return (
     <div className={classes.formArea}>
-      <SegmentForm
-        deselectSegment={() => state.onSegmentSelect(null)}
-        segment={state.segment}
-        onChanged={state.onSegmentChanged}
-        onValidationFailed={onValidationFailed}
-        disabled={!userCanEditSegment()}
-        disabledMessage={
-          user 
-          ? "Du hast leider keine Berechtigung, Abschnitte, die von anderen Nutzer*innen hinzugefügt wurden zu bearbeiten." 
-          : "Bitte einloggen zum ändern"
-        }
-      />
+      <SegmentForm />
     </div>
-  )
-})
+  );
+});
 
-const connector = () => <RightPanel state={segmentState} />
-export default connector
+const connector = () => <RightPanel formState={segmentFormState} />;
+export default connector;
