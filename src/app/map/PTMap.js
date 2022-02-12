@@ -1,67 +1,68 @@
-import React, { useEffect, useContext, useRef } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
-import MapboxDraw from '@mapbox/mapbox-gl-draw'
-import { observer } from 'mobx-react-lite'
-import { action } from 'mobx'
+import React, { useEffect, useContext, useRef } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { observer } from 'mobx-react-lite';
+import { action } from 'mobx';
 
-import { UserContext } from '../context/UserContext'
-import state from '../state/AppState'
-import segmentFormState from '../state/SegmentFormState'
-import getString from '../../strings'
-import theme from './MapTheme'
-import { routes } from '../../helpers/api'
+import { UserContext } from '../context/UserContext';
+import mapState from '../state/MapState';
+import segmentFormState from '../state/SegmentFormState';
+import getString from '../../strings';
+import theme from './MapTheme';
+import { routes } from '../../helpers/api';
 
-const tileServerURL = 'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH'
+const tileServerURL =
+  'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH';
 
 var StaticMode = {};
 
-StaticMode.onSetup = function() {
+StaticMode.onSetup = function () {
   this.setActionableState(); // default actionable state is false for all actions
   return {};
 };
 
-StaticMode.toDisplayFeatures = function(state, geojson, display) {
+StaticMode.toDisplayFeatures = function (state, geojson, display) {
   display(geojson);
 };
 
 function addStaticLayers(map) {
   map.addSource('clusters', {
     type: 'geojson',
-    data: routes.clusters
+    data: routes.clusters,
   });
   map.addLayer({
-    'id': 'clusters-fills',
-    'type': 'fill',
-    'source': 'clusters',
-    'paint': {
+    id: 'clusters-fills',
+    type: 'fill',
+    source: 'clusters',
+    paint: {
       'fill-color': '#3bb2d0',
       'fill-outline-color': '#3bb2d0',
       'fill-opacity': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],
         1,
-        0.1
-        ]
-    }
-  });
-  map.addLayer({
-    'id': 'clusters-borders',
-    'type': 'line',
-    'source': 'clusters',
-    'layout': {
-      'line-join': 'round',
-      'line-cap': 'round'
+        0.1,
+      ],
     },
-    'paint': {
-      'line-color': '#3bb2d0',
-      'line-width': 1
-    }
   });
   map.addLayer({
-    "id": "clusters-labels",
-    "type": "symbol",
-    "source": "clusters",
-    "layout": {
+    id: 'clusters-borders',
+    type: 'line',
+    source: 'clusters',
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-color': '#3bb2d0',
+      'line-width': 1,
+    },
+  });
+  map.addLayer({
+    id: 'clusters-labels',
+    type: 'symbol',
+    source: 'clusters',
+    layout: {
       'text-field': [
         'format',
         ['upcase', ['get', 'name']],
@@ -69,12 +70,12 @@ function addStaticLayers(map) {
         '\n',
         {},
         ['downcase', ['get', 'label']],
-        { 'font-scale': 0.6 }
+        { 'font-scale': 0.6 },
       ],
     },
     paint: {
-      "text-color": "#195b6b"
-    }
+      'text-color': '#195b6b',
+    },
   });
 }
 
@@ -93,23 +94,23 @@ function showStaticLayers(map) {
 var modes = MapboxDraw.modes;
 modes.static = StaticMode;
 
-const PTMap = observer(({ state, onSegmentSelect }) => {
-  const { user } = useContext(UserContext)
-  const history = useHistory()
-  const { lat, lng, zm } = useParams()
-  const mapRef = useRef(null)
-  const map = useRef(null)
-  const draw = useRef(null)
-  const segId = useRef(null)
-  
+const PTMap = observer(({ mapState, onSegmentSelect }) => {
+  const { user } = useContext(UserContext);
+  const history = useHistory();
+  const { lat, lng, zm } = useParams();
+  const mapRef = useRef(null);
+  const map = useRef(null);
+  const draw = useRef(null);
+  const segId = useRef(null);
+
   useEffect(() => {
     if (!map.current) {
-      setupMap()
+      setupMap();
     }
     if (map.current && draw.current) {
-      setFeatures()
+      setFeatures();
     }
-  }, [state.segments])
+  }, [mapState.segments]);
 
   useEffect(() => {
     map.current.on('draw.selectionchange', onSelect);
@@ -118,14 +119,14 @@ const PTMap = observer(({ state, onSegmentSelect }) => {
       map.current.on('draw.update', onUpdate);
       map.current.on('draw.delete', onDelete);
     }
-  }, [user])
-  
+  }, [user]);
+
   function setupMap() {
     map.current = new window.maplibregl.Map({
       container: mapRef.current,
       style: tileServerURL,
       center: [lng, lat],
-      zoom: zm
+      zoom: zm,
     });
     draw.current = new MapboxDraw({
       drawing: false,
@@ -134,113 +135,110 @@ const PTMap = observer(({ state, onSegmentSelect }) => {
       controls: {
         line_string: true,
         polygon: true,
-        trash: true
+        trash: true,
       },
       styles: theme,
-      modes: modes
-    })
+      modes: modes,
+    });
 
     map.current.addControl(draw.current, 'top-left');
 
     map.current.addControl(
       new window.maplibregl.GeolocateControl({
         positionOptions: {
-          enableHighAccuracy: true
+          enableHighAccuracy: true,
         },
-          trackUserLocation: true
-        }), 'top-left'
-      );
+        trackUserLocation: true,
+      }),
+      'top-left'
+    );
 
-    map.current.on('load', onLoaded)
-    map.current.on('zoomend', onMoveOrZoom)
-    map.current.on('moveend', onMoveOrZoom)
+    map.current.on('load', onLoaded);
+    map.current.on('zoomend', onMoveOrZoom);
+    map.current.on('moveend', onMoveOrZoom);
     map.current.on('style.load', () => {
-      addStaticLayers(map.current)
+      addStaticLayers(map.current);
     });
   }
 
   function hasBasePermissions(owner_id) {
-    return user.permission_level === 0 
-      && owner_id !== user.id
+    return user.permission_level === 0 && owner_id !== user.id;
   }
 
   function onDelete(event) {
     event.features.forEach((feature) => {
       if (hasBasePermissions(feature.properties.owner_id)) {
-        window.alert(getString('permissions_failure'))
+        window.alert(getString('permissions_failure'));
       } else {
-        state.onSegmentDeleted(feature.id)
+        mapState.onSegmentDeleted(feature.id);
       }
     });
   }
 
   function onSelect(event) {
     if (event?.features?.length > 0 && event?.features[0]?.id) {
-      segId.current = event.features[0].id
-      onSegmentSelect(event.features[0].id)
+      segId.current = event.features[0].id;
+      onSegmentSelect(event.features[0].id);
     } else {
-      segId.current = null
-      onSegmentSelect(null)
+      segId.current = null;
+      onSegmentSelect(null);
     }
   }
 
   async function onCreate(event) {
-    const newSeg = await state.onSegmentCreated(event.features[0])
-    draw.current.delete(event.features[0].id)
-    draw.current.changeMode('simple_select', { featureIds: [newSeg.id] })
+    const newSeg = await mapState.onSegmentCreated(event.features[0]);
+    draw.current.delete(event.features[0].id);
+    draw.current.changeMode('simple_select', { featureIds: [newSeg.id] });
   }
 
   function onUpdate(event) {
     event.features.forEach((feature) => {
       if (hasBasePermissions(feature.properties.owner_id)) {
-        window.alert(getString('permissions_failure'))
+        window.alert(getString('permissions_failure'));
       } else {
-        state.onSegmentEdited(feature)
+        mapState.onSegmentEdited(feature);
       }
     });
   }
 
   function onLoaded() {
-    onMoveOrZoom()
-    if (state.segments.length) {
-      setFeatures()
+    onMoveOrZoom();
+    if (mapState.segments.length) {
+      setFeatures();
     }
   }
 
   function onMoveOrZoom() {
-    const zm = map.current.getZoom()
-    const { lat, lng } = map.current.getCenter()
+    const zm = map.current.getZoom();
+    const { lat, lng } = map.current.getCenter();
     if (lat && lng && zm) {
-      history.push(`/${lat}/${lng}/${zm}${window.location.search}`)
+      history.push(`/${lat}/${lng}/${zm}${window.location.search}`);
       if (zm >= 12) {
-        hideStaticLayers(map.current)
-        state.onBoundsChanged(map.current.getBounds())
+        hideStaticLayers(map.current);
+        mapState.onBoundsChanged(map.current.getBounds());
       } else {
-        draw.current.deleteAll()
-        showStaticLayers(map.current)
+        draw.current.deleteAll();
+        showStaticLayers(map.current);
       }
     }
   }
 
   function setFeatures() {
-    var startTime = performance.now()
-    draw.current.set({ 
-      features: state.segments,
+    draw.current.set({
+      features: mapState.segments,
       type: 'FeatureCollection',
       id: 'ppt-feature-collection',
-    })
-    var endTime = performance.now()
-    console.log(`Call to setFeatures took ${endTime - startTime} milliseconds`)
+    });
   }
 
-  return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
-})
+  return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>;
+});
 
 const connector = () => (
-  <PTMap 
-    state={state}
+  <PTMap
+    mapState={mapState}
     onSegmentSelect={action((id) => segmentFormState.onSegmentSelect(id))}
   />
-)
+);
 
-export default connector
+export default connector;
