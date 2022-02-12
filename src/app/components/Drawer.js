@@ -37,7 +37,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function TemporaryDrawer() {
+export default React.memo(() => {
   const classes = useStyles()
   const [state, setState] = React.useState(false)
 
@@ -108,4 +108,4 @@ export default function TemporaryDrawer() {
       </React.Fragment>
     </div>
   )
-}
+})

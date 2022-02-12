@@ -4,7 +4,6 @@ import clsx from 'clsx'
 
 import PTMap from '../map/PTMap'
 import RightPanel from '../components/RightPanel'
-import { SegmentContext } from '../context/SegmentContext'
 import { Drawer } from '@material-ui/core'
 import { UserContext } from '../context/UserContext'
 import isEmbedded from '../../helpers/isEmbedded'
@@ -38,20 +37,7 @@ const useStyles = makeStyles({
 function Recording () {
   const { user } = useContext(UserContext)
   const classes = useStyles()
-  const { selectedSegmentId } = useContext(SegmentContext)
   const [open, setOpen] = useState(window.innerWidth > 900)
-
-  const previousSegmentId = useRef(null)
-
-  useEffect(() => {
-    if (selectedSegmentId) {
-      previousSegmentId.current = selectedSegmentId
-    } if (previousSegmentId.current && !selectedSegmentId && open) {
-      setOpen(false)
-    } if (selectedSegmentId) {
-      setOpen(true)
-    }
-  }, [selectedSegmentId])
 
   return (
     <>

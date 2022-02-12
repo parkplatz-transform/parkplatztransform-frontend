@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   },
 })
 
-function HowTo() {
+const HowTo = React.memo(() => {
   const classes = useStyles()
 
   return (
@@ -335,6 +335,6 @@ function HowTo() {
       </Paper>
     </Container>
   )
-}
+})
 
 export default HowTo

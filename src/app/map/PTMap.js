@@ -1,9 +1,11 @@
 import React, { useEffect, useContext, useRef } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import { observer } from "mobx-react-lite"
+import { action } from 'mobx'
 
 import { UserContext } from '../context/UserContext'
-import { SegmentContext } from '../context/SegmentContext'
+import segmentState from '../state/segments'
 import getString from '../../strings'
 import theme from './MapTheme'
 import { routes } from '../../helpers/api'
@@ -87,8 +89,10 @@ function showStaticLayers(map) {
   map.setLayoutProperty('clusters-labels', 'visibility', 'visible');
 }
 
+var modes = MapboxDraw.modes;
+modes.static = StaticMode;
 
-function PTMap({ children }) {
+const PTMap = observer(({ state }) => {
   const { user } = useContext(UserContext)
   const history = useHistory()
   const { lat, lng, zm } = useParams()
@@ -97,15 +101,6 @@ function PTMap({ children }) {
   const draw = useRef(null)
   const segId = useRef(null)
   
-  const { 
-    segments, 
-    onBoundsChanged,
-    onSegmentSelect,
-    onSegmentDeleted,
-    onSegmentCreated,
-    onSegmentEdited,
-  } = useContext(SegmentContext)
-  
   useEffect(() => {
     if (!map.current) {
       setupMap()
@@ -113,7 +108,7 @@ function PTMap({ children }) {
     if (map.current && draw.current) {
       setFeatures()
     }
-  }, [segments])
+  }, [state.segments])
 
   useEffect(() => {
     map.current.on('draw.selectionchange', onSelect);
@@ -123,9 +118,6 @@ function PTMap({ children }) {
       map.current.on('draw.delete', onDelete);
     }
   }, [user])
-  
-  var modes = MapboxDraw.modes;
-  modes.static = StaticMode;
   
   function setupMap() {
     map.current = new window.maplibregl.Map({
@@ -155,7 +147,7 @@ function PTMap({ children }) {
           enableHighAccuracy: true
         },
           trackUserLocation: true
-        }), 'bottom-left'
+        }), 'top-left'
       );
 
     map.current.on('load', onLoaded)
@@ -163,7 +155,7 @@ function PTMap({ children }) {
     map.current.on('moveend', onMoveOrZoom)
     map.current.on('style.load', () => {
       addStaticLayers(map.current)
-    })
+    });
   }
 
   function hasBasePermissions(owner_id) {
@@ -176,7 +168,7 @@ function PTMap({ children }) {
       if (hasBasePermissions(feature.properties.owner_id)) {
         window.alert(getString('permissions_failure'))
       } else {
-        onSegmentDeleted(feature.id)
+        state.onSegmentDeleted(feature.id)
       }
     });
   }
@@ -184,15 +176,15 @@ function PTMap({ children }) {
   function onSelect(event) {
     if (event?.features?.length > 0 && event?.features[0]?.id) {
       segId.current = event.features[0].id
-      onSegmentSelect(event.features[0].id)
+      state.onSegmentSelect(event.features[0].id)
     } else {
       segId.current = null
-      onSegmentSelect(null)
+      state.onSegmentSelect(null)
     }
   }
 
   async function onCreate(event) {
-    const newSeg = await onSegmentCreated(event.features[0])
+    const newSeg = await state.onSegmentCreated(event.features[0])
     draw.current.delete(event.features[0].id)
     draw.current.changeMode('simple_select', { featureIds: [newSeg.id] })
   }
@@ -202,14 +194,14 @@ function PTMap({ children }) {
       if (hasBasePermissions(feature.properties.owner_id)) {
         window.alert(getString('permissions_failure'))
       } else {
-        onSegmentEdited(feature)
+        state.onSegmentEdited(feature)
       }
     });
   }
 
   function onLoaded() {
     onMoveOrZoom()
-    if (segments.length) {
+    if (state.segments.length) {
       setFeatures()
     }
   }
@@ -221,7 +213,7 @@ function PTMap({ children }) {
       history.push(`/${lat}/${lng}/${zm}${window.location.search}`)
       if (zm >= 12) {
         hideStaticLayers(map.current)
-        onBoundsChanged(map.current.getBounds())
+        state.onBoundsChanged(map.current.getBounds())
       } else {
         draw.current.deleteAll()
         showStaticLayers(map.current)
@@ -229,15 +221,21 @@ function PTMap({ children }) {
     }
   }
 
-  function setFeatures() {  
+  function setFeatures() {
+    var startTime = performance.now()
     draw.current.set({ 
-      features: segments, 
+      features: state.segments,
       type: 'FeatureCollection',
       id: 'ppt-feature-collection',
     })
+    var endTime = performance.now()
+    console.log(`Call to setFeatures took ${endTime - startTime} milliseconds`)
+    
   }
 
   return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>
-}
+})
 
-export default PTMap
+const connector = () => <PTMap state={segmentState} />
+
+export default connector
