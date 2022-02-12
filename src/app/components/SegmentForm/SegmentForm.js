@@ -27,6 +27,7 @@ import SubsegmentList from './SubsegmentList';
 import SubsegmentDetails from './SubsegmentDetails';
 import AddToFavoriteDialog from './AddToFavoriteDialog';
 import segmentFormState from '../../state/SegmentFormState';
+import appState from '../../state/AppState';
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -103,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SegmentForm = observer(({ formState }) => {
+const SegmentForm = observer(({ appState, formState }) => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
 
@@ -168,18 +169,27 @@ const SegmentForm = observer(({ formState }) => {
     );
   }
 
+  function closeDrawer() {
+    formState.onSegmentSelect(null);
+    appState.setRightDrawerOpen(false);
+  }
+
+  function onSave() {
+    formState.save().then(() => {
+      if (formState.isFormValid) {
+        appState.setRightDrawerOpen(false);
+      }
+    });
+  }
+
   return (
     <div className={classes.formView}>
       <div className={classes.headerContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => formState.onSegmentSelect(null)}
-        >
+        <Button variant="contained" color="primary" onClick={closeDrawer}>
           Close
         </Button>
         <Button
-          onClick={action(() => formState.save())}
+          onClick={onSave}
           disabled={formState.isChanged === 0}
           color="primary"
           variant="contained"
@@ -246,6 +256,8 @@ const SegmentForm = observer(({ formState }) => {
   );
 });
 
-const connector = () => <SegmentForm formState={segmentFormState} />;
+const connector = () => (
+  <SegmentForm appState={appState} formState={segmentFormState} />
+);
 
 export default connector;

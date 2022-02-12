@@ -1,22 +1,26 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 
-import './components.css'
-import { makeStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
+import './components.css';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Link } from 'react-router-dom';
 
-import LoginForm from './LoginForm'
-import TemporaryDrawer from './Drawer'
-import { Avatar, Typography } from '@material-ui/core'
-import blue from '@material-ui/core/colors/blue'
+import LoginForm from './LoginForm';
+import TemporaryDrawer from './Drawer';
+import { Avatar, Typography } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import blue from '@material-ui/core/colors/blue';
+import { observer } from 'mobx-react-lite';
+import { action } from 'mobx';
 
-import { UserContext } from '../context/UserContext'
-import { logoutUser } from '../../helpers/api'
-import { Link } from 'react-router-dom'
+import { UserContext } from '../context/UserContext';
+import { logoutUser } from '../../helpers/api';
+import appState from '../state/AppState';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,56 +45,66 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 10,
     fontSize: 12,
   },
-}))
+}));
 
-function MainMenu() {
-  const classes = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const [loginModalOpen, setLoginModalOpen] = React.useState(false)
-  const { user, logout } = useContext(UserContext)
+const MainMenu = observer(({ appState }) => {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [loginModalOpen, setLoginModalOpen] = React.useState(false);
+  const { user, logout } = useContext(UserContext);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
+
+  const handleToggleRightDrawer = () => {
+    appState.setRightDrawerOpen(!appState.rightDrawerOpen);
+  };
 
   return (
-    <AppBar position='relative' style={{ zIndex: 1201 }}>
+    <AppBar position="relative" style={{ zIndex: 1201 }}>
       <Toolbar>
         <TemporaryDrawer />
 
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
 
-        <Typography variant='h6' className={classes.title}>
-          <Link className={classes.titleLink} href='/' color='inherit'>
+        <Typography variant="p" className={classes.title}>
+          <Link className={classes.titleLink} href="/" color="inherit">
             ParkplatzTransform
           </Link>
         </Typography>
 
         {!user && (
-          <Button className={classes.userButton} color='inherit' onClick={() => setLoginModalOpen(true)}>
+          <Button
+            className={classes.userButton}
+            color="inherit"
+            onClick={() => setLoginModalOpen(true)}
+          >
             Login
           </Button>
         )}
-        
+
         {user && (
           <>
             <IconButton
-              edge='end'
+              edge="end"
               className={classes.userButton}
-              color='inherit'
-              aria-label='menu'
-              aria-controls='simple-menu'
-              aria-haspopup='true'
+              color="inherit"
+              aria-label="menu"
+              aria-controls="simple-menu"
+              aria-haspopup="true"
               onClick={handleClick}
             >
-              <Avatar style={{ backgroundColor: blue[500] }}>{user?.email[0]}</Avatar>
+              <Avatar style={{ backgroundColor: blue[500] }}>
+                {user?.email[0]}
+              </Avatar>
             </IconButton>
             <Menu
-              id='simple-menu'
+              id="simple-menu"
               anchorEl={anchorEl}
               keepMounted
               open={Boolean(anchorEl)}
@@ -100,9 +114,21 @@ function MainMenu() {
             </Menu>
           </>
         )}
+        <IconButton
+          edge="end"
+          color="inherit"
+          aria-label="menu"
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          onClick={handleToggleRightDrawer}
+        >
+          <EditIcon />
+        </IconButton>
       </Toolbar>
     </AppBar>
-  )
-}
+  );
+});
 
-export default MainMenu
+const connector = () => <MainMenu appState={appState} />;
+
+export default connector;

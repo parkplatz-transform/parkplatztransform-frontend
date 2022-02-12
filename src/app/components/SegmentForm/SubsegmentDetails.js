@@ -14,6 +14,7 @@ import {
 } from '../../recording/Subsegments';
 import getString from '../../../strings';
 import segmentFormState from '../../state/SegmentFormState';
+import appState from '../../state/AppState';
 import ParkingAllowed from './ParkingAllowed';
 import ParkingNotAllowed from './ParkingNotAllowed';
 
@@ -67,12 +68,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubsegmentDetails = observer(({ formState }) => {
+const SubsegmentDetails = observer(({ appState, formState }) => {
   const subsegment = formState.subsegment;
   const classes = useStyles();
 
   function getButtonVariant(highlighted) {
     return highlighted ? 'contained' : 'outlined';
+  }
+
+  function onSave() {
+    formState.save().then(() => {
+      if (formState.isFormValid) {
+        appState.setRightDrawerOpen(false);
+      }
+    });
   }
 
   if (!formState.subsegment) {
@@ -137,7 +146,7 @@ const SubsegmentDetails = observer(({ formState }) => {
             <Button
               variant="contained"
               color="primary"
-              onClick={action(() => formState.save())}
+              onClick={onSave}
               className={classes.bottomButton}
             >
               {getString('save')}
@@ -149,6 +158,8 @@ const SubsegmentDetails = observer(({ formState }) => {
   );
 });
 
-const connector = () => <SubsegmentDetails formState={segmentFormState} />;
+const connector = () => (
+  <SubsegmentDetails appState={appState} formState={segmentFormState} />
+);
 
 export default connector;
