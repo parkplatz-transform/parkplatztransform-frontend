@@ -37,10 +37,9 @@ const useStyles = makeStyles({
   },
 })
 
-export default React.memo(() => {
+const NavList = React.memo(({ toggleDrawer }) => {
   const classes = useStyles()
-  const [state, setState] = React.useState(false)
-
+  
   async function downloadAllSegments() {
     const allSegments = await getAllSegments()
     const element = document.createElement('a')
@@ -49,6 +48,39 @@ export default React.memo(() => {
     element.style.display = 'none'
     element.click()
   }
+  
+  return (<div
+    className={clsx(classes.list)}
+    role='presentation'
+    onClick={toggleDrawer(false)}
+    onKeyDown={toggleDrawer(false)}
+  >
+    <List>
+      {['Home', 'Howto', 'Impressum', 'Datenschutz'].map((text, index) => (
+        <Link key={`${text}-${index}`} className={classes.link} to={`/${text.toLowerCase()}`}>
+          <ListItem button>
+            <ArrowForwardIcon className={classes.icon} />
+            <ListItemText className={classes.paddingLeft} primary={text} />
+          </ListItem>
+        </Link>
+      ))}
+        <ListItem button onClick={downloadAllSegments}>
+          <CloudDownload className={classes.icon} />
+          <ListItemText className={classes.paddingLeft} primary={"GeoJSON herunterladen"} />
+        </ListItem>
+        <a key={'docs'} className={classes.link} href={'https://api.xtransform.org/docs'}>
+        <ListItem button onClick={downloadAllSegments}>
+          <Code className={classes.icon} />
+          <ListItemText className={classes.paddingLeft} primary={"API Documentation"} />
+        </ListItem>
+        </a>
+    </List>
+  </div>)
+})
+
+export default React.memo(() => {
+  const classes = useStyles()
+  const [state, setState] = React.useState(false)
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -60,36 +92,6 @@ export default React.memo(() => {
 
     setState(!state)
   }
-
-  const list = () => (
-    <div
-      className={clsx(classes.list)}
-      role='presentation'
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {['Home', 'Howto', 'Impressum', 'Datenschutz'].map((text, index) => (
-          <Link key={`${text}-${index}`} className={classes.link} to={`/${text.toLowerCase()}`}>
-            <ListItem button>
-              <ArrowForwardIcon className={classes.icon} />
-              <ListItemText className={classes.paddingLeft} primary={text} />
-            </ListItem>
-          </Link>
-        ))}
-          <ListItem button onClick={downloadAllSegments}>
-            <CloudDownload className={classes.icon} />
-            <ListItemText className={classes.paddingLeft} primary={"GeoJSON herunterladen"} />
-          </ListItem>
-          <a key={'docs'} className={classes.link} href={'https://api.xtransform.org/docs'}>
-          <ListItem button onClick={downloadAllSegments}>
-            <Code className={classes.icon} />
-            <ListItemText className={classes.paddingLeft} primary={"API Documentation"} />
-          </ListItem>
-          </a>
-      </List>
-    </div>
-  )
 
   return (
     <div>
@@ -103,7 +105,7 @@ export default React.memo(() => {
           <MenuIcon />
         </IconButton>
         <Drawer anchor='left' open={state} onClose={toggleDrawer(false)}>
-          {list()}
+          <NavList toggleDrawer={toggleDrawer} />
         </Drawer>
       </React.Fragment>
     </div>
