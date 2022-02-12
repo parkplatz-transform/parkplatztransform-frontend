@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 })
 
-function Impressum() {
+const Impressum = React.memo(() => {
   const classes = useStyles()
 
   return (
@@ -106,6 +106,6 @@ function Impressum() {
       </Paper>
     </Container>
   )
-}
+})
 
 export default Impressum

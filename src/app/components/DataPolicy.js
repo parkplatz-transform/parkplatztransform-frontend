@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 })
 
-function DataPolicy() {
+const DataPolicy = React.memo(() => {
   const classes = useStyles()
 
   return (
@@ -581,6 +581,6 @@ function DataPolicy() {
       </Paper>
     </Container>
   )
-}
+})
 
 export default DataPolicy

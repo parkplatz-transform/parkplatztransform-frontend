@@ -2,12 +2,14 @@ import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import IconButton from '@material-ui/core/IconButton'
+import { Box } from '@material-ui/core'
 import { Link } from 'react-router-dom'
+import { observer } from "mobx-react-lite"
+
 import SegmentForm from '../components/SegmentForm'
 import getString from '../../strings'
-import { SegmentContext } from '../context/SegmentContext'
-import { Box } from '@material-ui/core'
 import { UserContext } from '../context/UserContext'
+import segmentState from '../state/segments'
 
 const useStyles = makeStyles({
   header: {
@@ -54,81 +56,79 @@ const useStyles = makeStyles({
   },
 })
 
-function RightPanel () {
+const WelcomeMessage = React.memo(() => {
   const classes = useStyles()
-  const { 
-    segment,
-    onSegmentChanged,
-    setAlertDisplayed,
-    onSegmentSelect
-  } = useContext(SegmentContext)
+  return (
+    <div className={classes.formArea}>
+      <Box p={2} mt={5}>
+        <div className={classes.verticalSpace}/>
+        <div className={classes.header}>
+          <p>{getString('welcome_title')}</p>
+        </div>
+        <div className={classes.subheader}>
+          <p>{getString('welcome_subtitle')}</p>
+        </div>
+        <div className={classes.subheader}>
+          <p>{getString('welcome_hints')}</p>
+        </div>
+  
+        <ol className={classes.orderdList}>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_1')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_2')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_3')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_4')}</p>
+            </div>
+          </li>
+          <li>
+            <div className={classes.subheader}>
+              <p>{getString('welcome_hint_5')}</p>
+            </div>
+          </li>
+        </ol>
+        <div className={classes.bottom}>
+          <Link className={classes.link} to={`/howto`}>
+            <IconButton aria-label="delete">
+              <ArrowForwardIcon/>
+            </IconButton>
+          </Link>
+          <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
+        </div>
+      </Box>
+    </div>
+  )
+})
 
+const RightPanel = observer(({ state }) => {
+  const classes = useStyles()
   const { user } = useContext(UserContext)
 
 
   function onValidationFailed (message) {
-    setAlertDisplayed({severity: 'error', message})
+    // setAlertDisplayed({severity: 'error', message})
   }
 
-  if (!segment) {
-    return (
-      <div className={classes.formArea}>
-        <Box p={2} mt={5}>
-          <div className={classes.verticalSpace}/>
-          <div className={classes.header}>
-            <p>{getString('welcome_title')}</p>
-          </div>
-          <div className={classes.subheader}>
-            <p>{getString('welcome_subtitle')}</p>
-          </div>
-          <div className={classes.subheader}>
-            <p>{getString('welcome_hints')}</p>
-          </div>
-
-          <ol className={classes.orderdList}>
-            <li>
-              <div className={classes.subheader}>
-                <p>{getString('welcome_hint_1')}</p>
-              </div>
-            </li>
-            <li>
-              <div className={classes.subheader}>
-                <p>{getString('welcome_hint_2')}</p>
-              </div>
-            </li>
-            <li>
-              <div className={classes.subheader}>
-                <p>{getString('welcome_hint_3')}</p>
-              </div>
-            </li>
-            <li>
-              <div className={classes.subheader}>
-                <p>{getString('welcome_hint_4')}</p>
-              </div>
-            </li>
-            <li>
-              <div className={classes.subheader}>
-                <p>{getString('welcome_hint_5')}</p>
-              </div>
-            </li>
-          </ol>
-          <div className={classes.bottom}>
-            <Link className={classes.link} to={`/howto`}>
-              <IconButton aria-label="delete">
-                <ArrowForwardIcon/>
-              </IconButton>
-            </Link>
-            <p className={classes.paddingLeft}>{getString('welcome_to_howto')}</p>
-          </div>
-        </Box>
-      </div>
-    )
+  if (!state.segment) {
+    return <WelcomeMessage />
   }
 
   function userCanEditSegment() {
     if (user?.permission_level > 0) {
       return true
-    } else if (user?.id === segment.properties?.owner_id) {
+    } else if (user?.id === state.segment.properties?.owner_id) {
       return true
     }
     return false
@@ -137,9 +137,9 @@ function RightPanel () {
   return (
     <div className={classes.formArea}>
       <SegmentForm
-        deselectSegment={() => onSegmentSelect(null)}
-        segment={segment}
-        onChanged={onSegmentChanged}
+        deselectSegment={() => state.onSegmentSelect(null)}
+        segment={state.segment}
+        onChanged={state.onSegmentChanged}
         onValidationFailed={onValidationFailed}
         disabled={!userCanEditSegment()}
         disabledMessage={
@@ -150,6 +150,7 @@ function RightPanel () {
       />
     </div>
   )
-}
+})
 
-export default RightPanel
+const connector = () => <RightPanel state={segmentState} />
+export default connector

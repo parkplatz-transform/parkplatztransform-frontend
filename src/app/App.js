@@ -9,7 +9,6 @@ import HowTo from './components/HowTo'
 import Impressum from './components/Impressum'
 import DataPolicy from './components/DataPolicy'
 import { UserProvider } from './context/UserContext'
-import { SegmentProvider } from './context/SegmentContext'
 import isEmbedded from '../helpers/isEmbedded'
 
 // Center of Berlin
@@ -36,9 +35,7 @@ function App() {
         <Route exact path='/impressum' component={Impressum} />
         <Route exact path='/datenschutz' component={DataPolicy} />
         <Route path='/:lat/:lng/:zm'>
-          <SegmentProvider>
-            <Recording/>
-          </SegmentProvider>
+          <Recording/>
         </Route>
       </Router>
     </UserProvider>
