@@ -165,15 +165,10 @@ class MapState {
     if (!newOrUpdatedSegments) {
       return;
     }
-    const keyedSegments = newOrUpdatedSegments.reduce(
-      (acc, segment) => {
-        if (segment?.id) {
-          return { ...acc, [segment.id]: segment };
-        }
-        return acc;
-      },
-      { ...this.allSegmentsById }
-    );
+    const keyedSegments = {}
+    for (var i = newOrUpdatedSegments.length - 1; i >= 0; i--) {
+      keyedSegments[newOrUpdatedSegments[i].id] = newOrUpdatedSegments[i]
+    }
     this.allSegmentsById = keyedSegments;
   }
 
