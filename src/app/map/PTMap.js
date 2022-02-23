@@ -83,12 +83,18 @@ function hideStaticLayers(map) {
   map.setLayoutProperty('clusters-borders', 'visibility', 'none');
   map.setLayoutProperty('clusters-fills', 'visibility', 'none');
   map.setLayoutProperty('clusters-labels', 'visibility', 'none');
+
+  map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'visible');
+  map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'visible');
 }
 
 function showStaticLayers(map) {
   map.setLayoutProperty('clusters-borders', 'visibility', 'visible');
   map.setLayoutProperty('clusters-fills', 'visibility', 'visible');
   map.setLayoutProperty('clusters-labels', 'visibility', 'visible');
+
+  map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'none');
+  map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'none');
 }
 
 var modes = MapboxDraw.modes;
@@ -101,23 +107,25 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   const mapRef = useRef(null);
   const map = useRef(null);
   const draw = useRef(null);
-  const segId = useRef(null);
 
   useEffect(() => {
     if (!map.current) {
       setupMap();
     }
-    if (map.current && draw.current) {
-      setFeatures();
-    }
-  }, [mapState.segments]);
+  }, []);
 
   useEffect(() => {
     map.current.on('draw.selectionchange', onSelect);
-    if (user) {
+    if (user) { 
       map.current.on('draw.create', onCreate);
       map.current.on('draw.update', onUpdate);
       map.current.on('draw.delete', onDelete);
+    }
+    return () => {
+      map.current.off('draw.selectionchange', onSelect);  
+      map.current.off('draw.create', onCreate);
+      map.current.off('draw.update', onUpdate);
+      map.current.off('draw.delete', onDelete);
     }
   }, [user]);
 
@@ -176,19 +184,20 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   }
 
   function onSelect(event) {
-    if (event?.features?.length > 0 && event?.features[0]?.id) {
-      segId.current = event.features[0].id;
-      onSegmentSelect(event.features[0].id);
+    // Assume it's a newly created segment if it has no properties and don't try to fetch it
+    if (event?.features?.length > 0 && Object.keys(event?.features[0]?.properties).length > 0) {
+      onSegmentSelect(event.features[0]);
     } else {
-      segId.current = null;
       onSegmentSelect(null);
     }
   }
 
   async function onCreate(event) {
-    const newSeg = await mapState.onSegmentCreated(event.features[0]);
+    const newSegment = await mapState.onSegmentCreated(event.features[0]);
+    draw.current.add(newSegment)
     draw.current.delete(event.features[0].id);
-    draw.current.changeMode('simple_select', { featureIds: [newSeg.id] });
+    draw.current.changeMode('simple_select', { featureIds: [newSegment.id] });
+    onSegmentSelect(newSegment);
   }
 
   function onUpdate(event) {
@@ -203,9 +212,6 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 
   function onLoaded() {
     onMoveOrZoom();
-    if (mapState.segments.length) {
-      setFeatures();
-    }
   }
 
   function onMoveOrZoom() {
@@ -215,20 +221,11 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
       history.push(`/${lat}/${lng}/${zm}${window.location.search}`);
       if (zm >= 12) {
         hideStaticLayers(map.current);
-        mapState.onBoundsChanged(map.current.getBounds());
+        mapState.onBoundsChanged(map.current.getBounds(), draw.current);
       } else {
-        draw.current.deleteAll();
         showStaticLayers(map.current);
       }
     }
-  }
-
-  function setFeatures() {
-    draw.current.set({
-      features: mapState.segments,
-      type: 'FeatureCollection',
-      id: 'ppt-feature-collection',
-    });
   }
 
   return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>;

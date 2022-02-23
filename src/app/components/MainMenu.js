@@ -16,10 +16,8 @@ import { Avatar, Typography } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import blue from '@material-ui/core/colors/blue';
 import { observer } from 'mobx-react-lite';
-import { action } from 'mobx';
 
 import { UserContext } from '../context/UserContext';
-import { logoutUser } from '../../helpers/api';
 import appState from '../state/AppState';
 
 const useStyles = makeStyles((theme) => ({

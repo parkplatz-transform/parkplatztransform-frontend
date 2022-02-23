@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx';
-import getString from '../../strings';
 
 class AppState {
   rightDrawerOpen = false;

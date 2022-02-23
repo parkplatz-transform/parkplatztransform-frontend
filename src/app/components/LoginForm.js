@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMutate } from 'restful-react';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -11,7 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import { routes, headers } from '../../helpers/api'
+import { loginUser } from '../../helpers/api'
 
 const FORM_STATE = Object.freeze({
   INITIAL: Symbol('INITIAL'),
@@ -23,18 +22,14 @@ export default React.memo(({ open, setOpen }) => {
   const [email, setEmail] = React.useState('')
   const [accepted, setAccepted] = React.useState(false)
   const [formState, setFormState] = React.useState(FORM_STATE.INITIAL)
-  const { mutate } = useMutate({
-    verb: 'POST',
-    path: routes.users,
-    headers: headers.contentJSON
-  });
 
   function isValid() {
     return (email.length > 0) && accepted
   }
 
   const requestMagicLink = () => {
-    mutate({ email, accepted_terms_and_conditions: accepted }).catch((error) => {
+    loginUser({ email, accepted_terms_and_conditions: accepted })
+    .catch((error) => {
       setFormState(FORM_STATE.FAILURE)
     }).then((response) => {
       if (response?.email) {
