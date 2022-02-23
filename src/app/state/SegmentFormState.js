@@ -16,7 +16,10 @@ class SegmentFormState {
   subsegmentNameToFavorite = null;
 
   get subsegment() {
-    return this.segment?.properties?.subsegments[this.selectedSubsegmentIndex];
+    if (this.segment?.properties?.subsegments) {
+     return this.segment?.properties?.subsegments[this.selectedSubsegmentIndex];  
+    }
+    return null
   }
 
   get isFormValid() {
@@ -175,15 +178,16 @@ class SegmentFormState {
     this.selectedSubsegmentIndex = index;
   }
 
-  async onSegmentSelect(id) {
-    if (id === null) {
+  async onSegmentSelect(segment) {
+    if (segment === null) {
       this.segment = null;
       return;
     }
-    if (id === this.segment?.id) {
+    if (segment.id === this.segment?.id) {
       return;
     }
-    const segmentWithDetails = await getSegment(id);
+    this.segment = segment
+    const segmentWithDetails = await getSegment(segment.id);
     if (segmentWithDetails) {
       this.segment = segmentWithDetails;
       if (this.segment.properties.subsegments.length > 0) {

@@ -61,6 +61,23 @@ export async function getUserData() {
   }
 }
 
+export async function loginUser(payload) {
+  try {
+    const response = await fetch(routes.users, { 
+      credentials: 'include', 
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify(payload)
+    })
+    if (response.ok) {
+      return response.json()
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export async function logoutUser() {
   try {
     const response = await fetch(routes.usersLogout, { credentials: 'include', method: 'POST', headers: headers() })
