@@ -13,7 +13,6 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.3",
-    "@turf/turf": "^6.3.0",
     "http-proxy-middleware": "^1.0.6",
     "mobx": "^6.3.13",
     "mobx-react-lite": "^3.2.3",

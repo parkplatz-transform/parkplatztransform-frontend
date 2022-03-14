@@ -186,7 +186,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   function onSelect(event) {
     // Assume it's a newly created segment if it has no properties and don't try to fetch it
     if (event?.features?.length > 0 && Object.keys(event?.features[0]?.properties).length > 0) {
-      onSegmentSelect(event.features[0]);
+      onSegmentSelect(event.features[0], draw.current);
     } else {
       onSegmentSelect(null);
     }
@@ -234,7 +234,9 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 const connector = () => (
   <PTMap
     mapState={mapState}
-    onSegmentSelect={action((id) => segmentFormState.onSegmentSelect(id))}
+    onSegmentSelect={action((id, draw) => {
+      segmentFormState.onSegmentSelect(id, draw)
+    })}
   />
 );
 

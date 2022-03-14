@@ -178,7 +178,7 @@ class SegmentFormState {
     this.selectedSubsegmentIndex = index;
   }
 
-  async onSegmentSelect(segment) {
+  async onSegmentSelect(segment, draw) {
     if (segment === null) {
       this.segment = null;
       return;
@@ -194,6 +194,7 @@ class SegmentFormState {
         this.selectedSubsegmentIndex = 0;
       }
     }
+    draw.setFeatureProperty(segment.id, 'subsegments', segmentWithDetails.properties.subsegments)
   }
 
   async onSegmentChanged(segment) {

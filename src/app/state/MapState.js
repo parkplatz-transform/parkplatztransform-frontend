@@ -77,8 +77,14 @@ class MapState {
     const segments = draw.getAll().features
     const loadedSegments = this.getLoadedSegmentIdsInBounds(boundingBox, segments);
     const excludedIds = segments.map((segment) => segment.id);
+    var startTime = performance.now()
+
     const latestModificationDate =
       this.getLatestModificationDate(loadedSegments);
+      var endTime = performance.now()
+
+    console.log(`Call to update took ${endTime - startTime} milliseconds`)
+
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`;
     this.loadedBoundingBoxes.push(boundingBox);
     try {
@@ -88,7 +94,6 @@ class MapState {
         latestModificationDate
       );
       if (geoJson.features && geoJson.features.length) {
-        // this.addSegments(geoJson.features);
         draw.set({
           features: geoJson.features,
           type: 'FeatureCollection',
