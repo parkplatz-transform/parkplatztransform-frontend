@@ -183,10 +183,11 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     });
   }
 
-  function onSelect(event) {
+  async function onSelect(event) {
     // Assume it's a newly created segment if it has no properties and don't try to fetch it
     if (event?.features?.length > 0 && Object.keys(event?.features[0]?.properties).length > 0) {
-      onSegmentSelect(event.features[0], draw.current);
+      const updated = await onSegmentSelect(event.features[0]);
+      draw.current.add(updated)
     } else {
       onSegmentSelect(null);
     }
@@ -197,7 +198,8 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     draw.current.add(newSegment)
     draw.current.delete(event.features[0].id);
     draw.current.changeMode('simple_select', { featureIds: [newSegment.id] });
-    onSegmentSelect(newSegment);
+    const updated = await onSegmentSelect(newSegment);
+    draw.current.add(updated)
   }
 
   function onUpdate(event) {
@@ -234,8 +236,8 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 const connector = () => (
   <PTMap
     mapState={mapState}
-    onSegmentSelect={action((id, draw) => {
-      segmentFormState.onSegmentSelect(id, draw)
+    onSegmentSelect={action(async (currentSegment) => {
+      return await segmentFormState.onSegmentSelect(currentSegment)
     })}
   />
 );
