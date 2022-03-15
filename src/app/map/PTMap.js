@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import maplibregl from 'maplibre-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
@@ -9,21 +10,11 @@ import mapState from '../state/MapState';
 import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
 import theme from './MapTheme';
+import modes from './MapModes';
 import { routes } from '../../helpers/api';
 
 const tileServerURL =
   'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH';
-
-var StaticMode = {};
-
-StaticMode.onSetup = function () {
-  this.setActionableState(); // default actionable state is false for all actions
-  return {};
-};
-
-StaticMode.toDisplayFeatures = function (state, geojson, display) {
-  display(geojson);
-};
 
 function addStaticLayers(map) {
   map.addSource('clusters', {
@@ -97,9 +88,6 @@ function showStaticLayers(map) {
   map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'none');
 }
 
-var modes = MapboxDraw.modes;
-modes.static = StaticMode;
-
 const PTMap = observer(({ mapState, onSegmentSelect }) => {
   const { user } = useContext(UserContext);
   const history = useHistory();
@@ -130,7 +118,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   }, [user]);
 
   function setupMap() {
-    map.current = new window.maplibregl.Map({
+    map.current = new maplibregl.Map({
       container: mapRef.current,
       style: tileServerURL,
       center: [lng, lat],
@@ -152,7 +140,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     map.current.addControl(draw.current, 'top-left');
 
     map.current.addControl(
-      new window.maplibregl.GeolocateControl({
+      new maplibregl.GeolocateControl({
         positionOptions: {
           enableHighAccuracy: true,
         },
@@ -186,8 +174,11 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   async function onSelect(event) {
     // Assume it's a newly created segment if it has no properties and don't try to fetch it
     if (event?.features?.length > 0 && Object.keys(event?.features[0]?.properties).length > 0) {
+      console.log(event.features[0])
       const updated = await onSegmentSelect(event.features[0]);
-      draw.current.add(updated)
+      if (updated) {
+        draw.current.add(updated)
+      }
     } else {
       onSegmentSelect(null);
     }
