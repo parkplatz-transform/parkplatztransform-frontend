@@ -33,7 +33,7 @@ const theme = [
       ['==', '$type', 'Point'],
       ['==', 'meta', 'midpoint']],
     'paint': {
-      'circle-radius': 3,
+      'circle-radius': 5,
       'circle-color': blue
     }
   },
@@ -116,7 +116,7 @@ const theme = [
       ['!=', 'mode', 'static']
     ],
     'paint': {
-      'circle-radius': 5,
+      'circle-radius': 10,
       'circle-color': '#fff'
     }
   },
@@ -129,7 +129,7 @@ const theme = [
       ['!=', 'mode', 'static']
     ],
     'paint': {
-      'circle-radius': 3,
+      'circle-radius': 5,
       'circle-color': blue
     }
   },
@@ -143,7 +143,7 @@ const theme = [
       ['!=', 'mode', 'static']
     ],
     'paint': {
-      'circle-radius': 5,
+      'circle-radius': 10,
       'circle-opacity': 1,
       'circle-color': '#fff'
     }
@@ -158,7 +158,7 @@ const theme = [
       ['!=', 'mode', 'static']
     ],
     'paint': {
-      'circle-radius': 3,
+      'circle-radius': 5,
       'circle-color': '#3bb2d0'
     }
   },
@@ -171,7 +171,7 @@ const theme = [
       ['!=', 'meta', 'midpoint']
     ],
     'paint': {
-      'circle-radius': 7,
+      'circle-radius': 10,
       'circle-color': '#fff'
     }
   },
@@ -183,7 +183,7 @@ const theme = [
       ['!=', 'meta', 'midpoint'],
       ['==', 'active', 'true']],
     'paint': {
-      'circle-radius': 5,
+      'circle-radius': 10,
       'circle-color': blue
     }
   },
@@ -233,7 +233,7 @@ const theme = [
     'type': 'circle',
     'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Point']],
     'paint': {
-      'circle-radius': 5,
+      'circle-radius': 10,
       'circle-color': '#3bb2d0'
     }
   }
