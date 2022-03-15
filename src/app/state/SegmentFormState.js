@@ -178,7 +178,7 @@ class SegmentFormState {
     this.selectedSubsegmentIndex = index;
   }
 
-  async onSegmentSelect(segment, draw) {
+  async onSegmentSelect(segment) {
     if (segment === null) {
       this.segment = null;
       return;
@@ -194,7 +194,8 @@ class SegmentFormState {
         this.selectedSubsegmentIndex = 0;
       }
     }
-    draw.setFeatureProperty(segment.id, 'subsegments', segmentWithDetails.properties.subsegments)
+    
+    return segmentWithDetails
   }
 
   async onSegmentChanged(segment) {
@@ -211,6 +212,7 @@ class SegmentFormState {
       console.table(segment.properties.subsegments);
       console.log('Server returned:');
       console.table(updatedSegment.properties.subsegments);
+      this.segment = updatedSegment
       // this.setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
       return true;
     } catch (e) {

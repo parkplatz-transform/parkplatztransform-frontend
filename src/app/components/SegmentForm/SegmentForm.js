@@ -174,11 +174,7 @@ const SegmentForm = observer(({ appState, formState }) => {
   }
 
   function onSave() {
-    formState.save().then(() => {
-      if (formState.isFormValid) {
-        appState.setRightDrawerOpen(false);
-      }
-    });
+    formState.save();
   }
 
   return (
