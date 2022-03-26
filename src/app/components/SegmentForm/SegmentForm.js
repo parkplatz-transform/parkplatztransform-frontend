@@ -174,8 +174,11 @@ const SegmentForm = observer(({ appState, formState }) => {
   }
 
   function onSave() {
-    formState.save();
-    closeDrawer()
+    formState.save().then(() => {
+      if (formState.isFormValid) {
+        appState.setRightDrawerOpen(false);
+      }
+    });
   }
 
   return (

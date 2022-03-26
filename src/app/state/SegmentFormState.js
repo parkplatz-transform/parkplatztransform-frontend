@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, action } from 'mobx';
 
 import { getSegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
@@ -82,6 +82,12 @@ class SegmentFormState {
     );
 
     if (this.isFormValid) {
+      if (this.segment.properties.subsegments.length == 0) {
+        this.segment.properties.has_subsegments = false
+      } else {
+        this.segment.properties.has_subsegments = true
+      }
+      mapController.draw.add(this.segment);
       await this.onSegmentChanged(this.segment);
       mapController.draw.changeMode('simple_select');
     }
