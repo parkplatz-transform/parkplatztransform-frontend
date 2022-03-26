@@ -179,6 +179,7 @@ class SegmentFormState {
     this.segment.properties.subsegments = this.segment.properties.subsegments
       .filter((s) => s !== subsegment)
       .map((sub, idx) => ({ ...sub, order_number: idx }));
+    this.selectedSubsegmentIndex = null;
   }
 
   setSelectedSubsegmentIndex(index) {
