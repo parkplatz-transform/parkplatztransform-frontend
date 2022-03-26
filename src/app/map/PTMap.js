@@ -103,6 +103,14 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   }, []);
 
   useEffect(() => {
+    if (!user) {
+      draw.current.changeMode('static');
+    } else {
+      draw.current.changeMode('simple_select');
+    }
+  }, user)
+
+  useEffect(() => {
     map.current.on('draw.selectionchange', onSelect);
     if (user) { 
       map.current.on('draw.create', onCreate);
