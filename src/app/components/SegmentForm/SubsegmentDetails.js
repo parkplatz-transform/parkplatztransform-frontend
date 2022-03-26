@@ -69,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SubsegmentDetails = observer(({ appState, formState }) => {
-  const subsegment = formState.subsegment;
   const classes = useStyles();
 
   function getButtonVariant(highlighted) {
@@ -101,7 +100,7 @@ const SubsegmentDetails = observer(({ appState, formState }) => {
         <IconButton
           onClick={action(() =>
             formState.setSubsegmentToAddToFavorites(
-              Object.assign({}, subsegment)
+              Object.assign({}, formState.subsegment)
             )
           )}
           edge="end"
@@ -119,7 +118,7 @@ const SubsegmentDetails = observer(({ appState, formState }) => {
             className={classes.fullWidth}
           >
             <Button
-              variant={getButtonVariant(subsegment.parking_allowed === true)}
+              variant={getButtonVariant(formState.subsegment.parking_allowed === true)}
               onClick={action(formState.updateSubsegment(setParkingIsAllowed))}
               className={classes.halfWidth}
             >

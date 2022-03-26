@@ -11,6 +11,7 @@ import {
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import { observer } from 'mobx-react-lite';
+import { action } from 'mobx';
 
 import { createEmptySubsegment } from '../../recording/Subsegments';
 import getString from '../../../strings';
@@ -224,7 +225,7 @@ const SegmentForm = observer(({ appState, formState }) => {
           optionsAndCallbacks={[
             {
               label: 'Unterabschnitt hinzufügen',
-              callback: () => formState.addSubsegment(createEmptySubsegment()),
+              callback: action(() => formState.addSubsegment(createEmptySubsegment())),
             },
             ...formState.favorites.map((favorite) => {
               return {
