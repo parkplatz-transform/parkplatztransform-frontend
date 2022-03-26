@@ -1,7 +1,5 @@
 import React, { useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import maplibregl from 'maplibre-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
 
@@ -9,13 +7,9 @@ import { UserContext } from '../context/UserContext';
 import mapState from '../state/MapState';
 import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
-import theme from './MapTheme';
-import modes from './MapModes';
 import mapController from './MapController'
 import { routes } from '../../helpers/api';
 
-const tileServerURL =
-  'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH';
 
 function addStaticLayers(map) {
   map.addSource('clusters', {
@@ -94,8 +88,6 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   const history = useHistory();
   const { lat, lng, zm } = useParams();
   const mapRef = useRef(null);
-  const map = useRef(null);
-  const draw = useRef(null);
 
   useEffect(() => {
     if (!mapController.map) {
@@ -109,7 +101,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     } else {
       mapController.draw.changeMode('simple_select');
     }
-  }, user)
+  }, [user])
 
   useEffect(() => {
     mapController.map.on('draw.selectionchange', onSelect);
