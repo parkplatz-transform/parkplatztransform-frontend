@@ -11,6 +11,7 @@ import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
 import theme from './MapTheme';
 import modes from './MapModes';
+import mapController from './MapController'
 import { routes } from '../../helpers/api';
 
 const tileServerURL =
@@ -97,71 +98,42 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   const draw = useRef(null);
 
   useEffect(() => {
-    if (!map.current) {
+    if (!mapController.map) {
       setupMap();
     }
   }, []);
 
   useEffect(() => {
     if (!user) {
-      draw.current.changeMode('static');
+      mapController.draw.changeMode('static');
     } else {
-      draw.current.changeMode('simple_select');
+      mapController.draw.changeMode('simple_select');
     }
   }, user)
 
   useEffect(() => {
-    map.current.on('draw.selectionchange', onSelect);
+    mapController.map.on('draw.selectionchange', onSelect);
     if (user) { 
-      map.current.on('draw.create', onCreate);
-      map.current.on('draw.update', onUpdate);
-      map.current.on('draw.delete', onDelete);
+      mapController.map.on('draw.create', onCreate);
+      mapController.map.on('draw.update', onUpdate);
+      mapController.map.on('draw.delete', onDelete);
     }
     return () => {
-      map.current.off('draw.selectionchange', onSelect);  
-      map.current.off('draw.create', onCreate);
-      map.current.off('draw.update', onUpdate);
-      map.current.off('draw.delete', onDelete);
+      mapController.map.off('draw.selectionchange', onSelect);  
+      mapController.map.off('draw.create', onCreate);
+      mapController.map.off('draw.update', onUpdate);
+      mapController.map.off('draw.delete', onDelete);
     }
   }, [user]);
 
   function setupMap() {
-    map.current = new maplibregl.Map({
-      container: mapRef.current,
-      style: tileServerURL,
-      center: [lng, lat],
-      zoom: zm,
-    });
-    draw.current = new MapboxDraw({
-      drawing: false,
-      displayControlsDefault: false,
-      userProperties: true,
-      controls: {
-        line_string: true,
-        polygon: true,
-        trash: true,
-      },
-      styles: theme,
-      modes: modes,
-    });
+    mapController.setupMap(lat, lng, zm)
 
-    map.current.addControl(draw.current, 'top-left');
-
-    map.current.addControl(
-      new maplibregl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-      }),
-      'top-left'
-    );
-
-    map.current.on('load', onLoaded);
-    map.current.on('zoomend', onMoveOrZoom);
-    map.current.on('moveend', onMoveOrZoom);
-    map.current.on('style.load', () => {
-      addStaticLayers(map.current);
+    mapController.map.on('load', onLoaded);
+    mapController.map.on('zoomend', onMoveOrZoom);
+    mapController.map.on('moveend', onMoveOrZoom);
+    mapController.map.on('style.load', () => {
+      addStaticLayers(mapController.map);
     });
   }
 
@@ -185,7 +157,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
       console.log(event.features[0])
       const updated = await onSegmentSelect(event.features[0]);
       if (updated) {
-        draw.current.add(updated)
+        mapController.draw.add(updated)
       }
     } else {
       onSegmentSelect(null);
@@ -194,11 +166,11 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 
   async function onCreate(event) {
     const newSegment = await mapState.onSegmentCreated(event.features[0]);
-    draw.current.add(newSegment)
-    draw.current.delete(event.features[0].id);
-    draw.current.changeMode('simple_select', { featureIds: [newSegment.id] });
+    mapController.draw.add(newSegment)
+    mapController.draw.delete(event.features[0].id);
+    mapController.draw.changeMode('simple_select', { featureIds: [newSegment.id] });
     const updated = await onSegmentSelect(newSegment);
-    draw.current.add(updated)
+    mapController.draw.add(updated)
   }
 
   function onUpdate(event) {
@@ -216,20 +188,20 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   }
 
   function onMoveOrZoom() {
-    const zm = map.current.getZoom();
-    const { lat, lng } = map.current.getCenter();
+    const zm = mapController.map.getZoom();
+    const { lat, lng } = mapController.map.getCenter();
     if (lat && lng && zm) {
       history.push(`/${lat}/${lng}/${zm}${window.location.search}`);
       if (zm >= 12) {
-        hideStaticLayers(map.current);
-        mapState.onBoundsChanged(map.current.getBounds(), draw.current);
+        hideStaticLayers(mapController.map);
+        mapState.onBoundsChanged(mapController.map.getBounds());
       } else {
-        showStaticLayers(map.current);
+        showStaticLayers(mapController.map);
       }
     }
   }
 
-  return <div style={{ height: '100%', width: '100%' }} ref={mapRef}></div>;
+  return <div id="map" style={{ height: '100%', width: '100%' }} ref={mapRef}></div>;
 });
 
 const connector = () => (

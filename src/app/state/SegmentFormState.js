@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import { getSegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
 import subsegmentSchema from '../recording/SubsegmentSchema';
-
+import mapController from '../map/MapController';
 import addPredefinedFavorites from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
@@ -83,6 +83,7 @@ class SegmentFormState {
 
     if (this.isFormValid) {
       await this.onSegmentChanged(this.segment);
+      mapController.draw.changeMode('simple_select');
     }
   }
 
