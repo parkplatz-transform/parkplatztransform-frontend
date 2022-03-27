@@ -7,7 +7,7 @@ import { UserContext } from '../context/UserContext';
 import mapState from '../state/MapState';
 import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
-import mapController from './MapController'
+import mapContext from './MapContext'
 import { routes } from '../../helpers/api';
 
 
@@ -90,42 +90,42 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    if (!mapController.map) {
+    if (!mapContext.map) {
       setupMap();
     }
   }, []);
 
   useEffect(() => {
     if (!user) {
-      mapController.draw.changeMode('static');
+      mapContext.draw.changeMode('static');
     } else {
-      mapController.draw.changeMode('simple_select');
+      mapContext.draw.changeMode('simple_select');
     }
   }, [user])
 
   useEffect(() => {
-    mapController.map.on('draw.selectionchange', onSelect);
+    mapContext.map.on('draw.selectionchange', onSelect);
     if (user) { 
-      mapController.map.on('draw.create', onCreate);
-      mapController.map.on('draw.update', onUpdate);
-      mapController.map.on('draw.delete', onDelete);
+      mapContext.map.on('draw.create', onCreate);
+      mapContext.map.on('draw.update', onUpdate);
+      mapContext.map.on('draw.delete', onDelete);
     }
     return () => {
-      mapController.map.off('draw.selectionchange', onSelect);  
-      mapController.map.off('draw.create', onCreate);
-      mapController.map.off('draw.update', onUpdate);
-      mapController.map.off('draw.delete', onDelete);
+      mapContext.map.off('draw.selectionchange', onSelect);  
+      mapContext.map.off('draw.create', onCreate);
+      mapContext.map.off('draw.update', onUpdate);
+      mapContext.map.off('draw.delete', onDelete);
     }
   }, [user]);
 
   function setupMap() {
-    mapController.setupMap(lat, lng, zm)
+    mapContext.setupMap(lat, lng, zm)
 
-    mapController.map.on('load', onLoaded);
-    mapController.map.on('zoomend', onMoveOrZoom);
-    mapController.map.on('moveend', onMoveOrZoom);
-    mapController.map.on('style.load', () => {
-      addStaticLayers(mapController.map);
+    mapContext.map.on('load', onLoaded);
+    mapContext.map.on('zoomend', onMoveOrZoom);
+    mapContext.map.on('moveend', onMoveOrZoom);
+    mapContext.map.on('style.load', () => {
+      addStaticLayers(mapContext.map);
     });
   }
 
@@ -149,7 +149,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
       console.log(event.features[0])
       const updated = await onSegmentSelect(event.features[0]);
       if (updated) {
-        mapController.draw.add(updated)
+        mapContext.draw.add(updated)
       }
     } else {
       onSegmentSelect(null);
@@ -158,11 +158,11 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 
   async function onCreate(event) {
     const newSegment = await mapState.onSegmentCreated(event.features[0]);
-    mapController.draw.add(newSegment)
-    mapController.draw.delete(event.features[0].id);
-    mapController.draw.changeMode('simple_select', { featureIds: [newSegment.id] });
+    mapContext.draw.add(newSegment)
+    mapContext.draw.delete(event.features[0].id);
+    mapContext.draw.changeMode('simple_select', { featureIds: [newSegment.id] });
     const updated = await onSegmentSelect(newSegment);
-    mapController.draw.add(updated)
+    mapContext.draw.add(updated)
   }
 
   function onUpdate(event) {
@@ -180,15 +180,15 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   }
 
   function onMoveOrZoom() {
-    const zm = mapController.map.getZoom();
-    const { lat, lng } = mapController.map.getCenter();
+    const zm = mapContext.map.getZoom();
+    const { lat, lng } = mapContext.map.getCenter();
     if (lat && lng && zm) {
       history.push(`/${lat}/${lng}/${zm}${window.location.search}`);
       if (zm >= 12) {
-        hideStaticLayers(mapController.map);
-        mapState.onBoundsChanged(mapController.map.getBounds());
+        hideStaticLayers(mapContext.map);
+        mapState.onBoundsChanged(mapContext.map.getBounds());
       } else {
-        showStaticLayers(mapController.map);
+        showStaticLayers(mapContext.map);
       }
     }
   }

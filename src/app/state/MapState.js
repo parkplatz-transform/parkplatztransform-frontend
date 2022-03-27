@@ -10,7 +10,7 @@ import { sanitizeSegment } from '../recording/Segment';
 import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc';
 import getString from '../../strings';
 import { PermissionsError } from '../../helpers/errors';
-import mapController from '../map/MapController'
+import mapContext from '../map/MapContext'
 
 class MapState {
   loadedBoundingBoxes = [];
@@ -57,7 +57,7 @@ class MapState {
   }
 
   async onBoundsChanged(bounds) {
-    const draw = mapController.draw
+    const draw = mapContext.draw
     // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
     // rounding precision depends on how big the requested area is
     const boundingBox = {

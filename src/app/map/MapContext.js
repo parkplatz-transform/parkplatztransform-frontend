@@ -6,7 +6,7 @@ import modes from './MapModes';
 const tileServerURL =
   'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH';
 
-class MapController {
+class MapContext {
     setupMap(lat, lng, zm) {
         this.map = new maplibregl.Map({
           container: 'map',
@@ -39,6 +39,6 @@ class MapController {
     }
 }
 
-const mapController = new MapController()
+const mapContext = new MapContext()
 
-export default mapController
+export default mapContext

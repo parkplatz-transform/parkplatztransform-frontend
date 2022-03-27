@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import { getSegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
 import subsegmentSchema from '../recording/SubsegmentSchema';
-import mapController from '../map/MapController';
+import mapContext from '../map/MapContext';
 import addPredefinedFavorites from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
@@ -87,9 +87,9 @@ class SegmentFormState {
       } else {
         this.segment.properties.has_subsegments = true
       }
-      mapController.draw.add(this.segment);
+      mapContext.draw.add(this.segment);
       await this.onSegmentChanged(this.segment);
-      mapController.draw.changeMode('simple_select');
+      mapContext.draw.changeMode('simple_select');
     }
   }
 
