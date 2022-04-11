@@ -20,25 +20,27 @@ export const DEFAULT_MAP_POSITION = {
 
 function App() {
   return (
-    <UserProvider>
-      <Router>
-        {!isEmbedded && <Route path='/' component={MainMenu}></Route>}
-        <Route path='/home'>
-          <Redirect to='/' />
-        </Route>
-        <Route exact path='/'>
-          <Redirect
-            to={`/${DEFAULT_MAP_POSITION.lat}/${DEFAULT_MAP_POSITION.lng}/${DEFAULT_MAP_POSITION.zm}`}
-          />
-        </Route>
-        <Route exact path='/howto' component={HowTo} />
-        <Route exact path='/impressum' component={Impressum} />
-        <Route exact path='/datenschutz' component={DataPolicy} />
-        <Route path='/:lat/:lng/:zm'>
-          <Recording/>
-        </Route>
-      </Router>
-    </UserProvider>
+    <React.StrictMode>
+      <UserProvider>
+        <Router>
+          {!isEmbedded && <Route path='/' component={MainMenu}></Route>}
+          <Route path='/home'>
+            <Redirect to='/' />
+          </Route>
+          <Route exact path='/'>
+            <Redirect
+              to={`/${DEFAULT_MAP_POSITION.lat}/${DEFAULT_MAP_POSITION.lng}/${DEFAULT_MAP_POSITION.zm}`}
+            />
+          </Route>
+          <Route exact path='/howto' component={HowTo} />
+          <Route exact path='/impressum' component={Impressum} />
+          <Route exact path='/datenschutz' component={DataPolicy} />
+          <Route path='/:lat/:lng/:zm'>
+            <Recording/>
+          </Route>
+        </Router>
+      </UserProvider>
+    </React.StrictMode>
   )
 }
 

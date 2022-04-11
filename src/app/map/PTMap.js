@@ -9,6 +9,7 @@ import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
 import mapContext from './MapContext'
 import { routes } from '../../helpers/api';
+import arrow from '../images/arrow.png';
 
 
 function addStaticLayers(map) {
@@ -70,8 +71,12 @@ function hideStaticLayers(map) {
   map.setLayoutProperty('clusters-fills', 'visibility', 'none');
   map.setLayoutProperty('clusters-labels', 'visibility', 'none');
 
-  map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'visible');
-  map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'visible');
+  if (map.getLayer('mapbox-gl-draw-hot')) {
+    map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'visible');
+  }
+  if (map.getLayer('mapbox-gl-draw-cold')) {
+    map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'visible');
+  }
 }
 
 function showStaticLayers(map) {
@@ -93,7 +98,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     if (!mapContext.map) {
       setupMap();
     }
-  }, []);
+  });
 
   useEffect(() => {
     if (!user) {
@@ -177,6 +182,22 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 
   function onLoaded() {
     onMoveOrZoom();
+    mapContext.map.loadImage(arrow, (error, image) => {
+      mapContext.map.addImage('arrow', image, { 'sdf': true });
+      console.log('map render')
+      mapContext.map.addLayer({
+        'id': 'icons',
+        'source': 'mapbox-gl-draw-cold',
+        // 'source-layer': 'food_stores-8sw1vy',
+        'type': 'symbol',
+        'layout': {
+          'symbol-placement': 'line',
+          'icon-image': 'arrow',
+          'icon-size': 1,
+          'icon-rotate': 90
+        }
+      })
+    })
   }
 
   function onMoveOrZoom() {
