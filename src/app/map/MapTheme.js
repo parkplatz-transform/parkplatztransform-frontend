@@ -5,6 +5,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-fill-inactive',
     'type': 'fill',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'active', 'false'],
       ['==', '$type', 'Polygon'],
@@ -19,6 +20,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-fill-active',
     'type': 'fill',
+    'minzoom': 12,
     'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
     'paint': {
       'fill-color': blue,
@@ -29,6 +31,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-midpoint',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', '$type', 'Point'],
       ['==', 'meta', 'midpoint']],
@@ -40,6 +43,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-stroke-inactive',
     'type': 'line',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'active', 'false'],
       ['==', '$type', 'Polygon'],
@@ -58,6 +62,7 @@ const theme = [
     'id': 'gl-draw-polygon-stroke-active',
     'type': 'line',
     'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
+    'minzoom': 12,
     'layout': {
       'line-cap': 'round',
       'line-join': 'round'
@@ -71,6 +76,7 @@ const theme = [
   {
     'id': 'gl-draw-line-inactive',
     'type': 'line',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'active', 'false'],
       ['==', '$type', 'LineString'],
@@ -93,6 +99,7 @@ const theme = [
   {
     'id': 'gl-draw-line-active',
     'type': 'line',
+    'minzoom': 12,
     'filter': ['all',
       ['==', '$type', 'LineString'],
       ['==', 'active', 'true']
@@ -110,6 +117,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'meta', 'vertex'],
       ['==', '$type', 'Point'],
@@ -123,6 +131,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-and-line-vertex-inactive',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'meta', 'vertex'],
       ['==', '$type', 'Point'],
@@ -136,6 +145,7 @@ const theme = [
   {
     'id': 'gl-draw-point-point-stroke-inactive',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'active', 'false'],
       ['==', '$type', 'Point'],
@@ -151,6 +161,7 @@ const theme = [
   {
     'id': 'gl-draw-point-inactive',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', 'active', 'false'],
       ['==', '$type', 'Point'],
@@ -165,6 +176,7 @@ const theme = [
   {
     'id': 'gl-draw-point-stroke-active',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', '$type', 'Point'],
       ['==', 'active', 'true'],
@@ -178,6 +190,7 @@ const theme = [
   {
     'id': 'gl-draw-point-active',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all',
       ['==', '$type', 'Point'],
       ['!=', 'meta', 'midpoint'],
@@ -190,6 +203,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-fill-static',
     'type': 'fill',
+    'minzoom': 12,
     'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
     'paint': {
       'fill-color': '#3bb2d0',
@@ -200,6 +214,7 @@ const theme = [
   {
     'id': 'gl-draw-polygon-stroke-static',
     'type': 'line',
+    'minzoom': 12,
     'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
     'layout': {
       'line-cap': 'round',
@@ -213,6 +228,7 @@ const theme = [
   {
     'id': 'gl-draw-line-static',
     'type': 'line',
+    'minzoom': 12,
     'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'LineString']],
     'layout': {
       'line-cap': 'round',
@@ -231,6 +247,7 @@ const theme = [
   {
     'id': 'gl-draw-point-static',
     'type': 'circle',
+    'minzoom': 12,
     'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Point']],
     'paint': {
       'circle-radius': 10,

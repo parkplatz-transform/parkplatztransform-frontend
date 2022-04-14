@@ -9,7 +9,6 @@ import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
 import mapContext from './MapContext'
 import { routes } from '../../helpers/api';
-import arrow from '../images/arrow.png';
 
 
 function addStaticLayers(map) {
@@ -21,6 +20,7 @@ function addStaticLayers(map) {
     id: 'clusters-fills',
     type: 'fill',
     source: 'clusters',
+    maxzoom: 12,
     paint: {
       'fill-color': '#3bb2d0',
       'fill-outline-color': '#3bb2d0',
@@ -36,6 +36,7 @@ function addStaticLayers(map) {
     id: 'clusters-borders',
     type: 'line',
     source: 'clusters',
+    maxzoom: 12,
     layout: {
       'line-join': 'round',
       'line-cap': 'round',
@@ -49,6 +50,7 @@ function addStaticLayers(map) {
     id: 'clusters-labels',
     type: 'symbol',
     source: 'clusters',
+    maxzoom: 12,
     layout: {
       'text-field': [
         'format',
@@ -64,28 +66,6 @@ function addStaticLayers(map) {
       'text-color': '#195b6b',
     },
   });
-}
-
-function hideStaticLayers(map) {
-  map.setLayoutProperty('clusters-borders', 'visibility', 'none');
-  map.setLayoutProperty('clusters-fills', 'visibility', 'none');
-  map.setLayoutProperty('clusters-labels', 'visibility', 'none');
-
-  if (map.getLayer('mapbox-gl-draw-hot')) {
-    map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'visible');
-  }
-  if (map.getLayer('mapbox-gl-draw-cold')) {
-    map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'visible');
-  }
-}
-
-function showStaticLayers(map) {
-  map.setLayoutProperty('clusters-borders', 'visibility', 'visible');
-  map.setLayoutProperty('clusters-fills', 'visibility', 'visible');
-  map.setLayoutProperty('clusters-labels', 'visibility', 'visible');
-
-  map.setLayoutProperty('mapbox-gl-draw-hot', 'visibility', 'none');
-  map.setLayoutProperty('mapbox-gl-draw-cold', 'visibility', 'none');
 }
 
 const PTMap = observer(({ mapState, onSegmentSelect }) => {
@@ -182,22 +162,6 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 
   function onLoaded() {
     onMoveOrZoom();
-    mapContext.map.loadImage(arrow, (error, image) => {
-      mapContext.map.addImage('arrow', image, { 'sdf': true });
-      console.log('map render')
-      mapContext.map.addLayer({
-        'id': 'icons',
-        'source': 'mapbox-gl-draw-cold',
-        // 'source-layer': 'food_stores-8sw1vy',
-        'type': 'symbol',
-        'layout': {
-          'symbol-placement': 'line',
-          'icon-image': 'arrow',
-          'icon-size': 1,
-          'icon-rotate': 90
-        }
-      })
-    })
   }
 
   function onMoveOrZoom() {
@@ -206,10 +170,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
     if (lat && lng && zm) {
       history.push(`/${lat}/${lng}/${zm}${window.location.search}`);
       if (zm >= 12) {
-        hideStaticLayers(mapContext.map);
         mapState.onBoundsChanged(mapContext.map.getBounds());
-      } else {
-        showStaticLayers(mapContext.map);
       }
     }
   }

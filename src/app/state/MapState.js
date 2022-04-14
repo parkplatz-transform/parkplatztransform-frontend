@@ -11,6 +11,7 @@ import { bboxContainsBBox, bboxIntersectsBBox } from '../../helpers/geocalc';
 import getString from '../../strings';
 import { PermissionsError } from '../../helpers/errors';
 import mapContext from '../map/MapContext'
+import arrow from '../images/arrow.png';
 
 class MapState {
   loadedBoundingBoxes = [];
@@ -79,13 +80,9 @@ class MapState {
     const segments = draw.getAll().features
     const loadedSegments = this.getLoadedSegmentIdsInBounds(boundingBox, segments);
     const excludedIds = segments.map((segment) => segment.id);
-    var startTime = performance.now()
 
     const latestModificationDate =
       this.getLatestModificationDate(loadedSegments);
-      var endTime = performance.now()
-
-    console.log(`Call to update took ${endTime - startTime} milliseconds`)
 
     const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`;
     this.loadedBoundingBoxes.push(boundingBox);
@@ -101,6 +98,35 @@ class MapState {
           type: 'FeatureCollection',
           id: 'ppt-feature-collection',
         })
+        if (!mapContext.map.getLayer('icons-cold') && !mapContext.map.getLayer('icons-hot')) {
+          mapContext.map.loadImage(arrow, (error, image) => {
+            mapContext.map.addImage('arrow', image, { 'sdf': true });
+            mapContext.map.addLayer({
+              'id': 'icons-hot',
+              'source': 'mapbox-gl-draw-hot',
+              'type': 'symbol',
+              'minzoom': 15,
+              'layout': {
+                'symbol-placement': 'line',
+                'symbol-spacing': 30,
+                'icon-image': 'arrow',
+                'icon-size': 0.5,
+              }
+            })
+            mapContext.map.addLayer({
+              'id': 'icons-cold',
+              'source': 'mapbox-gl-draw-cold',
+              'type': 'symbol',
+              'minzoom': 15,
+              'layout': {
+                'symbol-placement': 'line',
+                'symbol-spacing': 30,
+                'icon-image': 'arrow',
+                'icon-size': 0.5,
+              }
+            })
+          })
+        }
       }
     } catch (e) {
       console.log(e);
