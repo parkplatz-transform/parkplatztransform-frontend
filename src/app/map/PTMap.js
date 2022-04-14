@@ -131,7 +131,6 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
   async function onSelect(event) {
     // Assume it's a newly created segment if it has no properties and don't try to fetch it
     if (event?.features?.length > 0 && Object.keys(event?.features[0]?.properties).length > 0) {
-      console.log(event.features[0])
       const updated = await onSegmentSelect(event.features[0]);
       if (updated) {
         mapContext.draw.add(updated)
