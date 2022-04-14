@@ -128,10 +128,9 @@ const SegmentForm = observer(({ appState, formState }) => {
         <Box px={2} py={1}>
           <FormControl key={`${getSegmentKey()}_data_source`} fullWidth>
             <TextField
-              labelId="select_data_source"
               id="select_data_source"
               value={formState.segment.properties?.data_source || null}
-              onChange={formState.updateSegment(setDataSource)}
+              onChange={action(formState.updateSegment(setDataSource))}
               variant={'outlined'}
               label="Datenquelle"
               select
@@ -161,7 +160,7 @@ const SegmentForm = observer(({ appState, formState }) => {
               multiline
               type="text"
               value={formState.segment.properties?.further_comments}
-              onChange={formState.updateSegment(setFurtherComments)}
+              onChange={action(formState.updateSegment(setFurtherComments))}
             />
           </FormControl>
         </Box>
@@ -177,7 +176,7 @@ const SegmentForm = observer(({ appState, formState }) => {
   function onSave() {
     formState.save().then(() => {
       if (formState.isFormValid) {
-        appState.setRightDrawerOpen(false);
+        closeDrawer()
       }
     });
   }

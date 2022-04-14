@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, autorun } from 'mobx';
 
 import { getSegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
@@ -6,6 +6,20 @@ import subsegmentSchema from '../recording/SubsegmentSchema';
 import mapContext from '../map/MapContext';
 import addPredefinedFavorites from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
+
+const debounce = (func, wait) => {
+  let timeout;
+
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 class SegmentFormState {
   segment = null;
@@ -162,12 +176,10 @@ class SegmentFormState {
 
   duplicateSubsegment(subsegment) {
     const newSubsegment = { ...subsegment };
-
     const newSubsegments = [...this.segment.properties.subsegments];
     // Insert in the right position  --> at end of list
     const newOrderIndex = this.segment.properties.subsegments.length;
     newSubsegments.push(newSubsegment);
-    //TODO: probably makes more sense to just set order_number server-side
     this.segment.properties.subsegments = newSubsegments.map((sub, idx) => ({
       ...sub,
       order_number: idx,
@@ -186,20 +198,26 @@ class SegmentFormState {
     this.selectedSubsegmentIndex = index;
   }
 
+  setSegment(segment) {
+    this.segment = segment
+  }
+
   async onSegmentSelect(segment) {
+    console.log(segment?.geometry)
     if (segment === null) {
+      if (this.segment !== null) {
+        const geo = mapContext.draw.get(this.segment.id)?.geometry
+        await updateSegment(sanitizeSegment({ ...this.segment, geo }))  
+      }
       this.segment = null;
       return;
     }
-    if (segment.id === this.segment?.id) {
-      return;
-    }
-    this.segment = segment
+    this.setSegment(segment);
     const segmentWithDetails = await getSegment(segment.id);
     if (segmentWithDetails) {
-      this.segment = segmentWithDetails;
-      if (this.segment.properties.subsegments.length > 0) {
-        this.selectedSubsegmentIndex = 0;
+      this.setSegment(segmentWithDetails)
+      if (segmentWithDetails.properties.subsegments.length > 0) {
+        this.setSelectedSubsegmentIndex(0)
       }
     }
     
@@ -209,23 +227,15 @@ class SegmentFormState {
   async onSegmentChanged(segment) {
     try {
       const sanitizedSegment = sanitizeSegment(segment);
-      console.log(this);
-
-      if (!sanitizedSegment) {
-        // this.setAlertDisplayed({severity: 'error', message: getString('subsegment_invalid')})
-      }
-
       const updatedSegment = await updateSegment(sanitizedSegment);
       console.log('Client set:');
       console.table(segment.properties.subsegments);
       console.log('Server returned:');
       console.table(updatedSegment.properties.subsegments);
-      this.segment = updatedSegment
-      // this.setAlertDisplayed({severity: 'success', message: getString('segment_update_success', sanitizedSegment.id)})
+      this.setSegment(updatedSegment)
       return true;
     } catch (e) {
       console.log(e);
-      // this.setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
       return false;
     }
   }

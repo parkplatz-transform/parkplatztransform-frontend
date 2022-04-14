@@ -9,6 +9,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import clsx from 'clsx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import {
   ALIGNMENT,
@@ -135,7 +136,7 @@ const ParkingAllowed = observer(({ formState }) => {
               type="number"
               helperText={getString('helper_text_length')}
               value={formState.subsegment.length_in_meters}
-              onChange={formState.updateSubsegment(setLengthInMeters)}
+              onChange={action(formState.updateSubsegment(setLengthInMeters))}
               aria-describedby="length in meters"
               inputProps={{
                 'aria-label': 'length',
@@ -154,7 +155,7 @@ const ParkingAllowed = observer(({ formState }) => {
               type="number"
               value={formState.subsegment.car_count}
               helperText={getString('helper_text_length')}
-              onChange={formState.updateSubsegment(setCarCount)}
+              onChange={action(formState.updateSubsegment(setCarCount))}
               aria-describedby="car count"
               inputProps={{
                 'aria-label': 'car count',
@@ -171,7 +172,7 @@ const ParkingAllowed = observer(({ formState }) => {
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.time_constraint}
                 color={'primary'}
-                onChange={formState.updateSubsegment(setHasTimeConstraint)}
+                onChange={action(formState.updateSubsegment(setHasTimeConstraint))}
               />
             }
             label="Parken zeitweise verboten"
@@ -187,7 +188,7 @@ const ParkingAllowed = observer(({ formState }) => {
                 variant={'outlined'}
                 InputLabelProps={{ shrink: true }}
                 value={formState.subsegment.time_constraint_reason}
-                onChange={formState.updateSubsegment(setTimeConstraintReason)}
+                onChange={action(formState.updateSubsegment(setTimeConstraintReason))}
               />
             </FormControl>
           </Box>
@@ -199,13 +200,12 @@ const ParkingAllowed = observer(({ formState }) => {
               <TextField
                 select
                 label="Nutzung bei Parkverbot"
-                labelId="select_alternative_usage_reason"
                 id="select_alternative_usage_reason"
                 value={
                   formState.subsegment.alternative_usage_reason ||
                   ALTERNATIVE_USAGE_REASON.UNKNOWN
                 }
-                onChange={formState.updateSubsegment(setAlternativeUsageReason)}
+                onChange={action(formState.updateSubsegment(setAlternativeUsageReason))}
                 variant={'outlined'}
               >
                 <MenuItem value={ALTERNATIVE_USAGE_REASON.UNKNOWN}>
@@ -377,7 +377,6 @@ const ParkingAllowed = observer(({ formState }) => {
             <TextField
               select
               label="Nutzergruppe"
-              labelId="demo-simple-select-label"
               id="select_usage_restriction"
               value={
                 formState.subsegment.user_restriction_reason ||
