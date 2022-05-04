@@ -203,11 +203,10 @@ class SegmentFormState {
   }
 
   async onSegmentSelect(segment) {
-    console.log(segment?.geometry)
     if (segment === null) {
       if (this.segment !== null) {
         const geo = mapContext.draw.get(this.segment.id)?.geometry
-        await updateSegment(sanitizeSegment({ ...this.segment, geo }))  
+        await updateSegment(sanitizeSegment({ ...this.segment, geometry: geo }))
       }
       this.segment = null;
       return;

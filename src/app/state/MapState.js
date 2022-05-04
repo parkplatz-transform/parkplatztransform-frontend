@@ -41,7 +41,8 @@ class MapState {
         severity: 'success',
         message: getString('segment_update_success'),
       });
-      await updateSegment(updatedSegment);
+      const segment = await updateSegment(updatedSegment);
+      mapContext.addSegment(segment)
     } catch (e) {
       if (e instanceof PermissionsError) {
         this.setAlertDisplayed({

@@ -37,6 +37,10 @@ class MapContext {
           'top-left'
         );
     }
+
+    addSegment(segment) {
+      this.draw.add(segment)
+    }
 }
 
 const mapContext = new MapContext()
