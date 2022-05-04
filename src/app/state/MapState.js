@@ -190,7 +190,7 @@ class MapState {
       return true;
     } catch (e) {
       console.log(e);
-      // this.setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
+      this.setAlertDisplayed({severity: 'error', message: getString('segment_update_failure')})
       return false;
     }
   }

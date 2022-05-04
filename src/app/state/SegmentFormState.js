@@ -203,24 +203,28 @@ class SegmentFormState {
   }
 
   async onSegmentSelect(segment) {
-    if (segment === null) {
-      if (this.segment !== null) {
-        const geo = mapContext.draw.get(this.segment.id)?.geometry
-        await updateSegment(sanitizeSegment({ ...this.segment, geometry: geo }))
+    try {
+      if (segment === null) {
+        if (this.segment !== null) {
+          const geo = mapContext.draw.get(this.segment.id)?.geometry
+          await updateSegment(sanitizeSegment({ ...this.segment, geometry: geo }))
+        }
+        this.segment = null;
+        return;
       }
-      this.segment = null;
-      return;
-    }
-    this.setSegment(segment);
-    const segmentWithDetails = await getSegment(segment.id);
-    if (segmentWithDetails) {
-      this.setSegment(segmentWithDetails)
-      if (segmentWithDetails.properties.subsegments.length > 0) {
-        this.setSelectedSubsegmentIndex(0)
+      this.setSegment(segment);
+      const segmentWithDetails = await getSegment(segment.id);
+      if (segmentWithDetails) {
+        this.setSegment(segmentWithDetails)
+        if (segmentWithDetails.properties.subsegments.length > 0) {
+          this.setSelectedSubsegmentIndex(0)
+        }
       }
+      
+      return segmentWithDetails  
+    } catch(error) {
+      return null
     }
-    
-    return segmentWithDetails
   }
 
   async onSegmentChanged(segment) {
