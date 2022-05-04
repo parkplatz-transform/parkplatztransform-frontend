@@ -125,6 +125,7 @@ const ParkingAllowed = observer(({ formState }) => {
         <Box px={2} py={1}>
           <FormControl fullWidth>
             <TextField
+              key={`length-${formState.subsegment.order_number}`}
               label={
                 <label>
                   Länge (ca.) <i>und/oder</i> Stellplätze
@@ -148,6 +149,7 @@ const ParkingAllowed = observer(({ formState }) => {
           {/* Count */}
           <FormControl fullWidth>
             <TextField
+              key={`car-count-${formState.subsegment.order_number}`}
               variant={'outlined'}
               label="Stellplätze"
               required={!!error}

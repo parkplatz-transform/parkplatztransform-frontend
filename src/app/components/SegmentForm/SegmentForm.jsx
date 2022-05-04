@@ -174,11 +174,7 @@ const SegmentForm = observer(({ appState, formState }) => {
   }
 
   function onSave() {
-    formState.save().then(() => {
-      if (formState.isFormValid) {
-        closeDrawer()
-      }
-    });
+    formState.save()
   }
 
   return (
