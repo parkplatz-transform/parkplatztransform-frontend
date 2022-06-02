@@ -10,6 +10,7 @@ const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
 class SegmentFormState {
   segment = null;
+  isDirty = false;
   selectedSubsegmentIndex = null;
   favorites = [];
   errors = {};
@@ -96,6 +97,7 @@ class SegmentFormState {
 
   updateSegment(segmentChangeFunction) {
     return (event) => {
+      this.isDirty = true
       segmentChangeFunction(this.segment, event?.target?.value);
     };
   }
@@ -107,6 +109,7 @@ class SegmentFormState {
    */
   updateSubsegment(subsegmentChangeFunction) {
     return (event) => {
+      this.isDirty = true
       subsegmentChangeFunction(
         this.subsegment,
         event?.target?.value || event?.target?.checked || event
@@ -116,6 +119,7 @@ class SegmentFormState {
 
   updateSubsegmentByCheckbox(subsegmentChangeFunction) {
     return (checked) => {
+      this.isDirty = true
       subsegmentChangeFunction(this.subsegment, checked);
     };
   }
@@ -150,6 +154,7 @@ class SegmentFormState {
   }
 
   addSubsegment(subsegment) {
+    this.isDirty = true
     if (!this.segment.properties) {
       this.segment.properties = {};
     }
@@ -162,6 +167,7 @@ class SegmentFormState {
   }
 
   duplicateSubsegment(subsegment) {
+    this.isDirty = true
     const newSubsegment = { ...subsegment };
     const newSubsegments = [...this.segment.properties.subsegments];
     // Insert in the right position  --> at end of list
@@ -175,6 +181,7 @@ class SegmentFormState {
   }
 
   deleteSubsegment(subsegment) {
+    this.isDirty = true
     this.segment.properties.subsegments = this.segment.properties.subsegments
       .filter((s) => s !== subsegment)
       .map((sub, idx) => ({ ...sub, order_number: idx }));
@@ -192,9 +199,10 @@ class SegmentFormState {
   async onSegmentSelect(segment) {
     try {
       if (segment === null) {
-        if (this.segment !== null) {
+        if (this.segment !== null && this.isDirty) {
           const geo = mapContext.draw.get(this.segment.id)?.geometry
           await updateSegment(sanitizeSegment({ ...this.segment, geometry: geo }))
+          this.isDirty = false
         }
         this.segment = null;
         return;
