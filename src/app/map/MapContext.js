@@ -27,6 +27,11 @@ class MapContext {
           styles: theme,
           modes: modes,
         });
+        this.map.addControl(new maplibregl.NavigationControl({
+            visualizePitch: false,
+            showZoom: true,
+            showCompass: true
+        }), 'top-left');
         this.map.addControl(this.draw, 'top-left');
         this.map.addControl(
           new maplibregl.GeolocateControl({

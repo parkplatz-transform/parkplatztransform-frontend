@@ -4,8 +4,7 @@ import {
   List,
   ListItem,
   ListItemSecondaryAction,
-  ListItemText,
-  Divider
+  ListItemText
 } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -46,7 +45,7 @@ const SubsegmentList = observer(({ formState }) => {
           <ListItem
             key={subsegment.order_number}
             button
-            style={{ backgroundColor: error ? red[100] : lightGreen[50] }}
+            style={{ backgroundColor: error ? red[100] : (subsegment?.order_number === formState.selectedSubsegmentIndex ? lightGreen[100] : lightGreen[50]) }}
             selected={
               subsegment?.order_number === formState.selectedSubsegmentIndex
             }
