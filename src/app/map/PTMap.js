@@ -5,6 +5,7 @@ import { action } from 'mobx';
 
 import { UserContext } from '../context/UserContext';
 import mapState from '../state/MapState';
+import appState from '../state/AppState';
 import segmentFormState from '../state/SegmentFormState';
 import getString from '../../strings';
 import mapContext from './MapContext'
@@ -124,6 +125,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
         window.alert(getString('permissions_failure'));
       } else {
         mapState.onSegmentDeleted(feature.id);
+        appState.setRightDrawerOpen(false)
       }
     });
   }
@@ -180,6 +182,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
 const connector = () => (
   <PTMap
     mapState={mapState}
+    appState={appState}
     onSegmentSelect={action(async (currentSegment) => {
       return await segmentFormState.onSegmentSelect(currentSegment)
     })}
