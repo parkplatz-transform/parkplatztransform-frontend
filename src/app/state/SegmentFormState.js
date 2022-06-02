@@ -1,4 +1,4 @@
-import { makeAutoObservable, autorun } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 
 import { getSegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
@@ -7,19 +7,6 @@ import mapContext from '../map/MapContext';
 import addPredefinedFavorites from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
-const debounce = (func, wait) => {
-  let timeout;
-
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-};
 
 class SegmentFormState {
   segment = null;

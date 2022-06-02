@@ -8,6 +8,7 @@ import {
   MenuItem,
   TextField,
 } from '@material-ui/core';
+
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import { observer } from 'mobx-react-lite';
@@ -15,7 +16,6 @@ import { action } from 'mobx';
 
 import { createEmptySubsegment } from '../../recording/Subsegments';
 import getString from '../../../strings';
-import SplitButton from '../SplitButton';
 import { userCanEditSegment } from '../../../helpers/permissions';
 import { UserContext } from '../../context/UserContext';
 import {
@@ -216,25 +216,35 @@ const SegmentForm = observer(({ appState, formState }) => {
         <div className={classes.list}>
           <SubsegmentList />
         </div>
-        <SplitButton
-          optionsAndCallbacks={[
-            {
-              label: 'Unterabschnitt hinzufügen',
-              callback: action(() => formState.addSubsegment(createEmptySubsegment())),
-            },
-            ...formState.favorites.map((favorite) => {
-              return {
-                label: favorite.name,
-                color: favorite.color,
-                callback: () =>
-                  formState.addSubsegment(
-                    Object.assign({}, favorite.subsegment)
-                  ),
-                deleteCallback: (name) => formState.removeFavorite(name),
-              };
-            }),
-          ]}
-        />
+        <Box px={2} py={1}>
+          <FormControl className={classes.formControl} fullWidth>
+          <Button
+            variant="contained" color="primary"
+            onClick={action(() => formState.addSubsegment(createEmptySubsegment()))}>
+            Unterabschnitt hinzufügen
+          </Button>
+          </FormControl>
+        </Box>
+        <Box px={2} py={1}>
+          <FormControl className={classes.formControl} fullWidth>
+            <TextField
+              select
+              label="Favorite"
+              labelId="favorite-label"
+              variant={'outlined'}
+              onChange={(event) => {
+                formState.addSubsegment(
+                  Object.assign({}, event.target.value)
+                )
+              }}
+            >
+              {formState.favorites.map((favorite) => (
+                <MenuItem style={{backgroundColor: favorite.color}} value={favorite.subsegment}>{favorite.name}</MenuItem>  
+                ))
+              }
+            </TextField>
+          </FormControl>
+        </Box>
         <Box pt={2}>
           <Divider />
         </Box>
