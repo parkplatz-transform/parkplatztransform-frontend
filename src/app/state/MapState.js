@@ -104,7 +104,7 @@ class MapState {
             mapContext.map.addImage('arrow', image, { 'sdf': true });
             mapContext.map.addLayer({
               'id': 'icons-hot',
-              'source': 'mapbox-gl-draw-hot',
+              'source': 'mapbox-gl-draw',
               'type': 'symbol',
               'minzoom': 15,
               'layout': {
@@ -116,7 +116,7 @@ class MapState {
             })
             mapContext.map.addLayer({
               'id': 'icons-cold',
-              'source': 'mapbox-gl-draw-cold',
+              'source': 'mapbox-gl-draw',
               'type': 'symbol',
               'minzoom': 15,
               'layout': {
