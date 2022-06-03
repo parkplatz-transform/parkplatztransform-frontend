@@ -14,7 +14,6 @@ class MapContext {
           center: [lng, lat],
           zoom: zm,
         });
-        this.map.addControl(new maplibregl.NavigationControl(), 'top-left');
         this.draw = new MapboxDraw({
           drawing: false,
           displayControlsDefault: false,
