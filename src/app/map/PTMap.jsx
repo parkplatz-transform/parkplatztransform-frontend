@@ -125,7 +125,7 @@ const PTMap = observer(({ mapState, onSegmentSelect }) => {
         window.alert(getString('permissions_failure'));
       } else {
         mapState.onSegmentDeleted(feature.id);
-        appState.setRightDrawerOpen(false)
+        appState.setRightDrawerOpen(false);
       }
     });
   }
