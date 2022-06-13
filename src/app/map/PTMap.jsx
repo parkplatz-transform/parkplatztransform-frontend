@@ -58,9 +58,7 @@ function addStaticLayers(map) {
         ['upcase', ['get', 'name']],
         { 'font-scale': 0.8 },
         '\n',
-        {},
-        ['downcase', ['get', 'label']],
-        { 'font-scale': 0.6 },
+        {}
       ],
     },
     paint: {
