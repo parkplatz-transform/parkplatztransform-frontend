@@ -19,7 +19,7 @@ class SegmentFormState {
 
   get subsegment() {
     if (this.segment?.properties?.subsegments) {
-     return this.segment?.properties?.subsegments[this.selectedSubsegmentIndex];  
+      return this.segment?.properties?.subsegments[this.selectedSubsegmentIndex];
     }
     return null
   }
@@ -194,6 +194,7 @@ class SegmentFormState {
 
   setSegment(segment) {
     this.segment = segment
+    this.segment.properties.subsegments = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number)
   }
 
   async onSegmentSelect(segment) {

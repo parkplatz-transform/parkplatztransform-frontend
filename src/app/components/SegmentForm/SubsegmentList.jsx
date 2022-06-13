@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { action } from 'mobx';
 import {
   List,
   ListItem,
@@ -20,8 +21,6 @@ const SubsegmentList = observer(({ formState }) => {
     formState.segment.properties.subsegments
   ) {
     const listItems = formState.segment.properties.subsegments
-      .slice()
-      .sort((a, b) => a.order_number > b.order_number)
       .map((subsegment) => {
         let title;
         if (subsegment.parking_allowed === true) {
@@ -49,9 +48,9 @@ const SubsegmentList = observer(({ formState }) => {
             selected={
               subsegment?.order_number === formState.selectedSubsegmentIndex
             }
-            onClick={() =>
+            onClick={action(() =>
               formState.setSelectedSubsegmentIndex(subsegment.order_number)
-            }
+            )}
           >
             <ListItemText
               primary={title}
@@ -59,14 +58,14 @@ const SubsegmentList = observer(({ formState }) => {
             />
             <ListItemSecondaryAction>
               <IconButton
-                onClick={() => formState.duplicateSubsegment(subsegment)}
+                onClick={action(() => formState.duplicateSubsegment(subsegment))}
                 edge="end"
                 aria-label="duplicate"
               >
                 <FileCopyIcon />
               </IconButton>
               <IconButton
-                onClick={() => formState.deleteSubsegment(subsegment)}
+                onClick={action(() => formState.deleteSubsegment(subsegment))}
                 edge="end"
                 aria-label="delete"
               >
