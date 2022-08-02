@@ -5,13 +5,14 @@ import { sanitizeSegment } from '../recording/Segment';
 import subsegmentSchema from '../recording/SubsegmentSchema';
 import mapContext from '../map/MapContext';
 import addPredefinedFavorites, { Favorite } from '../components/SegmentForm/Favourites';
+import { createEmptySubsegment } from '../recording/Subsegments';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
 
 export class SegmentFormState {
   segment: Segment | null = null;
   isDirty = false;
-  selectedSubsegmentIndex: number | null = null;
+  selectedSubsegmentIndex: number = 0;
   favorites: Favorite[] = [];
   errors: Record<number, Error> = {};
   subsegmentToFavorite: Subsegment | null = null;
@@ -108,7 +109,7 @@ export class SegmentFormState {
    *   takes the event's value
    */
   updateSubsegment(subsegmentChangeFunction) {
-    return (event) => {
+    return (event: Event) => {
       this.isDirty = true
       subsegmentChangeFunction(
         this.subsegment,
@@ -128,7 +129,7 @@ export class SegmentFormState {
     this.favorites = favorites;
   }
 
-  addFavorite(name, subsegmentToFavorite) {
+  addFavorite(name: string, subsegmentToFavorite: Subsegment) {
     const subsegment = {
       ...subsegmentToFavorite,
       id: null,
@@ -153,25 +154,27 @@ export class SegmentFormState {
     );
   }
 
-  addSubsegment(subsegment) {
+  addSubsegment(subsegment: Subsegment) {
     this.isDirty = true
-    if (!this.segment.properties) {
+    if (this.segment && !this.segment.properties) {
       this.segment.properties = {};
     }
-    if (!this.segment.properties.subsegments) {
+    if (this.segment && !this.segment.properties.subsegments) {
       this.segment.properties.subsegments = [];
     }
-    subsegment.order_number = this.segment.properties.subsegments.length;
-    this.segment.properties.subsegments.push(subsegment);
-    this.setSelectedSubsegmentIndex(subsegment.order_number);
+    if (this.segment) {
+      subsegment.order_number = this.segment.properties.subsegments.length ?? 0;
+      this.segment.properties.subsegments.push(subsegment);
+      this.setSelectedSubsegmentIndex(subsegment.order_number);
+    }
   }
 
-  duplicateSubsegment(subsegment) {
+  duplicateSubsegment(subsegment: Subsegment) {
     this.isDirty = true
     const newSubsegment = { ...subsegment };
     const newSubsegments = [...this.segment.properties.subsegments];
     // Insert in the right position  --> at end of list
-    const newOrderIndex = this.segment.properties.subsegments.length;
+    const newOrderIndex = this.segment?.properties.subsegments.length;
     newSubsegments.push(newSubsegment);
     this.segment.properties.subsegments = newSubsegments.map((sub, idx) => ({
       ...sub,
@@ -180,9 +183,9 @@ export class SegmentFormState {
     this.setSelectedSubsegmentIndex(newOrderIndex);
   }
 
-  deleteSubsegment(subsegment) {
+  deleteSubsegment(subsegment: Subsegment) {
     this.isDirty = true
-    this.segment.properties.subsegments = this.segment.properties.subsegments
+    this.segment.properties.subsegments = this.segment?.properties.subsegments ?? []
       .filter((s) => s !== subsegment)
       .map((sub, idx) => ({ ...sub, order_number: idx }));
     this.selectedSubsegmentIndex = null;
@@ -194,10 +197,11 @@ export class SegmentFormState {
 
   setSegment(segment: Segment) {
     this.segment = segment
-    this.segment.properties.subsegments = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number)
+    this.segment.properties.subsegments = segment.properties.subsegments
+      .sort((a, b) => a.order_number > b.order_number)
   }
 
-  async onSegmentSelect(segment: Segment) {
+  async onSegmentSelect(segment: Segment | null) {
     try {
       if (segment === null) {
         if (this.segment !== null && this.isDirty) {

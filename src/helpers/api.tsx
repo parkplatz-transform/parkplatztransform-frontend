@@ -33,9 +33,10 @@ export interface Properties {
 }
 
 export interface Subsegment {
+  id: string | null;
   parking_allowed:            boolean;
-  order_number:               number;
-  length_in_meters:           null;
+  order_number:               number | null;
+  length_in_meters:           number | null;
   car_count:                  number | null;
   quality:                    number;
   fee:                        boolean | null;
@@ -48,7 +49,7 @@ export interface Subsegment {
   alternative_usage_reason:   ALTERNATIVE_USAGE_REASON | null;
   time_constraint:            boolean | null;
   time_constraint_reason:     null | string;
-  duration_constraint_reason: null;
+  duration_constraint_reason: string | null;
   no_parking_reasons:         NO_PARKING_REASONS_AND_LABEL[];
 }
 
@@ -161,11 +162,14 @@ export async function getSegments(boundingBox = null, excludedIds: string[], mod
 
   const params: { 
     details: boolean;
-    bbox: number[] | null;
+    bbox: string | null;
     exclude_ids: string[] | null;
     include_if_modified_after: Date | null;
   } = {
-    details: false
+    details: false,
+    bbox: null,
+    exclude_ids: null,
+    include_if_modified_after: null
   }
   if (boundingBox) {
     params.bbox = boundingBox

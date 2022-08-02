@@ -245,7 +245,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
               select
               id="select_parking_position"
               value={formState.subsegment.alignment || ALIGNMENT.UNKNOWN}
-              onChange={formState.updateSubsegment(setAlignment)}
+              onChange={() => action(formState.updateSubsegment(setAlignment))}
               variant={'outlined'}
             >
               <MenuItem value={ALIGNMENT.UNKNOWN}>unbekannt</MenuItem>
@@ -274,7 +274,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.fee}
-                onChange={formState.updateSubsegment(setHasFee)}
+                onChange={() => action(formState.updateSubsegment(setHasFee))}
               />
             }
             label="Mit Gebühr"
@@ -285,7 +285,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.duration_constraint}
-                onChange={formState.updateSubsegment(setDurationConstraint)}
+                onChange={() => action(formState.updateSubsegment(setDurationConstraint))}
               />
             }
             label="Zeitlich beschränkte Parkdauer"
@@ -328,7 +328,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
               value={
                 formState.subsegment.street_location || STREET_LOCATION.UNKNOWN
               }
-              onChange={formState.updateSubsegment(setStreetLocation)}
+              onChange={() => action(formState.updateSubsegment(setStreetLocation))}
               variant={'outlined'}
             >
               <MenuItem value={STREET_LOCATION.UNKNOWN}>unbekannt</MenuItem>
@@ -360,7 +360,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.user_restriction}
-                onChange={formState.updateSubsegment(setUserRestriction)}
+                onChange={() => action(formState.updateSubsegment(setUserRestriction))}
               />
             }
             label="Eingeschränkte Nutzergruppe"
@@ -379,7 +379,7 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
                 formState.subsegment.user_restriction_reason ||
                 USER_RESTRICTIONS.UNKNOWN
               }
-              onChange={formState.updateSubsegment(setUserRestrictionReason)}
+              onChange={() => action(formState.updateSubsegment(setUserRestrictionReason))}
               variant={'outlined'}
             >
               {formState.subsegment.user_restriction === false && (

@@ -30,7 +30,10 @@ export class MapState {
     try {
       const createdSegment = await postSegment({
         ...segment,
-        properties: { subsegments: [] },
+        properties: { 
+          ...segment.properties,
+          subsegments: [] 
+        },
       });
       return createdSegment;
     } catch (e) {}
@@ -59,11 +62,25 @@ export class MapState {
     }
   }
 
-  async onBoundsChanged(bounds) {
+  async onBoundsChanged(bounds: {
+    _sw: {
+      lng: number;
+      lat: number;
+    },
+    _ne: {
+      lng: number;
+      lat: number;
+    }
+  }) {
     const draw = mapContext.draw
     // be less precise with map bounds and load larger chunks, avoid re-fetch on every little map move
     // rounding precision depends on how big the requested area is
-    const boundingBox = {
+    const boundingBox: {
+      swLng: number;
+      swLat: number;
+      neLng: number;
+      neLat: number;
+    } = {
       swLng: Math.floor(bounds._sw.lng * 100) / 100,
       swLat: Math.floor(bounds._sw.lat * 100) / 100,
       neLng: Math.ceil(bounds._ne.lng * 100) / 100,
@@ -100,10 +117,12 @@ export class MapState {
           type: 'FeatureCollection',
           id: 'ppt-feature-collection',
         })
-        if (!mapContext.map.getLayer('icons-cold') && !mapContext.map.getLayer('icons-hot')) {
-          mapContext.map.loadImage(arrow, (error, image) => {
-            mapContext.map.addImage('arrow', image, { 'sdf': true });
-            mapContext.map.addLayer({
+        if (!mapContext.map?.getLayer('icons-cold') && !mapContext.map?.getLayer('icons-hot')) {
+          mapContext.map?.loadImage(arrow, (error, image) => {
+            if (image) {
+              mapContext.map?.addImage('arrow', image, { 'sdf': true });
+            }
+            mapContext.map?.addLayer({
               'id': 'icons-hot',
               'source': 'mapbox-gl-draw',
               'type': 'symbol',
@@ -115,7 +134,7 @@ export class MapState {
                 'icon-size': 0.5,
               }
             })
-            mapContext.map.addLayer({
+            mapContext.map?.addLayer({
               'id': 'icons-cold',
               'source': 'mapbox-gl-draw',
               'type': 'symbol',

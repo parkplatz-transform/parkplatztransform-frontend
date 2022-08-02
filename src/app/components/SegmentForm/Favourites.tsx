@@ -1,5 +1,5 @@
 import { Subsegment } from "../../../helpers/api";
-import { STREET_LOCATION } from "../../recording/Subsegments";
+import { NO_PARKING_REASONS_AND_LABEL, STREET_LOCATION } from "../../recording/Subsegments";
 
 export interface Favorite {
   name: string;
@@ -76,7 +76,7 @@ export default function addPredefinedFavorites(favObj: Favorite[]) {
         id: null,
         length_in_meters: null,
         marked: null,
-        no_parking_reasons: ['no_stopping'],
+        no_parking_reasons: [NO_PARKING_REASONS_AND_LABEL.no_stopping],
         order_number: null,
         parking_allowed: false,
         quality: 1,
@@ -102,7 +102,7 @@ export default function addPredefinedFavorites(favObj: Favorite[]) {
         id: null,
         length_in_meters: null,
         marked: null,
-        no_parking_reasons: ['no_stopping'],
+        no_parking_reasons: [NO_PARKING_REASONS_AND_LABEL.no_stopping],
         order_number: null,
         parking_allowed: true,
         quality: 1,
@@ -128,7 +128,7 @@ export default function addPredefinedFavorites(favObj: Favorite[]) {
         id: null,
         length_in_meters: null,
         marked: null,
-        no_parking_reasons: ['no_stopping'],
+        no_parking_reasons: [NO_PARKING_REASONS_AND_LABEL.no_stopping],
         order_number: null,
         parking_allowed: true,
         quality: 1,
@@ -154,7 +154,7 @@ export default function addPredefinedFavorites(favObj: Favorite[]) {
         id: null,
         length_in_meters: null,
         marked: null,
-        no_parking_reasons: ['no_stopping'],
+        no_parking_reasons: [NO_PARKING_REASONS_AND_LABEL.no_stopping],
         order_number: null,
         parking_allowed: true,
         quality: 1,

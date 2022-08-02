@@ -39,7 +39,7 @@ const SubsegmentList = observer(({ formState }: { formState: SegmentFormState })
         }
 
         const error =
-          formState.errors && formState.errors[subsegment.order_number];
+          formState.errors && subsegment.order_number && formState.errors[subsegment.order_number];
 
         return (
           <ListItem
@@ -50,7 +50,7 @@ const SubsegmentList = observer(({ formState }: { formState: SegmentFormState })
               subsegment?.order_number === formState.selectedSubsegmentIndex
             }
             onClick={action(() =>
-              formState.setSelectedSubsegmentIndex(subsegment.order_number)
+              formState.setSelectedSubsegmentIndex(subsegment.order_number ?? 0)
             )}
           >
             <ListItemText

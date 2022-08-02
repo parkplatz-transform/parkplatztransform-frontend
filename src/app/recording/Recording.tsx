@@ -7,7 +7,7 @@ import RightPanel from '../components/RightPanel';
 import { Drawer } from '@material-ui/core';
 import { UserContext } from '../context/UserContext';
 import isEmbedded from '../../helpers/isEmbedded';
-import appState from '../state/AppState';
+import appState, { AppState } from '../state/AppState';
 import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Recording = observer(({ appState }) => {
+const Recording = observer(({ appState }: { appState: AppState }) => {
   const { user } = useContext(UserContext);
   const classes = useStyles();
 

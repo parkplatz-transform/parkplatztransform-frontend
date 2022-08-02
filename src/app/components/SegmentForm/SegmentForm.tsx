@@ -238,7 +238,11 @@ const SegmentForm = observer(({ appState, formState }: { appState: AppState, for
               }}
             >
               {formState.favorites.map((favorite: Favorite) => (
-                <MenuItem style={{backgroundColor: favorite.color}} value={favorite.subsegment}>{favorite.name}</MenuItem>  
+                <MenuItem 
+                  style={{backgroundColor: favorite.color}} 
+                  value={favorite.subsegment}>
+                    {favorite.name}
+                </MenuItem>  
                 ))
               }
             </TextField>

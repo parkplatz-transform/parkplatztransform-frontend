@@ -9,6 +9,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
+import { action } from 'mobx';
 import {
   getToggleNoParkingReasonFn,
   NO_PARKING_REASONS_AND_LABEL,
@@ -105,7 +106,7 @@ const ParkingNotAllowed = observer(({ formState }: { formState: SegmentFormState
               variant="outlined"
               id="standard-adornment-weight"
               value={formState.subsegment?.length_in_meters}
-              onChange={formState.updateSubsegment(setLengthInMeters)}
+              onChange={() => action(formState.updateSubsegment(setLengthInMeters))}
               aria-describedby="length in meters"
               inputProps={{
                 'aria-label': 'weight',
@@ -118,7 +119,7 @@ const ParkingNotAllowed = observer(({ formState }: { formState: SegmentFormState
           <div className={classes.optionTitle}>Gründe</div>
           <FormGroup>
             {Object.keys(NO_PARKING_REASONS_AND_LABEL).map((key) => {
-              const reason = formState.subsegment?.no_parking_reasons?.find(
+              const reason: NO_PARKING_REASONS_AND_LABEL | undefined = formState.subsegment?.no_parking_reasons?.find(
                 (k) => k === key
               );
               return (
@@ -128,9 +129,9 @@ const ParkingNotAllowed = observer(({ formState }: { formState: SegmentFormState
                     <Checkbox
                       color={'primary'}
                       checked={reason === key}
-                      onChange={formState.updateSubsegment(
-                        getToggleNoParkingReasonFn(key)
-                      )}
+                      onChange={() => action(formState.updateSubsegment(
+                        getToggleNoParkingReasonFn(key as NO_PARKING_REASONS_AND_LABEL)
+                      ))}
                     />
                   }
                   label={NO_PARKING_REASONS_AND_LABEL[key]}

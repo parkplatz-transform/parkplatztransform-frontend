@@ -1,5 +1,5 @@
 import { Segment } from "../../helpers/api"
-import { Alignment, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
+import { ALIGNMENT, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
 
 export enum DATA_SOURCES {
     PARKPLATZ_TRANSFORM = "parkplatz_transform",
@@ -31,7 +31,7 @@ export function sanitizeSegment(segment: Segment) {
         }
         if (subsegment.parking_allowed === true) {
             subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
-            if (subsegment.alignment === Alignment.UNKNOWN) {
+            if (subsegment.alignment === ALIGNMENT.UNKNOWN) {
                 subsegment.alignment = null
             }
             if (subsegment.street_location === STREET_LOCATION.UNKNOWN) {
@@ -51,8 +51,8 @@ export function sanitizeSegment(segment: Segment) {
             subsegment.alignment = emptySubsegment.alignment
             subsegment.duration_constraint = emptySubsegment.duration_constraint
             subsegment.duration_constraint_reason = emptySubsegment.duration_constraint_reason
-            subsegment.user_restriction = emptySubsegment.user_restrictions
-            subsegment.user_restriction_reason = emptySubsegment.user_restrictions
+            subsegment.user_restriction = emptySubsegment.user_restriction
+            subsegment.user_restriction_reason = emptySubsegment.user_restriction
             subsegment.alternative_usage_reason = emptySubsegment.alternative_usage_reason
             subsegment.time_constraint = emptySubsegment.time_constraint
             subsegment.time_constraint_reason = emptySubsegment.time_constraint_reason

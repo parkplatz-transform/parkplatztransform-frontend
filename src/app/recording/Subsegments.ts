@@ -81,7 +81,7 @@ export function setDurationConstraint(subsegment: Subsegment, hasDurationConstra
   subsegment.duration_constraint = hasDurationConstraint
 }
 
-export function setDurationConstraintDetails(subsegment: Subsegment, details) {
+export function setDurationConstraintDetails(subsegment: Subsegment, details: string) {
   if (typeof details === "string") {
     subsegment.duration_constraint_reason = details && details.trim().length > 0 ? details.trim() : null
   } else {
@@ -89,7 +89,7 @@ export function setDurationConstraintDetails(subsegment: Subsegment, details) {
   }
 }
 
-export function setLengthInMeters(subsegment: Subsegment, length) {
+export function setLengthInMeters(subsegment: Subsegment, length: number) {
   // due to too much generification we get a `false` here if the string is empty...
   if (Number(length)) {
     subsegment.length_in_meters = length
@@ -98,7 +98,7 @@ export function setLengthInMeters(subsegment: Subsegment, length) {
   }
 }
 
-export function setCarCount(subsegment, car_count) {
+export function setCarCount(subsegment: Subsegment, car_count: number) {
   // due to too much generification we get a `false` here if the string is empty...
   if (Number.isInteger(Number(car_count))) {
     subsegment.car_count = car_count
@@ -110,7 +110,7 @@ export function setCarCount(subsegment, car_count) {
 /**
  * TODO: rename to setTimeConstraintDetails
  */
-export function setTimeConstraintReason(subsegment, reason) {
+export function setTimeConstraintReason(subsegment: Subsegment, reason: string) {
   if (typeof reason === "string") {
     subsegment.time_constraint_reason = reason
   } else {
@@ -118,11 +118,11 @@ export function setTimeConstraintReason(subsegment, reason) {
   }
 }
 
-export function setStreetLocation(subsegment, street_location) {
+export function setStreetLocation(subsegment: Subsegment, street_location: STREET_LOCATION) {
   subsegment.street_location = street_location
 }
 
-export function setUserRestriction(subsegment, userRestriction) {
+export function setUserRestriction(subsegment: Subsegment, userRestriction: boolean | null) {
   if (userRestriction === false) {
     subsegment.user_restriction_reason = USER_RESTRICTIONS.NO_RESTRICTION
   }
@@ -132,26 +132,26 @@ export function setUserRestriction(subsegment, userRestriction) {
   subsegment.user_restriction = userRestriction
 }
 
-export function setUserRestrictionReason(subsegment, userRestrictionReason) {
+export function setUserRestrictionReason(subsegment: Subsegment, userRestrictionReason: string) {
   subsegment.user_restriction_reason = userRestrictionReason
 }
 
-export function setAlternativeUsageReason(subsegment, alternativeUsageReason) {
+export function setAlternativeUsageReason(subsegment: Subsegment, alternativeUsageReason: ALTERNATIVE_USAGE_REASON) {
   subsegment.alternative_usage_reason = alternativeUsageReason === ALTERNATIVE_USAGE_REASON.UNKNOWN
     ? null
     : alternativeUsageReason
 }
 
-export function setAlignment(subsegment, alignment) {
+export function setAlignment(subsegment: Subsegment, alignment: ALIGNMENT) {
   subsegment.alignment = alignment
 }
 
-export function getToggleNoParkingReasonFn(reason) {
-  return (subsegment) => {
+export function getToggleNoParkingReasonFn(reason: NO_PARKING_REASONS_AND_LABEL) {
+  return (subsegment: Subsegment) => {
     if (!subsegment.no_parking_reasons) {
       subsegment.no_parking_reasons = [reason]
     } else if (subsegment.no_parking_reasons.includes(reason)) {
-      subsegment.no_parking_reasons = subsegment.no_parking_reasons.filter(r => r !== reason)
+      subsegment.no_parking_reasons = subsegment.no_parking_reasons.filter((r: NO_PARKING_REASONS_AND_LABEL) => r !== reason)
     } else {
       subsegment.no_parking_reasons.push(reason)
     }
@@ -159,8 +159,9 @@ export function getToggleNoParkingReasonFn(reason) {
 
 }
 
-export function createEmptySubsegment() {
+export function createEmptySubsegment(): Subsegment {
   return {
+    id: null,
     parking_allowed: true,
     order_number: null,   // to be set by caller
     length_in_meters: null,
