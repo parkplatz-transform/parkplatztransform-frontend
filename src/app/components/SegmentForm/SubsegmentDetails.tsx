@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubsegmentDetails = observer(({ appState, formState }) => {
+const SubsegmentDetails = observer(({ appState, formState }: ) => {
   const classes = useStyles();
 
   function getButtonVariant(highlighted) {

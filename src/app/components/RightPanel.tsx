@@ -99,7 +99,7 @@ const WelcomeMessage = React.memo(() => {
           </li>
         </ol>
         <div className={classes.bottom}>
-          <Link className={classes.link} to={`/howto`}>
+          <Link to={`/howto`}>
             <IconButton aria-label="delete">
               <ArrowForwardIcon />
             </IconButton>
