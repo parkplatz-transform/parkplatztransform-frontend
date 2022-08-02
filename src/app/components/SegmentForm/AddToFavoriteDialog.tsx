@@ -14,10 +14,10 @@ import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState
 
 const AddToFavoriteDialog = observer(({ formState }: { formState: SegmentFormState }) => {
   const errorText =
-    formState.subsegmentNameForFavorites &&
+    formState.subsegmentNameToFavorite &&
     formState.favorites
       .map((favorite) => favorite.name)
-      .includes(formState.subsegmentNameForFavorites)
+      .includes(formState.subsegmentNameToFavorite)
       ? 'Name ist bereits vergeben'
       : null;
 
@@ -43,7 +43,7 @@ const AddToFavoriteDialog = observer(({ formState }: { formState: SegmentFormSta
           label="Name"
           fullWidth
           defaultValue={''}
-          error={errorText}
+          error={errorText !== null}
           helperText={errorText}
           onChange={(event) =>
             formState.setSubsegmentNameForFavorites(event.target.value)

@@ -1,24 +1,24 @@
 import { makeAutoObservable } from 'mobx';
 
-import { getSegment, updateSegment } from '../../helpers/api';
+import { getSegment, Segment, Subsegment, updateSegment } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
 import subsegmentSchema from '../recording/SubsegmentSchema';
 import mapContext from '../map/MapContext';
-import addPredefinedFavorites from '../components/SegmentForm/Favourites';
+import addPredefinedFavorites, { Favorite } from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
 
 export class SegmentFormState {
-  segment = null;
+  segment: Segment | null = null;
   isDirty = false;
-  selectedSubsegmentIndex = null;
-  favorites = [];
-  errors = {};
-  subsegmentToFavorite = null;
-  subsegmentNameToFavorite = null;
+  selectedSubsegmentIndex: number | null = null;
+  favorites: Favorite[] = [];
+  errors: Record<number, Error> = {};
+  subsegmentToFavorite: Subsegment | null = null;
+  subsegmentNameToFavorite: string | null = null;
 
   get subsegment() {
-    if (this.segment?.properties?.subsegments) {
+    if (this.segment?.properties?.subsegments && this.selectedSubsegmentIndex) {
       return this.segment?.properties?.subsegments[this.selectedSubsegmentIndex];
     }
     return null
@@ -49,11 +49,11 @@ export class SegmentFormState {
     this.clearAddFavoriteState();
   }
 
-  setSubsegmentToAddToFavorites(subsegment) {
+  setSubsegmentToAddToFavorites(subsegment: Subsegment) {
     this.subsegmentToFavorite = subsegment;
   }
 
-  setSubsegmentNameForFavorites(name) {
+  setSubsegmentNameForFavorites(name: string) {
     this.subsegmentNameToFavorite = name;
   }
 
@@ -62,13 +62,13 @@ export class SegmentFormState {
     this.subsegmentNameToFavorite = null;
   }
 
-  setErrors(errors) {
+  setErrors(errors: Record<number, Error>) {
     this.errors = errors;
   }
 
   async save() {
     await Promise.all(
-      this.segment.properties.subsegments.map(async (sub, idx) => {
+      this.segment?.properties.subsegments.map(async (sub, idx) => {
         try {
           await subsegmentSchema.validate(sub);
         } catch (error) {
@@ -84,9 +84,9 @@ export class SegmentFormState {
     );
 
     if (this.isFormValid) {
-      if (this.segment.properties.subsegments.length === 0) {
+      if (this.segment?.properties.subsegments.length === 0) {
         this.segment.properties.has_subsegments = false
-      } else {
+      } else if (this.segment) {
         this.segment.properties.has_subsegments = true
       }
       mapContext.draw.add(this.segment);
@@ -96,7 +96,7 @@ export class SegmentFormState {
   }
 
   updateSegment(segmentChangeFunction) {
-    return (event) => {
+    return (event: Event) => {
       this.isDirty = true
       segmentChangeFunction(this.segment, event?.target?.value);
     };
@@ -124,7 +124,7 @@ export class SegmentFormState {
     };
   }
 
-  setFavorites(favorites) {
+  setFavorites(favorites: Favorite[]) {
     this.favorites = favorites;
   }
 
@@ -188,16 +188,16 @@ export class SegmentFormState {
     this.selectedSubsegmentIndex = null;
   }
 
-  setSelectedSubsegmentIndex(index) {
+  setSelectedSubsegmentIndex(index: number) {
     this.selectedSubsegmentIndex = index;
   }
 
-  setSegment(segment) {
+  setSegment(segment: Segment) {
     this.segment = segment
     this.segment.properties.subsegments = segment.properties.subsegments.sort((a, b) => a.order_number > b.order_number)
   }
 
-  async onSegmentSelect(segment) {
+  async onSegmentSelect(segment: Segment) {
     try {
       if (segment === null) {
         if (this.segment !== null && this.isDirty) {
@@ -223,7 +223,7 @@ export class SegmentFormState {
     }
   }
 
-  async onSegmentChanged(segment) {
+  async onSegmentChanged(segment: Segment) {
     try {
       const sanitizedSegment = sanitizeSegment(segment);
       const updatedSegment = await updateSegment(sanitizedSegment);

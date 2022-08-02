@@ -33,7 +33,7 @@ import {
 
 import getString from '../../../strings';
 import YesNoUnknownCheckbox from '../YesNoUnknownCheckbox';
-import segmentFormState from '../../state/SegmentFormState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -110,15 +110,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ParkingAllowed = observer(({ formState }) => {
+const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState }) => {
   const classes = useStyles();
   const error =
     formState.errors && formState.errors[formState.subsegment.order_number];
 
   function getKey() {
-    return formState.subsegment.order_number || 'new_subsegment';
+    return formState.subsegment?.order_number || 'new_subsegment';
   }
-  if (formState.subsegment.parking_allowed) {
+  if (formState.subsegment?.parking_allowed) {
     return (
       <React.Fragment>
         {/* Length in meters */}
@@ -264,7 +264,6 @@ const ParkingAllowed = observer(({ formState }) => {
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.marked}
-                color={'primary'}
                 onChange={formState.updateSubsegmentByCheckbox(setIsMarked)}
               />
             }
@@ -276,7 +275,6 @@ const ParkingAllowed = observer(({ formState }) => {
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.fee}
-                color={'primary'}
                 onChange={formState.updateSubsegment(setHasFee)}
               />
             }
@@ -288,7 +286,6 @@ const ParkingAllowed = observer(({ formState }) => {
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.duration_constraint}
-                color={'primary'}
                 onChange={formState.updateSubsegment(setDurationConstraint)}
               />
             }

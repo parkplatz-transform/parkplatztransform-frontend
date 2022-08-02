@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react'
+import { ALIGNMENT, ALTERNATIVE_USAGE_REASON, NO_PARKING_REASONS_AND_LABEL, STREET_LOCATION } from '../app/recording/Subsegments';
 import { PermissionsError } from './errors'
 
 const baseURL = process.env.REACT_APP_API_URL || ''
@@ -26,7 +27,7 @@ export interface Properties {
   has_subsegments:  boolean;
   owner_id:         string;
   data_source:      string;
-  further_comments: null;
+  further_comments: string | null;
   modified_at:      Date;
   created_at:       Date;
 }
@@ -35,20 +36,20 @@ export interface Subsegment {
   parking_allowed:            boolean;
   order_number:               number;
   length_in_meters:           null;
-  car_count:                  number;
+  car_count:                  number | null;
   quality:                    number;
   fee:                        boolean | null;
-  street_location:            null;
-  marked:                     null;
-  alignment:                  null;
+  street_location:            STREET_LOCATION | null;
+  marked:                     boolean | null;
+  alignment:                  ALIGNMENT | null;
   duration_constraint:        boolean | null;
   user_restriction:           boolean | null;
   user_restriction_reason:    null | string;
-  alternative_usage_reason:   null;
+  alternative_usage_reason:   ALTERNATIVE_USAGE_REASON | null;
   time_constraint:            boolean | null;
   time_constraint_reason:     null | string;
   duration_constraint_reason: null;
-  no_parking_reasons:         any[];
+  no_parking_reasons:         NO_PARKING_REASONS_AND_LABEL[];
 }
 
 export interface LoginRequest {
@@ -157,8 +158,13 @@ export async function getAllSegments() {
 export async function getSegments(boundingBox = null, excludedIds: string[], modified_after: Date): Promise<SegmentCollection> {
   const url = routes.querySegment
 
-  const params = {
-    details: false,
+  const params: { 
+    details: boolean;
+    bbox: number[] | null;
+    exclude_ids: string[] | null;
+    include_if_modified_after: Date | null;
+  } = {
+    details: false
   }
   if (boundingBox) {
     params.bbox = boundingBox

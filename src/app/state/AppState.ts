@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 
 export class AppState {
-  rightDrawerOpen = false;
-  leftDrawerOpen = false;
+  rightDrawerOpen: boolean = false;
+  leftDrawerOpen: boolean = false;
   toast = null;
 
   constructor() {
@@ -18,7 +18,7 @@ export class AppState {
     this.leftDrawerOpen = value;
   }
 
-  setToast(toast) {
+  setToast(toast: any) {
     this.toast = toast;
   }
 }

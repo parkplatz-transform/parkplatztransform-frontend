@@ -1,13 +1,16 @@
-import maplibregl from 'maplibre-gl';
+import maplibregl, { Map } from 'maplibre-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import theme from './MapTheme';
 import modes from './MapModes';
+import { Segment } from '../../helpers/api';
 
 const tileServerURL =
   'https://api.maptiler.com/maps/streets/style.json?key=kM1vIzKbGSB88heYLJqH';
 
-class MapContext {
-    setupMap(lat, lng, zm) {
+export class MapContext {
+    map: Map | null = null
+    draw: MapboxDraw | null = null
+    setupMap(lat: number, lng: number, zm: number) {
         this.map = new maplibregl.Map({
           container: 'map',
           style: tileServerURL,
@@ -43,7 +46,7 @@ class MapContext {
         );
     }
 
-    addSegment(segment) {
+    addSegment(segment: Segment) {
       this.draw.add(segment)
     }
 }

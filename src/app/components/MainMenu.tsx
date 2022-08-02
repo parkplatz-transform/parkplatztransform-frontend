@@ -95,7 +95,7 @@ const MainMenu = observer(({ appState }: { appState: AppState }) => {
               aria-label="menu"
               aria-controls="simple-menu"
               aria-haspopup="true"
-              onClick={handleClick}
+              onClick={(event: Event) => handleClick(event)}
             >
               <Avatar style={{ backgroundColor: blue[500] }}>
                 {user?.email[0]}

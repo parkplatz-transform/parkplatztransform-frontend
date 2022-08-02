@@ -1,5 +1,14 @@
-export default function addPredefinedFavorites(favObj) {
-  var favNames = favObj.map((fav) => fav.name);
+import { Subsegment } from "../../../helpers/api";
+import { STREET_LOCATION } from "../../recording/Subsegments";
+
+export interface Favorite {
+  name: string;
+  color: String;
+  subsegment: Subsegment;
+}
+
+export default function addPredefinedFavorites(favObj: Favorite[]) {
+  var favNames = favObj.map((fav: Favorite) => fav.name);
 
   if (!favNames.includes('Lila')) {
     favObj.push({
@@ -19,7 +28,7 @@ export default function addPredefinedFavorites(favObj) {
         order_number: null,
         parking_allowed: true,
         quality: 1,
-        street_location: 'unknown',
+        street_location: STREET_LOCATION.UNKNOWN,
         time_constraint: false,
         time_constraint_reason: null,
         user_restriction: null,
@@ -45,7 +54,7 @@ export default function addPredefinedFavorites(favObj) {
         order_number: null,
         parking_allowed: true,
         quality: 1,
-        street_location: 'unknown',
+        street_location: STREET_LOCATION.UNKNOWN,
         time_constraint: false,
         time_constraint_reason: null,
         user_restriction: false,

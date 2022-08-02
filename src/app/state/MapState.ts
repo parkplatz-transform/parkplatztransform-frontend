@@ -22,7 +22,7 @@ export class MapState {
     makeAutoObservable(this);
   }
 
-  setAlertDisplayed(content) {
+  setAlertDisplayed(content: any) {
     this.toast = content;
   }
 
@@ -81,7 +81,7 @@ export class MapState {
 
     const segments = draw.getAll().features
     const loadedSegments = this.getLoadedSegmentIdsInBounds(boundingBox, segments);
-    const excludedIds = segments.map((segment) => segment.id);
+    const excludedIds = segments.map((segment: Segment) => segment.id);
 
     const latestModificationDate =
       this.getLatestModificationDate(loadedSegments);
@@ -148,7 +148,7 @@ export class MapState {
     );
   }
 
-  getLoadedSegmentIdsInBounds(boundingBox, segments) {
+  getLoadedSegmentIdsInBounds(boundingBox: number[][], segments: Segment[]) {
     return segments.filter((segment) => {
       if (segment.bbox) {
         const swLng = segment.bbox[0];
@@ -161,7 +161,7 @@ export class MapState {
     });
   }
 
-  getLatestModificationDate(segments) {
+  getLatestModificationDate(segments: Segment[]) {
     return segments
       .map((segment) => segment.properties?.modified_at)
       .filter(Boolean)
@@ -169,7 +169,7 @@ export class MapState {
       .reverse()[0];
   }
 
-  async onSegmentChanged(segment) {
+  async onSegmentChanged(segment: Segment) {
     try {
       const sanitizedSegment = sanitizeSegment(segment);
       if (!sanitizedSegment) {
@@ -179,7 +179,7 @@ export class MapState {
         });
       }
       const updatedSegment = await updateSegment(sanitizedSegment);
-      this.addSegment(updatedSegment);
+      mapContext.addSegment(updatedSegment);
       console.log('Client set:');
       console.table(segment.properties.subsegments);
       console.log('Server returned:');
@@ -196,7 +196,7 @@ export class MapState {
     }
   }
 
-  async onSegmentDeleted(id) {
+  async onSegmentDeleted(id: string) {
     try {
       this.setAlertDisplayed({
         severity: 'success',

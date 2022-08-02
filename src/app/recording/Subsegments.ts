@@ -1,85 +1,87 @@
-export const STREET_LOCATION = {
-  UNKNOWN: 'unknown',
-  STREET: 'street',
-  CURB: 'curb',
-  SIDEWALK: 'sidewalk',
-  PARKING_BAY: 'parking_bay',
-  MIDDLE: 'middle',
-  CAR_PARK: 'car_park'
+import { Subsegment } from "../../helpers/api"
+
+export enum STREET_LOCATION {
+  UNKNOWN = 'unknown',
+  STREET = 'street',
+  CURB = 'curb',
+  SIDEWALK = 'sidewalk',
+  PARKING_BAY = 'parking_bay',
+  MIDDLE = 'middle',
+  CAR_PARK = 'car_park'
 }
 
-export const ALIGNMENT = {
-  UNKNOWN: 'unknown',
-  PARALLEL: 'parallel',
-  PERPENDICULAR: 'perpendicular',
-  DIAGONAL: 'diagonal'
+export enum ALIGNMENT {
+  UNKNOWN = 'unknown',
+  PARALLEL = 'parallel',
+  PERPENDICULAR = 'perpendicular',
+  DIAGONAL = 'diagonal'
 }
 
-export const USER_RESTRICTIONS = {
-  UNKNOWN: 'unknown',
-  HANDICAP: 'handicap',
-  RESIDENTS: 'residents',
-  CAR_SHARING: 'car_sharing',
-  GENDER: 'gender',
-  ELECTRIC_CARS: 'electric_cars',
-  OTHER: 'other',
-  NO_RESTRICTION: 'all_users'
+export enum USER_RESTRICTIONS {
+  UNKNOWN = 'unknown',
+  HANDICAP = 'handicap',
+  RESIDENTS = 'residents',
+  CAR_SHARING = 'car_sharing',
+  GENDER = 'gender',
+  ELECTRIC_CARS = 'electric_cars',
+  OTHER = 'other',
+  NO_RESTRICTION = 'all_users'
 }
 
-export const ALTERNATIVE_USAGE_REASON = {
-  UNKNOWN: 'unknown',
-  BUS_STOP: 'bus_stop',
-  BUS_LANE: 'bus_lane',
-  MARKET: 'market',
-  LANE: 'lane',
-  TAXI: 'taxi',
-  LOADING_ZONE: 'loading',
-  OTHER: 'other'
+export enum ALTERNATIVE_USAGE_REASON {
+  UNKNOWN = 'unknown',
+  BUS_STOP = 'bus_stop',
+  BUS_LANE = 'bus_lane',
+  MARKET = 'market',
+  LANE = 'lane',
+  TAXI = 'taxi',
+  LOADING_ZONE = 'loading',
+  OTHER = 'other'
 }
 
-export const NO_PARKING_REASONS_AND_LABEL = {
-  'private_parking': 'Privatparkplatz',
-  'bus_stop': 'Haltestelle',
-  'bus_lane': 'Busspur',
-  'taxi': 'Taxi',
-  'bike_racks': 'Fahrradständer',
-  'driveway': 'Einfahrt',
-  'loading_zone': 'Ladezone',
-  'standing_zone': '"Standing Zone"',
-  'emergency_exit': 'Notausgang',
-  'lowered_curb_side': 'Abgesenkter Bordstein',
-  'no_stopping': 'Halteverbot',
-  'pedestrian_zone': 'Fußgängerzone',
-  'tree': 'Baum',
-  'pedestrian_crossing': 'Zebrastreifen',
-  'lane': 'Fahrspur'
+export enum NO_PARKING_REASONS_AND_LABEL {
+  'private_parking' = 'Privatparkplatz',
+  'bus_stop' = 'Haltestelle',
+  'bus_lane' = 'Busspur',
+  'taxi' = 'Taxi',
+  'bike_racks' = 'Fahrradständer',
+  'driveway' = 'Einfahrt',
+  'loading_zone' = 'Ladezone',
+  'standing_zone' = '"Standing Zone"',
+  'emergency_exit' = 'Notausgang',
+  'lowered_curb_side' = 'Abgesenkter Bordstein',
+  'no_stopping' = 'Halteverbot',
+  'pedestrian_zone' = 'Fußgängerzone',
+  'tree' = 'Baum',
+  'pedestrian_crossing' = 'Zebrastreifen',
+  'lane' = 'Fahrspur'
 }
 
-export function setParkingIsAllowed(subsegment) {
+export function setParkingIsAllowed(subsegment: Subsegment) {
   subsegment.parking_allowed = true
 }
 
-export function setParkingIsNotAllowed(subsegment) {
+export function setParkingIsNotAllowed(subsegment: Subsegment) {
   subsegment.parking_allowed = false
 }
 
-export function setIsMarked(subsegment, isMarked) {
+export function setIsMarked(subsegment: Subsegment, isMarked: boolean | null) {
   subsegment.marked = isMarked
 }
 
-export function setHasTimeConstraint(subsegment, hasTimeConstraint) {
+export function setHasTimeConstraint(subsegment: Subsegment, hasTimeConstraint: boolean | null) {
   subsegment.time_constraint = hasTimeConstraint
 }
 
-export function setHasFee(subsegment, hasFee) {
+export function setHasFee(subsegment: Subsegment, hasFee: boolean | null) {
   subsegment.fee = hasFee
 }
 
-export function setDurationConstraint(subsegment, hasDurationConstraint) {
+export function setDurationConstraint(subsegment: Subsegment, hasDurationConstraint: boolean | null) {
   subsegment.duration_constraint = hasDurationConstraint
 }
 
-export function setDurationConstraintDetails(subsegment, details) {
+export function setDurationConstraintDetails(subsegment: Subsegment, details) {
   if (typeof details === "string") {
     subsegment.duration_constraint_reason = details && details.trim().length > 0 ? details.trim() : null
   } else {
@@ -87,7 +89,7 @@ export function setDurationConstraintDetails(subsegment, details) {
   }
 }
 
-export function setLengthInMeters(subsegment, length) {
+export function setLengthInMeters(subsegment: Subsegment, length) {
   // due to too much generification we get a `false` here if the string is empty...
   if (Number(length)) {
     subsegment.length_in_meters = length

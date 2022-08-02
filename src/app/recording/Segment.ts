@@ -1,26 +1,27 @@
-import { ALIGNMENT, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
+import { Segment } from "../../helpers/api"
+import { Alignment, createEmptySubsegment, STREET_LOCATION, USER_RESTRICTIONS } from "./Subsegments"
 
-export const DATA_SOURCES = {
-    PARKPLATZ_TRANSFORM: "parkplatz_transform",
-    OWN_COUNTING: "own_counting",
-    LK_ARGUS: "lk_argus",
-    HOFFMANN_LEICHTER: "hoffmann_leichter",
-    OTHER: 'other'
+export enum DATA_SOURCES {
+    PARKPLATZ_TRANSFORM = "parkplatz_transform",
+    OWN_COUNTING = "own_counting",
+    LK_ARGUS = "lk_argus",
+    HOFFMANN_LEICHTER = "hoffmann_leichter",
+    OTHER = 'other'
 }
 
-export function setDataSource(segment, dataSource) {
+export function setDataSource(segment: Segment, dataSource: DATA_SOURCES) {
     segment.properties.data_source = dataSource
     window.localStorage.lastDataSource = dataSource
 }
 
-export function setFurtherComments(segment, comments) {
+export function setFurtherComments(segment: Segment, comments: string) {
     segment.properties.further_comments = comments
 }
 
 /**
  * returns a sanitized copy or null if has invalid configurations
  */
-export function sanitizeSegment(segment) {
+export function sanitizeSegment(segment: Segment) {
     const copy = JSON.parse(JSON.stringify(segment))
     const emptySubsegment = createEmptySubsegment()
 
@@ -30,7 +31,7 @@ export function sanitizeSegment(segment) {
         }
         if (subsegment.parking_allowed === true) {
             subsegment.no_parking_reasons = emptySubsegment.no_parking_reasons
-            if (subsegment.alignment === ALIGNMENT.UNKNOWN) {
+            if (subsegment.alignment === Alignment.UNKNOWN) {
                 subsegment.alignment = null
             }
             if (subsegment.street_location === STREET_LOCATION.UNKNOWN) {
