@@ -53,7 +53,8 @@ export interface Subsegment {
 }
 
 export interface LoginRequest {
-  email: string
+  email: string;
+  accepted_terms_and_conditions: boolean;
 }
 
 export const routes = {

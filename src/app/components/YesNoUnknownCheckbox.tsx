@@ -5,7 +5,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { Checkbox, Tooltip } from '@material-ui/core'
 
-function YesNoUnknownCheckbox ({checked, onChange}: { checked: boolean; onChange: (value: boolean | null) => void }) {
+function YesNoUnknownCheckbox ({checked, onChange}: { checked: boolean | null; onChange: (value: boolean | null) => void }) {
   function internalOnChange () {
     let nextValue
     if (checked === true) {

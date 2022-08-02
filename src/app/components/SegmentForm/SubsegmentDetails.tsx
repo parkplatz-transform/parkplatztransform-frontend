@@ -13,8 +13,8 @@ import {
   setParkingIsNotAllowed,
 } from '../../recording/Subsegments';
 import getString from '../../../strings';
-import segmentFormState from '../../state/SegmentFormState';
-import appState from '../../state/AppState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
+import appState, { AppState } from '../../state/AppState';
 import ParkingAllowed from './ParkingAllowed';
 import ParkingNotAllowed from './ParkingNotAllowed';
 
@@ -68,10 +68,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubsegmentDetails = observer(({ appState, formState }: ) => {
+const SubsegmentDetails = observer(({ appState, formState }: { appState: AppState; formState: SegmentFormState }) => {
   const classes = useStyles();
 
-  function getButtonVariant(highlighted) {
+  function getButtonVariant(highlighted: boolean) {
     return highlighted ? 'contained' : 'outlined';
   }
 
@@ -142,7 +142,6 @@ const SubsegmentDetails = observer(({ appState, formState }: ) => {
               variant="contained"
               color="primary"
               onClick={onSave}
-              className={classes.bottomButton}
             >
               {getString('save')}
             </Button>

@@ -26,8 +26,9 @@ import {
 import SubsegmentList from './SubsegmentList';
 import SubsegmentDetails from './SubsegmentDetails';
 import AddToFavoriteDialog from './AddToFavoriteDialog';
-import segmentFormState from '../../state/SegmentFormState';
-import appState from '../../state/AppState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
+import appState, { AppState } from '../../state/AppState';
+import { Favorite } from './Favourites';
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -104,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SegmentForm = observer(({ appState, formState }) => {
+const SegmentForm = observer(({ appState, formState }: { appState: AppState, formState: SegmentFormState }) => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
 
@@ -118,7 +119,7 @@ const SegmentForm = observer(({ appState, formState }) => {
     : 'Bitte einloggen zum ändern';
 
   function getSegmentKey() {
-    return formState.segment.id || 'new segment';
+    return formState.segment?.id || 'new segment';
   }
 
   function renderSegmentProperties() {
@@ -129,13 +130,13 @@ const SegmentForm = observer(({ appState, formState }) => {
           <FormControl key={`${getSegmentKey()}_data_source`} fullWidth>
             <TextField
               id="select_data_source"
-              value={formState.segment.properties?.data_source || null}
+              value={formState.segment?.properties?.data_source || null}
               onChange={action(formState.updateSegment(setDataSource))}
               variant={'outlined'}
               label="Datenquelle"
               select
             >
-              <MenuItem value={null}>&nbsp;</MenuItem>
+              <MenuItem value={undefined}>&nbsp;</MenuItem>
               <MenuItem value={DATA_SOURCES.OWN_COUNTING}>
                 Eigene Zählung
               </MenuItem>
@@ -159,7 +160,7 @@ const SegmentForm = observer(({ appState, formState }) => {
               variant={'outlined'}
               multiline
               type="text"
-              value={formState.segment.properties?.further_comments}
+              value={formState.segment?.properties?.further_comments}
               onChange={action(formState.updateSegment(setFurtherComments))}
             />
           </FormControl>
@@ -185,7 +186,7 @@ const SegmentForm = observer(({ appState, formState }) => {
         </Button>
         <Button
           onClick={onSave}
-          disabled={formState.isChanged === 0}
+          disabled={!formState.isFormValid}
           color="primary"
           variant="contained"
           size="small"
@@ -200,10 +201,9 @@ const SegmentForm = observer(({ appState, formState }) => {
           </Alert>
         </div>
       )}
-      <div className={disabled ? classes.disabled : null}>
+      <div className={disabled ? classes.disabled : undefined}>
         <div
           className={clsx(
-            classes.marginTop,
             disabled ? classes.disabled : null
           )}
         >
@@ -217,7 +217,7 @@ const SegmentForm = observer(({ appState, formState }) => {
           <SubsegmentList />
         </div>
         <Box px={2} py={1}>
-          <FormControl className={classes.formControl} fullWidth>
+          <FormControl fullWidth>
           <Button
             variant="contained" color="primary"
             onClick={action(() => formState.addSubsegment(createEmptySubsegment()))}>
@@ -226,7 +226,7 @@ const SegmentForm = observer(({ appState, formState }) => {
           </FormControl>
         </Box>
         <Box px={2} py={1}>
-          <FormControl className={classes.formControl} fullWidth>
+          <FormControl fullWidth>
             <TextField
               select
               label="Favorite"
@@ -237,7 +237,7 @@ const SegmentForm = observer(({ appState, formState }) => {
                 )
               }}
             >
-              {formState.favorites.map((favorite) => (
+              {formState.favorites.map((favorite: Favorite) => (
                 <MenuItem style={{backgroundColor: favorite.color}} value={favorite.subsegment}>{favorite.name}</MenuItem>  
                 ))
               }

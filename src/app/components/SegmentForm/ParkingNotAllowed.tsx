@@ -15,7 +15,7 @@ import {
   setLengthInMeters,
 } from '../../recording/Subsegments';
 
-import segmentFormState from '../../state/SegmentFormState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
 
 const useStyles = makeStyles((theme) => ({
   formView: {
@@ -92,9 +92,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ParkingNotAllowed = observer(({ formState }) => {
+const ParkingNotAllowed = observer(({ formState }: { formState: SegmentFormState }) => {
   const classes = useStyles();
-  if (formState.subsegment.parking_allowed === false) {
+  if (formState.subsegment?.parking_allowed === false) {
     return (
       <React.Fragment>
         {/*Length*/}
@@ -104,7 +104,7 @@ const ParkingNotAllowed = observer(({ formState }) => {
               label="Länge (ca.) (m)"
               variant="outlined"
               id="standard-adornment-weight"
-              value={formState.subsegment.length_in_meters}
+              value={formState.subsegment?.length_in_meters}
               onChange={formState.updateSubsegment(setLengthInMeters)}
               aria-describedby="length in meters"
               inputProps={{

@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState }) => {
   const classes = useStyles();
   const error =
-    formState.errors && formState.errors[formState.subsegment.order_number];
+    formState.errors && formState.subsegment?.order_number && formState.errors[formState.subsegment.order_number];
 
   function getKey() {
     return formState.subsegment?.order_number || 'new_subsegment';
@@ -173,7 +173,6 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.time_constraint}
-                color={'primary'}
                 onChange={action(formState.updateSubsegment(setHasTimeConstraint))}
               />
             }
@@ -361,7 +360,6 @@ const ParkingAllowed = observer(({ formState }: { formState: SegmentFormState })
             control={
               <YesNoUnknownCheckbox
                 checked={formState.subsegment.user_restriction}
-                color={'primary'}
                 onChange={formState.updateSubsegment(setUserRestriction)}
               />
             }

@@ -49,7 +49,7 @@ export default React.memo(({ open, setOpen }: { open: boolean; setOpen: (value: 
             Bitte gib deine E-Mail-Adresse ein, um dich bei ParkplatzTransform anzumelden.
             </DialogContentText>
           <TextField
-            error={(email.length && !email.includes('@'))}
+            error={(email.length && !email.includes('@')) === true}
             autoFocus
             margin="dense"
             id="name"
