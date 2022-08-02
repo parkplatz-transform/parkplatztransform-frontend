@@ -37,7 +37,7 @@ const useStyles = makeStyles({
   },
 })
 
-const NavList = React.memo(({ toggleDrawer }) => {
+const NavList = React.memo(({ toggleDrawer }: { toggleDrawer: (value: boolean) => void }) => {
   const classes = useStyles()
   
   async function downloadAllSegments() {
@@ -52,8 +52,8 @@ const NavList = React.memo(({ toggleDrawer }) => {
   return (<div
     className={clsx(classes.list)}
     role='presentation'
-    onClick={toggleDrawer(false)}
-    onKeyDown={toggleDrawer(false)}
+    onClick={() => toggleDrawer(false)}
+    onKeyDown={() => toggleDrawer(false)}
   >
     <List>
       {['Home', 'Howto', 'Impressum', 'Datenschutz'].map((text, index) => (
@@ -79,10 +79,9 @@ const NavList = React.memo(({ toggleDrawer }) => {
 })
 
 export default React.memo(() => {
-  const classes = useStyles()
   const [state, setState] = React.useState(false)
 
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = (open: boolean) => (event: KeyboardEvent) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -97,9 +96,8 @@ export default React.memo(() => {
     <div>
       <React.Fragment key='left'>
         <IconButton
-          className={classes.menuButton}
           color='inherit'
-          onClick={toggleDrawer(true)}
+          onClick={() => toggleDrawer(true)}
         >
           {' '}
           <MenuIcon />

@@ -8,7 +8,7 @@ import addPredefinedFavorites from '../components/SegmentForm/Favourites';
 const LOCAL_STORAGE_KEY_FAVORITES = 'subsegmentFavorites';
 
 
-class SegmentFormState {
+export class SegmentFormState {
   segment = null;
   isDirty = false;
   selectedSubsegmentIndex = null;

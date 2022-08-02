@@ -10,9 +10,9 @@ import {
 import Button from '@material-ui/core/Button';
 import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
-import segmentFormState from '../../state/SegmentFormState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
 
-const AddToFavoriteDialog = observer(({ formState }) => {
+const AddToFavoriteDialog = observer(({ formState }: { formState: SegmentFormState }) => {
   const errorText =
     formState.subsegmentNameForFavorites &&
     formState.favorites

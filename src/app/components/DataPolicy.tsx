@@ -102,7 +102,7 @@ const DataPolicy = React.memo(() => {
             verstehen.
           </p>
           <p>
-            <bold>Was genau sind Cookies?</bold>
+            <strong>Was genau sind Cookies?</strong>
           </p>
           <p>
             Immer wenn Sie durch das Internet surfen, verwenden Sie einen
@@ -158,7 +158,7 @@ const DataPolicy = React.memo(() => {
             </li>
           </ul>
           <p>
-            <bold>Welche Cookies verwenden wir auf unserer Seite?</bold>
+            <strong>Welche Cookies verwenden wir auf unserer Seite?</strong>
           </p>
           <p>
             Wir selbst verwenden ausschließlich sogenannte “unbedingt
@@ -178,7 +178,7 @@ const DataPolicy = React.memo(() => {
             OpenStreetMap”.
           </p>
           <p>
-            <bold>Wie kann ich Cookies löschen?</bold>
+            <strong>Wie kann ich Cookies löschen?</strong>
           </p>
           Wie und ob Sie Cookies verwenden wollen, entscheiden Sie selbst.
           Unabhängig von welchem Service oder welcher Website die Cookies
@@ -226,7 +226,7 @@ const DataPolicy = React.memo(() => {
             Browsers, z.B. Edge, Firefox, Safari aus.
           </p>
           <p>
-            <bold>Wie sieht es mit meinem Datenschutz aus?</bold>
+            <strong>Wie sieht es mit meinem Datenschutz aus?</strong>
           </p>
           <p>
             Seit 2009 gibt es die sogenannten „Cookie-Richtlinien“. Darin ist
@@ -263,10 +263,10 @@ const DataPolicy = React.memo(() => {
             beim Vorliegen von rechtswidrigem Verhalten eingesehen werden.
           </p>
           <p>
-            <bold>
+            <strong>
               Detaillierte Informationen zur Speicherung und Verwendung Ihrer
               E-Mail-Adresse:
-            </bold>
+            </strong>
           </p>
           <p>
             Wir benötigen Ihre E-Mail-Adresse, um Ihnen einen Link zuzusenden,
@@ -302,7 +302,7 @@ const DataPolicy = React.memo(() => {
           <p>
             Wenn Nutzer*innen unserer Seite die über unser Tool erfassten
             Parkplatz-Daten über den Button “Daten herunterladen” herunterladen,
-            wird Ihre E-Mail-Adresse <bold>nicht</bold> mit übermittelt. Die
+            wird Ihre E-Mail-Adresse <strong>nicht</strong> mit übermittelt. Die
             Parkplatz-Daten enthalten lediglich die Nutzer*innen-ID, nicht Ihre
             E-Mail-Adresse.
           </p>
@@ -406,7 +406,7 @@ const DataPolicy = React.memo(() => {
             können.
           </p>
           <p>
-            <bold>Was ist OpenStreetMap?</bold>
+            <strong>Was ist OpenStreetMap?</strong>
           </p>
           <p>
             Das Projekt OpenStreetMap wurde 2004 ins Leben gerufen. Ziel des
@@ -418,7 +418,7 @@ const DataPolicy = React.memo(() => {
             vielen Daten ausgestattet.
           </p>
           <p>
-            <bold>Warum verwenden wir OpenStreetMap auf unserer Website?</bold>
+            <strong>Warum verwenden wir OpenStreetMap auf unserer Website?</strong>
           </p>
           <p>
             Unsere Website soll Ihnen in erster Linie hilfreich sein. Und das
@@ -432,7 +432,7 @@ const DataPolicy = React.memo(() => {
             Kinderspiel.
           </p>
           <p>
-            <bold>Welche Daten werden von OpenStreetMap gespeichert?</bold>
+            <strong>Welche Daten werden von OpenStreetMap gespeichert?</strong>
           </p>
           <p>
             Wenn Sie eine unserer Webseiten besuchen, die OpenStreetMap
@@ -453,17 +453,17 @@ const DataPolicy = React.memo(() => {
             Website interagieren:
           </p>
           <p>
-            <bold>Name:</bold> _osm_location
+            <strong>Name:</strong> _osm_location
           </p>
           <p>
-            <bold>Wert:</bold> 9.63312%7C52.41500%7C17%7CM
+            <strong>Wert:</strong> 9.63312%7C52.41500%7C17%7CM
           </p>
           <p>
-            <bold>Verwendungszweck:</bold> Das Cookie wird benötigt, um die
+            <strong>Verwendungszweck:</strong> Das Cookie wird benötigt, um die
             Inhalte von OpenStreetMap zu entsperren.
           </p>
           <p>
-            <bold>Ablaufdatum: </bold>nach 10 Jahren
+            <strong>Ablaufdatum: </strong>nach 10 Jahren
           </p>
           <p>
             Wenn Sie sich das Vollbild der Karte ansehen wollen, werden Sie auf
@@ -471,44 +471,44 @@ const DataPolicy = React.memo(() => {
             folgende Cookies in Ihrem Browser gespeichert werden:
           </p>
           <p>
-            <bold>Name:</bold> _osm_totp_token
+            <strong>Name:</strong> _osm_totp_token
           </p>
           <p>
-            <bold>Wert:</bold> 148253311268789-2
+            <strong>Wert:</strong> 148253311268789-2
           </p>
           <p>
-            <bold>Verwendungszweck:</bold> Dieses Cookie wird benutzt, um die
+            <strong>Verwendungszweck:</strong> Dieses Cookie wird benutzt, um die
             Bedienung des Kartenausschnitts zu gewährleisten.
           </p>
           <p>
-            <bold>Ablaufdatum:</bold> nach einer Stunde
+            <strong>Ablaufdatum:</strong> nach einer Stunde
           </p>
           <p>
-            <bold>Name:</bold> _osm_session
+            <strong>Name:</strong> _osm_session
           </p>
           <p>
-            <bold>Wert:</bold> 1d9bfa122e0259d5f6db4cb8ef653a1c
+            <strong>Wert:</strong> 1d9bfa122e0259d5f6db4cb8ef653a1c
           </p>
           <p>
-            <bold>Verwendungszweck:</bold> Mit Hilfe des Cookies können
+            <strong>Verwendungszweck:</strong> Mit Hilfe des Cookies können
             Sitzungsinformationen (also Userverhalten) gespeichert werden.
           </p>
           <p>
-            <bold>Ablaufdatum:</bold> nach Sitzungsende
+            <strong>Ablaufdatum:</strong> nach Sitzungsende
           </p>
           <p>
-            <bold>Name:</bold> _pk_id.1.cf09
+            <strong>Name:</strong> _pk_id.1.cf09
           </p>
           <p>
-            <bold>Wert:</bold> 4a5.1593684142.2.1593688396.1593688396311268789-9
+            <strong>Wert:</strong> 4a5.1593684142.2.1593688396.1593688396311268789-9
           </p>
           <p>
-            <bold>Verwendungszweck:</bold> Dieses Cookie wird von Piwik gesetzt,
+            <strong>Verwendungszweck:</strong> Dieses Cookie wird von Piwik gesetzt,
             um Userdaten wie etwa das Klickverhalten zu speichern bzw. zu
             messen.
           </p>
           <p>
-            <bold>Ablaufdatum:</bold> nnach einem Jahr
+            <strong>Ablaufdatum:</strong> nnach einem Jahr
           </p>
           <h3>Wie lange und wo werden die Daten gespeichert?</h3>
           <p>

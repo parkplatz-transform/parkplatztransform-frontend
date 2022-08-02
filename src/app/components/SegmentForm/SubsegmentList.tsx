@@ -13,15 +13,16 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import red from '@material-ui/core/colors/red';
 import lightGreen from '@material-ui/core/colors/lightGreen';
-import segmentFormState from '../../state/SegmentFormState';
+import segmentFormState, { SegmentFormState } from '../../state/SegmentFormState';
+import { Subsegment } from '../../../helpers/api';
 
-const SubsegmentList = observer(({ formState }) => {
+const SubsegmentList = observer(({ formState }: { formState: SegmentFormState }) => {
   if (
-    formState.segment.properties &&
-    formState.segment.properties.subsegments
+    formState.segment?.properties &&
+    formState.segment?.properties.subsegments
   ) {
     const listItems = formState.segment.properties.subsegments
-      .map((subsegment) => {
+      .map((subsegment: Subsegment) => {
         let title;
         if (subsegment.parking_allowed === true) {
           title = 'Parken';

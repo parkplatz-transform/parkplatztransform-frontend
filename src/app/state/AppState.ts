@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
-class AppState {
+export class AppState {
   rightDrawerOpen = false;
   leftDrawerOpen = false;
   toast = null;

@@ -18,7 +18,7 @@ import blue from '@material-ui/core/colors/blue';
 import { observer } from 'mobx-react-lite';
 
 import { UserContext } from '../context/UserContext';
-import appState from '../state/AppState';
+import appState, { AppState } from '../state/AppState';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,13 +45,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MainMenu = observer(({ appState }) => {
+const MainMenu = observer(({ appState }: { appState: AppState }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [loginModalOpen, setLoginModalOpen] = React.useState(false);
   const { user, logout } = useContext(UserContext);
 
-  const handleClick = (event) => {
+  const handleClick = (event: Event) => {
     setAnchorEl(event.currentTarget);
   };
 

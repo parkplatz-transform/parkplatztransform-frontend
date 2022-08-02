@@ -4,6 +4,7 @@ import {
   deleteSegment,
   getSegments,
   postSegment,
+  Segment,
   updateSegment,
 } from '../../helpers/api';
 import { sanitizeSegment } from '../recording/Segment';
@@ -13,7 +14,7 @@ import { PermissionsError } from '../../helpers/errors';
 import mapContext from '../map/MapContext'
 import arrow from '../images/arrow.png';
 
-class MapState {
+export class MapState {
   loadedBoundingBoxes = [];
   toast = null;
 
@@ -25,7 +26,7 @@ class MapState {
     this.toast = content;
   }
 
-  async onSegmentCreated(segment) {
+  async onSegmentCreated(segment: Segment) {
     try {
       const createdSegment = await postSegment({
         ...segment,
@@ -35,7 +36,7 @@ class MapState {
     } catch (e) {}
   }
 
-  async onSegmentEdited(updatedSegment) {
+  async onSegmentEdited(updatedSegment: Segment) {
     try {
       this.setAlertDisplayed({
         severity: 'success',

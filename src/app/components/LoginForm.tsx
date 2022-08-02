@@ -18,7 +18,7 @@ const FORM_STATE = Object.freeze({
   SUCCESS: Symbol('RECORDING')
 })
 
-export default React.memo(({ open, setOpen }) => {
+export default React.memo(({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) => {
   const [email, setEmail] = React.useState('')
   const [accepted, setAccepted] = React.useState(false)
   const [formState, setFormState] = React.useState(FORM_STATE.INITIAL)

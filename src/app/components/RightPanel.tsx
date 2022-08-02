@@ -8,7 +8,7 @@ import { observer } from 'mobx-react-lite';
 
 import SegmentForm from '../components/SegmentForm/SegmentForm';
 import getString from '../../strings';
-import segmentFormState from '../state/SegmentFormState';
+import segmentFormState, { SegmentFormState } from '../state/SegmentFormState';
 
 const useStyles = makeStyles({
   header: {
@@ -111,7 +111,7 @@ const WelcomeMessage = React.memo(() => {
   );
 });
 
-const RightPanel = observer(({ formState }) => {
+const RightPanel = observer(({ formState }: { formState: SegmentFormState }) => {
   const classes = useStyles();
 
   if (!formState.segment) {
