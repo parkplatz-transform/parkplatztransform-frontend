@@ -1,4 +1,5 @@
-const strings = {
+type Strings = { [k: string]: (number?: number) => string }
+const strings: Strings = {
   // Start page
   welcome_title: () => 'Willkommen bei ParkplatzTransform',
   welcome_subtitle: () => 'Dies ist ein Tool zum Erfassen von Parkplätzen.',
@@ -19,7 +20,7 @@ const strings = {
   // Alert success messages
   segment_create_success: () => 'Abschnitt erfolgreich erstellt.',
   segment_update_success: () => `Abschnitt erfolgreich gespeichert.`,
-  segment_delete_success: (num) => {
+  segment_delete_success: (num?: number) => {
     if (num === 1) {
       return 'Abschnitt gelöscht.'
     }
@@ -33,7 +34,7 @@ const strings = {
   segment_create_failure: () => 'Abschnitt konnte nicht erstellt werden.',
   segment_update_failure: () => 'Abschnitt konnte nicht gespeichert werden.',
   subsegment_invalid: () => 'Mindestens ein Unterabschnitt ist fehlerhaft.',
-  segment_delete_failure: (num) => {
+  segment_delete_failure: (num?: number) => {
     if (num === 1) {
       return 'Abschnitt konnte nicht gelöscht werden.'
     }
@@ -56,7 +57,7 @@ const strings = {
   helper_text_length: () => 'Länge oder Stellplatzzahl muss gesetzt werden.',
 }
 
-export default function getString(key, variable) {
+export default function getString(key: string, variable?: number) {
   try {
     return strings[key](variable)
   } catch {

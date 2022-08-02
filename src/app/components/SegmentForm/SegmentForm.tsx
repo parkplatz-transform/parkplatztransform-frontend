@@ -230,7 +230,6 @@ const SegmentForm = observer(({ appState, formState }) => {
             <TextField
               select
               label="Favorite"
-              labelId="favorite-label"
               variant={'outlined'}
               onChange={(event) => {
                 formState.addSubsegment(

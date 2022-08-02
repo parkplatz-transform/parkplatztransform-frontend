@@ -3,6 +3,58 @@ import { PermissionsError } from './errors'
 
 const baseURL = process.env.REACT_APP_API_URL || ''
 
+
+export interface SegmentCollection {
+  type:     string;
+  features: Segment[];
+}
+export interface Segment {
+  type:       string;
+  geometry:   Geometry;
+  properties: Properties;
+  id:         string;
+  bbox:       number[];
+}
+
+export interface Geometry {
+  coordinates: Array<number[]>;
+  type:        string;
+}
+
+export interface Properties {
+  subsegments:      Subsegment[];
+  has_subsegments:  boolean;
+  owner_id:         string;
+  data_source:      string;
+  further_comments: null;
+  modified_at:      Date;
+  created_at:       Date;
+}
+
+export interface Subsegment {
+  parking_allowed:            boolean;
+  order_number:               number;
+  length_in_meters:           null;
+  car_count:                  number;
+  quality:                    number;
+  fee:                        boolean | null;
+  street_location:            null;
+  marked:                     null;
+  alignment:                  null;
+  duration_constraint:        boolean | null;
+  user_restriction:           boolean | null;
+  user_restriction_reason:    null | string;
+  alternative_usage_reason:   null;
+  time_constraint:            boolean | null;
+  time_constraint_reason:     null | string;
+  duration_constraint_reason: null;
+  no_parking_reasons:         any[];
+}
+
+export interface LoginRequest {
+  email: string
+}
+
 export const routes = {
   users: `${baseURL}/users/`,
   usersVerify: `${baseURL}/users/verify/`,
@@ -17,7 +69,7 @@ export const headers = () => new Headers({
   'Content-Type': 'application/json',
 })
 
-async function withErrorHandling(response) {
+async function withErrorHandling(response: any) {
   const json = await response.json()
   if (response.status === 401) {
     throw new PermissionsError("Unauthorized")
@@ -29,7 +81,7 @@ async function withErrorHandling(response) {
     if (typeof json.detail === "string") {
       console.error(json.detail)
     } else {
-      json.detail.forEach(error => {
+      json.detail.forEach((error: Error) => {
         console.error(error)
       })
     }
@@ -39,7 +91,7 @@ async function withErrorHandling(response) {
   return json
 }
 
-export async function postSegment(segment) {
+export async function postSegment(segment: Segment) {
   const response = await fetch(routes.segments, {
     method: 'POST',
     headers: headers(),
@@ -61,7 +113,7 @@ export async function getUserData() {
   }
 }
 
-export async function loginUser(payload) {
+export async function loginUser(payload: LoginRequest) {
   try {
     const response = await fetch(routes.users, { 
       credentials: 'include', 
@@ -102,7 +154,7 @@ export async function getAllSegments() {
 * details = true means all subsegments are fetched with segments,
 * a future optimisation would be to not fetch this and return a count from the server.
 */
-export async function getSegments(boundingBox = null, excludedIds, modified_after) {
+export async function getSegments(boundingBox = null, excludedIds: string[], modified_after: Date): Promise<SegmentCollection> {
   const url = routes.querySegment
 
   const params = {
@@ -125,14 +177,14 @@ export async function getSegments(boundingBox = null, excludedIds, modified_afte
   return withErrorHandling(response)
 }
 
-export async function getSegment(segmentId) {
+export async function getSegment(segmentId: string): Promise<Segment> {
   const response = await fetch(`${routes.segments}${segmentId}/`, {
     headers: headers(),
   })
   return withErrorHandling(response)
 }
 
-export async function deleteSegment(segmentId) {
+export async function deleteSegment(segmentId: string) {
   const response = await fetch(`${routes.segments}${segmentId}/`, {
     method: 'DELETE',
     headers: headers(),
@@ -141,7 +193,7 @@ export async function deleteSegment(segmentId) {
   return withErrorHandling(response)
 }
 
-export async function updateSegment(segment) {
+export async function updateSegment(segment: Segment): Promise<Segment> {
   const response = await fetch(`${routes.segments}${segment.id}/`, {
     method: 'PUT',
     headers: headers(),

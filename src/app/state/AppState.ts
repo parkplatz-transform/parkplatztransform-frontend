@@ -10,11 +10,11 @@ class AppState {
     this.rightDrawerOpen = window.innerWidth > 900;
   }
 
-  setRightDrawerOpen(value) {
+  setRightDrawerOpen(value: boolean) {
     this.rightDrawerOpen = value;
   }
 
-  setLeftDrawerOpen(value) {
+  setLeftDrawerOpen(value: boolean) {
     this.leftDrawerOpen = value;
   }
 
