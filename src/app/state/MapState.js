@@ -73,10 +73,10 @@ class MapState {
       return;
     }
 
-    const topRight = `${boundingBox.neLng},${boundingBox.neLat}`;
-    const bottomRight = `${boundingBox.swLng},${boundingBox.neLat}`;
-    const bottomLeft = `${boundingBox.swLng},${boundingBox.swLat}`;
-    const topLeft = `${boundingBox.neLng},${boundingBox.swLat}`;
+    const topRight = [boundingBox.neLng, boundingBox.neLat];
+    const bottomRight = [boundingBox.swLng, boundingBox.neLat];
+    const bottomLeft = [boundingBox.swLng, boundingBox.swLat];
+    const topLeft = [boundingBox.neLng, boundingBox.swLat];
 
     const segments = draw.getAll().features
     const loadedSegments = this.getLoadedSegmentIdsInBounds(boundingBox, segments);
@@ -85,11 +85,11 @@ class MapState {
     const latestModificationDate =
       this.getLatestModificationDate(loadedSegments);
 
-    const boundingBoxString = `${topRight},${bottomRight},${bottomLeft},${topLeft},${topRight}`;
+    const boundingBoxArray = [topRight, bottomRight, bottomLeft, topLeft, topRight];
     this.loadedBoundingBoxes.push(boundingBox);
     try {
       const geoJson = await getSegments(
-        boundingBoxString,
+        boundingBoxArray,
         excludedIds,
         latestModificationDate
       );
