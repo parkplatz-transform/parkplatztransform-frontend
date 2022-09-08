@@ -163,9 +163,7 @@ class SegmentFormState {
     }
     subsegment.order_number = this.segment.properties.subsegments.length;
     this.segment.properties.subsegments.push(subsegment);
-    setTimeout(() => {
-      this.setSelectedSubsegmentIndex(subsegment.order_number);  
-    }, 100)
+    this.setSelectedSubsegmentIndex(subsegment.order_number);
   }
 
   duplicateSubsegment(subsegment) {
@@ -200,6 +198,7 @@ class SegmentFormState {
   }
 
   async onSegmentSelect(segment) {
+    this.setSelectedSubsegmentIndex(null);
     try {
       if (segment === null) {
         if (this.segment !== null && this.isDirty) {
