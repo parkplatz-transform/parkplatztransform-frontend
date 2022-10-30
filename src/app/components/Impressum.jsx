@@ -39,7 +39,7 @@ const Impressum = React.memo(() => {
           <p>Eingetragen beim Amtsgericht Charlottenburg: VR38420B</p>
           <p>
             Die Satzung des Vereins lässt sich 
-            <a href='https://www.xtransform.org/images/Satzung-X-Tranform.pdf'>
+            <a href='/Satzung-X-Tranform.pdf'>
               hier einsehen und herunterladen (PDF)
             </a>
             .
