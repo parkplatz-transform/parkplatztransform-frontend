@@ -71,9 +71,9 @@ const MainMenu = observer(({ appState }) => {
         <LoginForm open={loginModalOpen} setOpen={setLoginModalOpen} />
 
         <Typography variant="body1" className={classes.title}>
-          <Link className={classes.titleLink} to="/" color="inherit">
+          <a className={classes.titleLink} href="/" color="inherit">
             ParkplatzTransform
-          </Link>
+          </a>
         </Typography>
 
         {!user && (

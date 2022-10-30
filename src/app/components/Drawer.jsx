@@ -68,12 +68,6 @@ const NavList = React.memo(({ toggleDrawer }) => {
           <CloudDownload className={classes.icon} />
           <ListItemText className={classes.paddingLeft} primary={"GeoJSON herunterladen"} />
         </ListItem>
-        <a key={'docs'} className={classes.link} href={'https://api.xtransform.org/docs'}>
-        <ListItem button onClick={downloadAllSegments}>
-          <Code className={classes.icon} />
-          <ListItemText className={classes.paddingLeft} primary={"API Documentation"} />
-        </ListItem>
-        </a>
     </List>
   </div>)
 })
