@@ -35,6 +35,12 @@ const useStyles = makeStyles({
   drawer: {
     top: '70px!important',
   },
+  license: {
+    position: 'absolute',
+    zIndex: 99,
+    bottom: 10,
+    left: 10
+  }
 });
 
 const Recording = observer(({ appState }) => {
@@ -46,6 +52,9 @@ const Recording = observer(({ appState }) => {
       <div className={classes.container}>
         <div className={clsx(classes.mapArea, user ? null : 'logged-out')}>
           <PTMap key="map" />
+        </div>
+        <div className={classes.license}>
+          <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg"/>
         </div>
         {!isEmbedded && (
           <Drawer
